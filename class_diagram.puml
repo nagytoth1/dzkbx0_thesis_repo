@@ -1,0 +1,49 @@
+@startuml
+/'
+- private
+# protected
+~ package private
++ public
+'/
+interface SL_Service <<interface>> {
+ +SLDLL_Open()
+ +SLDLL_Listelem()
+ +SLDLL_Felmeres()
+ +SLDLL_AzonositoCsereInditas()
+ +SLLDLL_Upgrade()
+ +SLLDLL_LEDLampa()
+ +SLLDLL_LEDNyil()
+ +SLLDLL_Hangkuldes()
+ +SLDLL_GetStatus()
+ +SLDLL_SetLista()
+}
+
+package Delphi_DLL <<Frame>> {
+class SL_Imp {
+----constants----
+SLDLL_PATH = 'SLDLL.DLL';  // A DLL útvonala és neve
+SLLELO	   = $4000;        // LED  lámpa előtag
+SLNELO     = $8000;        // LED nyíl előtag
+SLHELO     = $c000;        // SLH előtag
+MAXRES	   = 21;           // Legfeljebb ennyi elemnek van hely
+HANMAX     = 16;           // Ennyi hangnak van hely
+FELMOK     = 1;            // A felmérés rendben lezajlott
+AZOOKE     = 2;            // Az azonosító váltás rendben lezajlott
+FIRMUZ     = 3;            // Förmvercsere információs kódja
+FIRMEN     = 4;            // Förmvercsere vége, újraindítás elndul
+LEDRGB     = 5;            // A LED lámpa RGB értéke
+NYIRGB     = 6;            // A nyíl RGB és irány értéke
+HANGEL     = 7;            // A hangstring állapota
+STATKV     = 8;            // A státusz értéke
+LISVAL	   = 9;            // A táblázat végének a válasza
+USBREM     = -1;           // Az USB vezérlő eltávolításra került
+VALTIO     = -2;           // Felmérés közben válaszvárás time-out következett be
+FELMHK     = -3;           // Felmérés vége hibával
+FELMHD     = -4;           // Nincs egy darab sem hibakód (elvben sem lehet ilyen)
+FELMDE     = -5;           // A 16 és 64 bites darabszám nem egyforma (elvben sem lehet ilyen)
+---records--
+}
+}
+SL_Imp <|-up- SL_Service
+hide circle
+@enduml
