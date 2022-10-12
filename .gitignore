@@ -1,0 +1,9 @@
+# LATEX process files #
+*.out
+*.aux
+*.bbl
+*.blg
+*.dvi
+*.log
+*.gz
+*.toc

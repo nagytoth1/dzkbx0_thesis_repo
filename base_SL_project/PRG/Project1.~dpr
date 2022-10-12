@@ -1,0 +1,19 @@
+program Project1;
+
+{%ToDo 'Project1.todo'}
+
+uses
+  Forms,
+  prg in 'prg.pas' {Form1},
+  settings in 'settings.pas',
+  Unit2 in 'Unit2.pas' {Form2},
+  globals in 'globals.pas';
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TForm2, Form2);
+  Application.Run;
+end.

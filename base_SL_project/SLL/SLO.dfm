@@ -1,0 +1,1269 @@
+object SLF: TSLF
+  Left = 1043
+  Top = 86
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
+  Caption = 'SL'
+  ClientHeight = 552
+  ClientWidth = 628
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  Menu = MainMenu
+  OldCreateOrder = False
+  Scaled = False
+  ShowHint = True
+  OnActivate = FormActivate
+  OnClose = FormClose
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  object LEDNyilGroupBox: TGroupBox
+    Left = 8
+    Top = 0
+    Width = 409
+    Height = 487
+    Color = clBtnFace
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
+    ParentColor = False
+    ParentFont = False
+    TabOrder = 4
+    Visible = False
+    object LEDNyilLabel: TLabel
+      Left = 16
+      Top = 406
+      Width = 377
+      Height = 13
+      Alignment = taCenter
+      Anchors = [akLeft, akBottom]
+      AutoSize = False
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+    end
+    object LEDNyilShape06: TShape
+      Left = 205
+      Top = 73
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape23: TShape
+      Left = 205
+      Top = 105
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilRLabel: TLabel
+      Left = 16
+      Top = 254
+      Width = 377
+      Height = 13
+      Anchors = [akLeft, akBottom]
+      AutoSize = False
+    end
+    object LEDNyilGLabel: TLabel
+      Left = 16
+      Top = 302
+      Width = 377
+      Height = 13
+      Anchors = [akLeft, akBottom]
+      AutoSize = False
+    end
+    object LEDNyilBLabel: TLabel
+      Left = 16
+      Top = 350
+      Width = 377
+      Height = 13
+      Anchors = [akLeft, akBottom]
+      AutoSize = False
+    end
+    object LEDNyilShape07: TShape
+      Left = 238
+      Top = 73
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape22: TShape
+      Left = 238
+      Top = 105
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape08: TShape
+      Left = 271
+      Top = 73
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape21: TShape
+      Left = 271
+      Top = 105
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape11: TShape
+      Left = 304
+      Top = 73
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape15: TShape
+      Left = 304
+      Top = 105
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape24: TShape
+      Left = 172
+      Top = 105
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape05: TShape
+      Left = 172
+      Top = 73
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape04: TShape
+      Left = 139
+      Top = 73
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape25: TShape
+      Left = 139
+      Top = 105
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape16: TShape
+      Left = 106
+      Top = 105
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape03: TShape
+      Left = 106
+      Top = 73
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape02: TShape
+      Left = 73
+      Top = 73
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape19: TShape
+      Left = 73
+      Top = 105
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape12: TShape
+      Left = 331
+      Top = 89
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape20: TShape
+      Left = 46
+      Top = 89
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape18: TShape
+      Left = 90
+      Top = 132
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape13: TShape
+      Left = 288
+      Top = 132
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape10: TShape
+      Left = 288
+      Top = 46
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape01: TShape
+      Left = 90
+      Top = 46
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape09: TShape
+      Left = 265
+      Top = 23
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape14: TShape
+      Left = 265
+      Top = 156
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape17: TShape
+      Left = 113
+      Top = 156
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilShape00: TShape
+      Left = 113
+      Top = 23
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDNyilKilepButton: TButton
+      Left = 170
+      Top = 446
+      Width = 69
+      Height = 25
+      Hint = 'Kilépés a LED lámpa értékek beállításából'
+      Anchors = [akLeft, akBottom]
+      Caption = '&Kilép'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 7
+      OnClick = KilepClick
+    end
+    object LEDNyilRTrackBar: TTrackBar
+      Left = 4
+      Top = 270
+      Width = 401
+      Height = 25
+      Anchors = [akLeft, akBottom]
+      Max = 255
+      Orientation = trHorizontal
+      Frequency = 1
+      Position = 0
+      SelEnd = 0
+      SelStart = 0
+      TabOrder = 4
+      TickMarks = tmBoth
+      TickStyle = tsNone
+      OnChange = LEDNyilTrackBarChange
+    end
+    object LEDNyilGTrackBar: TTrackBar
+      Left = 4
+      Top = 318
+      Width = 401
+      Height = 25
+      Anchors = [akLeft, akBottom]
+      Max = 255
+      Orientation = trHorizontal
+      Frequency = 1
+      Position = 0
+      SelEnd = 0
+      SelStart = 0
+      TabOrder = 5
+      TickMarks = tmBoth
+      TickStyle = tsNone
+      OnChange = LEDNyilTrackBarChange
+    end
+    object LEDNyilBTrackBar: TTrackBar
+      Left = 4
+      Top = 366
+      Width = 401
+      Height = 25
+      Anchors = [akLeft, akBottom]
+      Max = 255
+      Orientation = trHorizontal
+      Frequency = 1
+      Position = 0
+      SelEnd = 0
+      SelStart = 0
+      TabOrder = 6
+      TickMarks = tmBoth
+      TickStyle = tsNone
+      OnChange = LEDNyilTrackBarChange
+    end
+    object NyilBalraRadioButton: TRadioButton
+      Left = 16
+      Top = 198
+      Width = 81
+      Height = 17
+      Hint = 'A nyil irányának balra mutatása'
+      Anchors = [akLeft, akBottom]
+      Caption = 'Balra mutat'
+      TabOrder = 0
+      OnClick = LEDNyilTrackBarChange
+    end
+    object NyilJobbraRadioButton: TRadioButton
+      Left = 312
+      Top = 198
+      Width = 81
+      Height = 17
+      Hint = 'A nyil irányának jobbra mutatása'
+      Anchors = [akLeft, akBottom]
+      Caption = 'Jobbra mutat'
+      TabOrder = 2
+      OnClick = LEDNyilTrackBarChange
+    end
+    object SzinaranyNyilCheckBox: TCheckBox
+      Left = 132
+      Top = 230
+      Width = 145
+      Height = 17
+      Hint = 
+        'A színarányok megõrzéséhez használjuk ezt az elemet.'#13#10'Ha bejelöl' +
+        'jük, akkor az aktuális színarányok megõrzésre'#13#10'kerülnek a színös' +
+        'szetevõk változtatásakor.'
+      Anchors = [akLeft, akBottom]
+      Caption = 'A színarányok megõrzése'
+      TabOrder = 3
+      OnClick = SzinaranyNyilCheckBoxClick
+    end
+    object NyilLampaRadioButton: TRadioButton
+      Left = 168
+      Top = 198
+      Width = 81
+      Height = 17
+      Hint = 'A nyil irányának balra mutatása'
+      Anchors = [akLeft, akBottom]
+      Caption = 'Lámpaként'
+      TabOrder = 1
+      OnClick = LEDNyilTrackBarChange
+    end
+  end
+  object NumEditBox: TGroupBox
+    Left = 8
+    Top = 0
+    Width = 333
+    Height = 137
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 1
+    Visible = False
+    object NOFejLabel: TLabel
+      Left = 57
+      Top = 24
+      Width = 219
+      Height = 17
+      Hint = 
+        'Az azonosító értéke. Az értéke nem lehet 0, és'#13#10'kisebb kell hogy' +
+        ' legyen 16383-nál.'
+      Alignment = taCenter
+      Anchors = [akLeft, akTop, akRight]
+      AutoSize = False
+      Caption = 'Az aktuális azonosító'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+      ParentShowHint = False
+      ShowHint = True
+    end
+    object AzonositoKilep: TButton
+      Left = 234
+      Top = 96
+      Width = 69
+      Height = 25
+      Hint = 'Kilépés módosítás nélkül'
+      Anchors = [akRight, akBottom]
+      Caption = '&Mégsem'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 0
+      OnClick = KilepClick
+    end
+    object NumEdit: TEdit
+      Left = 136
+      Top = 48
+      Width = 61
+      Height = 28
+      Hint = 
+        'Az azonosító értéke. Az értéke nem lehet 0, és'#13#10'kisebb kell hogy' +
+        ' legyen 16383-nál.'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      MaxLength = 5
+      ParentFont = False
+      TabOrder = 1
+      OnChange = NumEditChange
+      OnKeyPress = NumEditKeyPress
+    end
+    object AzonositoBeallit: TButton
+      Left = 30
+      Top = 96
+      Width = 69
+      Height = 25
+      Hint = 'Az azonosító módosítás elindítása'
+      Anchors = [akLeft, akBottom]
+      Caption = '&Beállít'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 2
+      OnClick = AzonositoBeallitClick
+    end
+  end
+  object HangszoroGroupBox: TGroupBox
+    Left = 8
+    Top = 0
+    Width = 559
+    Height = 415
+    Color = clBtnFace
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
+    ParentColor = False
+    ParentFont = False
+    TabOrder = 6
+    Visible = False
+    object HangmagassagLabel: TLabel
+      Left = 350
+      Top = 32
+      Width = 195
+      Height = 17
+      Cursor = crHandPoint
+      Hint = 'A hangmagasság beállítása'
+      Alignment = taCenter
+      Anchors = [akLeft, akTop, akRight]
+      AutoSize = False
+      Caption = 'Hangmagasság'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+      ParentShowHint = False
+      ShowHint = True
+    end
+    object HangszoroLabel: TLabel
+      Left = 16
+      Top = 334
+      Width = 527
+      Height = 13
+      Alignment = taCenter
+      Anchors = [akLeft, akRight, akBottom]
+      AutoSize = False
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+    end
+    object HangeroLabel: TLabel
+      Left = 350
+      Top = 212
+      Width = 195
+      Height = 13
+      Hint = 'Az adott hang a beállított hangerõvel kerül lejátszásra'
+      Alignment = taCenter
+      Anchors = [akLeft, akTop, akRight]
+      AutoSize = False
+      Caption = 'Hangerõ'
+    end
+    object HanglistaLabel: TLabel
+      Left = 16
+      Top = 16
+      Width = 289
+      Height = 13
+      Hint = 
+        'A hanglista elemeinek beállítása, szerkesztése'#13#10'történhet ebben ' +
+        'a listában. Jobb egérgombbal'#13#10'lehet kisegítõ mûveleteket kérni.'
+      Alignment = taCenter
+      AutoSize = False
+      Caption = 'Hanglista'
+    end
+    object HanghosszLabel: TLabel
+      Left = 350
+      Top = 111
+      Width = 195
+      Height = 17
+      Cursor = crHandPoint
+      Hint = 
+        'A hanghosszat lehet itt beállítani.'#13#10'A felajánlott értékeket "ké' +
+        'zzel" felül'#13#10'lehet írni.'
+      Alignment = taCenter
+      Anchors = [akLeft, akTop, akRight]
+      AutoSize = False
+      Caption = 'Hanghossz (msec.)'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+      ParentShowHint = False
+      ShowHint = True
+    end
+    object HangszoroKilepButton: TButton
+      Left = 245
+      Top = 374
+      Width = 69
+      Height = 25
+      Hint = 'Kilépés a hangszerkesztõbõl'
+      Anchors = [akLeft, akBottom]
+      Caption = '&Kilép'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 0
+      OnClick = KilepClick
+    end
+    object HangeroTrackBar: TTrackBar
+      Left = 350
+      Top = 232
+      Width = 195
+      Height = 25
+      Hint = 'Az adott hang a beállított hangerõvel kerül lejátszásra'
+      Anchors = [akLeft, akTop, akRight]
+      Max = 63
+      Min = 1
+      Orientation = trHorizontal
+      Frequency = 1
+      Position = 1
+      SelEnd = 0
+      SelStart = 0
+      TabOrder = 1
+      TickMarks = tmBoth
+      TickStyle = tsNone
+      OnChange = HangeroTrackBarChange
+    end
+    object HangListBox: TListBox
+      Left = 16
+      Top = 40
+      Width = 319
+      Height = 231
+      Hint = 'A lejátszangó hanglista elemei'
+      Anchors = [akLeft, akTop, akBottom]
+      Font.Charset = EASTEUROPE_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Courier New'
+      Font.Style = []
+      ItemHeight = 14
+      ParentFont = False
+      PopupMenu = HangPopupMenu
+      TabOrder = 2
+      OnClick = HangListBoxClick
+      OnKeyDown = HangListBoxKeyDown
+    end
+    object LejatszasButton: TButton
+      Left = 225
+      Top = 286
+      Width = 109
+      Height = 25
+      Hint = 'A megszerkesztett hanglista lejátszásának elindítása'
+      Anchors = [akLeft, akBottom]
+      Caption = '&Elküldés lejátszásra'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 3
+      OnClick = LejatszasButtonClick
+    end
+    object HangmagassagComboBox: TComboBox
+      Left = 350
+      Top = 56
+      Width = 195
+      Height = 22
+      Hint = 'A hangmagasság beállítása'
+      Style = csDropDownList
+      Anchors = [akLeft, akTop, akRight]
+      Font.Charset = EASTEUROPE_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Courier New'
+      Font.Style = []
+      ItemHeight = 14
+      ParentFont = False
+      TabOrder = 4
+      OnChange = HangmagassagComboBoxChange
+      Items.Strings = (
+        'C'#39#39#39#39'   4186.0090 Hz'
+        'H'#39#39#39'    3951.0664 Hz'
+        'B'#39#39#39'    3729.3101 Hz'
+        'A'#39#39#39'    3520.0000 Hz'
+        'GISZ'#39#39#39' 3322.4376 Hz'
+        'G'#39#39#39'    3135.9635 Hz'
+        'FISZ'#39#39#39' 2959.9554 Hz'
+        'F'#39#39#39'    2793.8259 Hz'
+        'E'#39#39#39'    2637.0205 Hz'
+        'DISZ'#39#39#39' 2489.0159 Hz'
+        'D'#39#39#39'    2349.3181 Hz'
+        'CISZ'#39#39#39' 2217.4610 Hz'
+        'C'#39#39#39'    2093.0045 Hz'
+        'H'#39#39'     1975.5332 Hz'
+        'B'#39#39'     1864.6550 Hz'
+        'A'#39#39'     1760.0000 Hz'
+        'GISZ'#39#39'  1661.2188 Hz'
+        'G'#39#39'     1567.9817 Hz'
+        'FISZ'#39#39'  1479.9777 Hz'
+        'F'#39#39'     1396.9129 Hz'
+        'E'#39#39'     1318.5102 Hz'
+        'DISZ'#39#39'  1244.5079 Hz'
+        'D'#39#39'     1174.6591 Hz'
+        'CISZ'#39#39'  1108.7305 Hz'
+        'C'#39#39'  '#9'  1046.5023 Hz'
+        'H'#39'       987.7666 Hz'
+        'B'#39'       932.3275 Hz'
+        'A'#39'       880.0000 Hz'
+        'GISZ'#39'    830.6094 Hz'
+        'G'#39'       783.9909 Hz'
+        'FISZ'#39'    739.9888 Hz'
+        'F'#39'       698.4565 Hz'
+        'E'#39'       659.2551 Hz'
+        'DISZ'#39'    622.2540 Hz'
+        'D'#39' '#9'      587.3295 Hz'
+        'CISZ'#39' '#9' 554.3653 Hz'
+        'C'#39'       523.2511 Hz'
+        'H     '#9' 493.8833 Hz'
+        'B        466.1638 Hz'
+        'A        440.0000 Hz'
+        'GISZ     415.3047 Hz'
+        'G '#9'     391.9954 Hz'
+        'FISZ     369.9944 Hz'
+        'F        349.2282 Hz'
+        'E        329.6276 Hz'
+        'DISZ     311.1270 Hz'
+        'D        293.6648 Hz'
+        'CISZ     277.1826 Hz'
+        'C        261.6256 Hz'
+        'Szünet              ')
+    end
+    object HanghosszComboBox: TComboBox
+      Left = 350
+      Top = 135
+      Width = 195
+      Height = 21
+      Hint = 
+        'A hanghosszat lehet itt beállítani.'#13#10'A felajánlott értékeket "ké' +
+        'zzel" felül'#13#10'lehet írni.'
+      Anchors = [akLeft, akTop, akRight]
+      ItemHeight = 13
+      TabOrder = 5
+      OnChange = HangmagassagComboBoxChange
+      Items.Strings = (
+        ' 100'
+        ' 200'
+        ' 300'
+        ' 400'
+        ' 500'
+        ' 600'
+        ' 700'
+        ' 800'
+        ' 900'
+        '1000')
+    end
+    object HangeroEgyuttCheckBox: TCheckBox
+      Left = 391
+      Top = 184
+      Width = 113
+      Height = 17
+      Caption = 'Hangerõ mindenhol'
+      TabOrder = 6
+      OnClick = HangeroEgyuttCheckBoxClick
+    end
+  end
+  object SelDevGroup: TGroupBox
+    Left = 8
+    Top = 0
+    Width = 361
+    Height = 104
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 2
+    Visible = False
+    object DevListBox: TListBox
+      Left = 24
+      Top = 24
+      Width = 315
+      Height = 17
+      Hint = 'Választás több csatlakoztatott eszközbõl.'
+      Anchors = [akLeft, akTop, akRight]
+      ExtendedSelect = False
+      ItemHeight = 13
+      TabOrder = 0
+      OnDblClick = KivalasztButtonClick
+      OnKeyDown = DevListBoxKeyDown
+      OnMouseMove = DevListBoxMouseMove
+    end
+    object MegsemValasztButton: TButton
+      Left = 231
+      Top = 63
+      Width = 69
+      Height = 25
+      Hint = 'Választás nélküli befejezés.'
+      Anchors = [akRight, akBottom]
+      Caption = '&Mégsem'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 1
+      OnClick = KilepClick
+    end
+    object KivalasztButton: TButton
+      Left = 56
+      Top = 63
+      Width = 69
+      Height = 25
+      Hint = 'A listában kiválasztott eszköz kiválasztása.'
+      Anchors = [akLeft, akBottom]
+      Caption = '&Kiválasztás'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 2
+      OnClick = KivalasztButtonClick
+    end
+  end
+  object EEPmuvelet: TGroupBox
+    Left = 8
+    Top = 0
+    Width = 401
+    Height = 105
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 0
+    Visible = False
+    object Gauge: TGauge
+      Left = 24
+      Top = 40
+      Width = 353
+      Height = 25
+      Hint = 'A frissítési folyamat állapota'
+      Anchors = [akLeft, akTop, akRight]
+      ForeColor = clBlue
+      MaxValue = 15872
+      Progress = 0
+    end
+  end
+  object StatusBar: TStatusBar
+    Left = 0
+    Top = 533
+    Width = 628
+    Height = 19
+    Panels = <
+      item
+        Width = 50
+      end>
+    SimplePanel = False
+  end
+  object LEDLampaGroupBox: TGroupBox
+    Left = 8
+    Top = 0
+    Width = 409
+    Height = 487
+    Color = clBtnFace
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
+    ParentColor = False
+    ParentFont = False
+    TabOrder = 3
+    Visible = False
+    object LEDLampaLabel: TLabel
+      Left = 16
+      Top = 406
+      Width = 377
+      Height = 13
+      Alignment = taCenter
+      Anchors = [akLeft, akBottom]
+      AutoSize = False
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+    end
+    object LEDLampaShape00: TShape
+      Left = 188
+      Top = 25
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDLampaShape01: TShape
+      Left = 188
+      Top = 57
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDLampaShape02: TShape
+      Left = 188
+      Top = 89
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDLampaShape03: TShape
+      Left = 188
+      Top = 121
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDLampaShape04: TShape
+      Left = 188
+      Top = 153
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDLampaShape05: TShape
+      Left = 215
+      Top = 41
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDLampaShape06: TShape
+      Left = 215
+      Top = 73
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDLampaShape07: TShape
+      Left = 215
+      Top = 105
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDLampaShape08: TShape
+      Left = 215
+      Top = 137
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDLampaShape09: TShape
+      Left = 159
+      Top = 41
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDLampaShape10: TShape
+      Left = 159
+      Top = 73
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDLampaShape11: TShape
+      Left = 159
+      Top = 105
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDLampaShape12: TShape
+      Left = 159
+      Top = 137
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDLampaShape13: TShape
+      Left = 242
+      Top = 57
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDLampaShape14: TShape
+      Left = 242
+      Top = 89
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDLampaShape15: TShape
+      Left = 242
+      Top = 121
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDLampaShape16: TShape
+      Left = 132
+      Top = 57
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDLampaShape17: TShape
+      Left = 132
+      Top = 89
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDLampaShape18: TShape
+      Left = 132
+      Top = 121
+      Width = 33
+      Height = 33
+      Cursor = crHandPoint
+      Shape = stCircle
+    end
+    object LEDLampaRLabel: TLabel
+      Left = 16
+      Top = 254
+      Width = 377
+      Height = 13
+      Anchors = [akLeft, akBottom]
+      AutoSize = False
+    end
+    object LEDLampaGLabel: TLabel
+      Left = 16
+      Top = 302
+      Width = 377
+      Height = 13
+      Anchors = [akLeft, akBottom]
+      AutoSize = False
+    end
+    object LEDLampaBLabel: TLabel
+      Left = 16
+      Top = 350
+      Width = 377
+      Height = 13
+      Anchors = [akLeft, akBottom]
+      AutoSize = False
+    end
+    object LEDLampaKilepButton: TButton
+      Left = 170
+      Top = 446
+      Width = 69
+      Height = 25
+      Hint = 'Kilépés a LED lámpa értékek beállításából'
+      Anchors = [akLeft, akBottom]
+      Caption = '&Kilép'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 0
+      OnClick = KilepClick
+    end
+    object LEDLampaRTrackBar: TTrackBar
+      Left = 4
+      Top = 270
+      Width = 401
+      Height = 25
+      Anchors = [akLeft, akBottom]
+      Max = 255
+      Orientation = trHorizontal
+      Frequency = 1
+      Position = 0
+      SelEnd = 0
+      SelStart = 0
+      TabOrder = 1
+      TickMarks = tmBoth
+      TickStyle = tsNone
+      OnChange = LEDLampaTrackBarChange
+    end
+    object LEDLampaGTrackBar: TTrackBar
+      Left = 4
+      Top = 318
+      Width = 401
+      Height = 25
+      Anchors = [akLeft, akBottom]
+      Max = 255
+      Orientation = trHorizontal
+      Frequency = 1
+      Position = 0
+      SelEnd = 0
+      SelStart = 0
+      TabOrder = 2
+      TickMarks = tmBoth
+      TickStyle = tsNone
+      OnChange = LEDLampaTrackBarChange
+    end
+    object LEDLampaBTrackBar: TTrackBar
+      Left = 4
+      Top = 366
+      Width = 401
+      Height = 25
+      Anchors = [akLeft, akBottom]
+      Max = 255
+      Orientation = trHorizontal
+      Frequency = 1
+      Position = 0
+      SelEnd = 0
+      SelStart = 0
+      TabOrder = 3
+      TickMarks = tmBoth
+      TickStyle = tsNone
+      OnChange = LEDLampaTrackBarChange
+    end
+    object SzinaranyLEDCheckBox: TCheckBox
+      Left = 132
+      Top = 230
+      Width = 145
+      Height = 17
+      Hint = 
+        'A színarányok megõrzéséhez használjuk ezt az elemet.'#13#10'Ha bejelöl' +
+        'jük, akkor az aktuális színarányok megõrzésre'#13#10'kerülnek a színös' +
+        'szetevõk változtatásakor.'
+      Anchors = [akLeft, akBottom]
+      Caption = 'A színarányok megõrzése'
+      TabOrder = 4
+      OnClick = SzinaranyLEDCheckBoxClick
+    end
+    object LampaLampaRadioButton: TRadioButton
+      Left = 168
+      Top = 198
+      Width = 81
+      Height = 17
+      Hint = 'A nyil irányának balra mutatása'
+      Anchors = [akLeft, akBottom]
+      Caption = 'Lámpaként'
+      TabOrder = 5
+      OnClick = LEDLampaTrackBarChange
+    end
+    object LampaBalraRadioButton: TRadioButton
+      Left = 16
+      Top = 198
+      Width = 81
+      Height = 17
+      Hint = 'A nyil irányának balra mutatása'
+      Anchors = [akLeft, akBottom]
+      Caption = 'Balra mutat'
+      TabOrder = 6
+      OnClick = LEDLampaTrackBarChange
+    end
+    object LampaJobbraRadioButton: TRadioButton
+      Left = 312
+      Top = 198
+      Width = 81
+      Height = 17
+      Hint = 'A nyil irányának jobbra mutatása'
+      Anchors = [akLeft, akBottom]
+      Caption = 'Jobbra mutat'
+      TabOrder = 7
+      OnClick = LEDLampaTrackBarChange
+    end
+  end
+  object MainMenu: TMainMenu
+    Left = 8
+    Top = 496
+    object FileMenu: TMenuItem
+      Caption = '&Fájl'
+      object Ujrafelmeres: TMenuItem
+        Caption = 'A felmérés újra&indítása'
+        ShortCut = 117
+        OnClick = UjrafelmeresClick
+      end
+      object ExitMenuElem: TMenuItem
+        Caption = '&Kilépés'
+        ShortCut = 32856
+        OnClick = ExitMenuElemClick
+      end
+    end
+    object Teendok: TMenuItem
+      Caption = '&Teendõk'
+      Enabled = False
+      object AzonositoBeallitasa: TMenuItem
+        Caption = '&Azonosító beállítása '
+        ShortCut = 113
+        OnClick = MenuinditClick
+      end
+      object LEDLampaKijelzo: TMenuItem
+        Tag = 16384
+        Caption = 'LED &lámpa kijelzõ paraméterek'
+        ShortCut = 114
+        OnClick = MenuinditClick
+      end
+      object LEDNyilKijelzo: TMenuItem
+        Tag = 32768
+        Caption = 'LED &nyíl kijelzõ paraméterek'
+        ShortCut = 115
+        OnClick = MenuinditClick
+      end
+      object HangszoroPanelKezeles: TMenuItem
+        Tag = 49152
+        Caption = '&Hangszóró panel kezelés'
+        ShortCut = 116
+        OnClick = MenuinditClick
+      end
+      object ListaKuldes1: TMenuItem
+        Caption = 'Lista küldése'
+        ShortCut = 118
+        OnClick = ListaKuldesClick
+      end
+      object Programfrissites: TMenuItem
+        Caption = '&Program frissítés'
+        ShortCut = 119
+        OnClick = MenuinditClick
+      end
+    end
+  end
+  object Timer: TTimer
+    Interval = 100
+    OnTimer = TimerTimer
+    Left = 40
+    Top = 496
+  end
+  object FirmwareUpdateDialog: TOpenDialog
+    DefaultExt = 'BIN'
+    Filter = 'BIN fájlok (*.BIN)|*.BIN|Minden fájl (*.*)|*.*'
+    Left = 72
+    Top = 496
+  end
+  object HangPopupMenu: TPopupMenu
+    OnPopup = HangPopupMenuPopup
+    Left = 104
+    Top = 496
+    object Torles: TMenuItem
+      Caption = 'Törlés'
+      ShortCut = 46
+      OnClick = TorlesClick
+    end
+    object Folfele: TMenuItem
+      Caption = 'Fölfele'
+      OnClick = FolfeleClick
+    end
+    object Lefele: TMenuItem
+      Caption = 'Lefele'
+      OnClick = LefeleClick
+    end
+    object Ujhang: TMenuItem
+      Caption = 'Új hang'
+      ShortCut = 45
+      OnClick = UjhangClick
+    end
+  end
+end

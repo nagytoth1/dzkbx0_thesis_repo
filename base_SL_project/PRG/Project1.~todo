@@ -1,0 +1,14 @@
+{TODO 2 : Layout kialakítása, skinezés.}
+{TODO 2 : Beállítások panelen a trackbárok kezelése induláskor, és betöltéskor.}
+{TODO 2 : A hibák kezelése, és a program futtatás ellenõrzése.}
+{TODO 1 : A program feldolgozása a DEVICELLIST-bõl történjen, de közvetlen a fájlból.}
+{TODO 1 : Program betöltésnél a panelek is jöjjenek létre, hogy lehessen szerkeszteni a programot.}
+  CONTAINERList: TList;
+    {eszközök konténere} DEVICECONTAINERLIST: TList;
+
+    {eszközök listája} DEVICEList: TList;
+    {panelek listája}  DEVICEPANELLIST: TList;}
+{DONE : A trackBar-ok beállításai az elem kiválasztásakor legyenek valid értékûek (panel beállításainál)}
+{DONE : Panelek beállításai látszódjanak a panelen}
+{TODO 2 : Panel device elemek képekell skinezése}
+{DONE : Beállítások mentése}
