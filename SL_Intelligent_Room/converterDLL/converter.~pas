@@ -1,0 +1,32 @@
+unit converter;
+
+interface
+
+
+uses Messages, SLDLL;
+const
+//ezek benne vannak SLDLL-ben is
+  //SLLELO = $4000;  //led light prefix
+  //SLNELO = $8000;  //led arrow prefix
+  //SLHELO = $c000;  //speaker prefix
+  MAX_DEVICECOUNT = 100;
+  UZESAJ = WM_USER + 0;
+var
+  drb485: integer;
+  dev485:DEVLIS;
+  lista: LISTBL;
+  devList: LISTBL;
+procedure Split (const Delimiter: Char; Input: string; const Strings: TStrings);
+
+implementation
+//Használata: Split('^', Forrás, Eredmény);
+procedure Split (const Delimiter: Char; Input: string; const Strings: TStrings) ;
+begin
+   Assert(Assigned(Strings));
+   Strings.Clear;
+   Strings.Delimiter := Delimiter;
+   Strings.DelimitedText :=  '"' +
+      StringReplace(Input, Delimiter, '"' + Delimiter + '"', [rfReplaceAll]) + '"' ;
+end;
+
+end.

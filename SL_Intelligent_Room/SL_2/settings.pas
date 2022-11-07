@@ -1,0 +1,219 @@
+unit settings;
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, SLDLL, StdCtrls, Menus, ExtCtrls, Grids, StrUtils, XMLIntf, XMLDoc;
+
+const
+  PROGRAMFILENAME = 'program.src';
+  UZESAJ = WM_USER + 0;
+  c1 = 52845;
+  c2 = 22719;
+  MAX_DEVICECOUNT = 100;
+
+  //procedure setRound(roundNumber: integer);
+  procedure setRounds();
+  procedure fillDeviceListWithDevices(dev485 : PDEVLIS);
+  function convertJSONToDeviceList(json_source: string):DEVLIS;
+  function convertDeviceListToJSON(dev485 : PDEVLIS):string;
+  procedure DeviceListToXML(dev485: PDEVLIS; const outPath:string);
+var
+  teststring: string;
+  drb485: integer;
+  dev485:DEVLIS;
+  lista: LISTBL;
+  devList: LISTBL;
+
+  SLprogram: TStringList;
+  programElements: TStringList;
+  ROUNDNUMBER: integer = 0;
+  ELEMENTNUMBER: integer;
+
+  timerIntervall: integer = 1000;
+  MyCounter: integer = 0;
+
+procedure Split (const Delimiter: Char; Input: string; const Strings: TStrings) ;
+
+implementation
+
+//Használata: Split('^', Forrás, Eredmény);
+procedure Split (const Delimiter: Char; Input: string; const Strings: TStrings) ;
+begin
+   Assert(Assigned(Strings));
+   Strings.Clear;
+   Strings.Delimiter := Delimiter;
+   Strings.DelimitedText :=  '"' +
+      StringReplace(Input, Delimiter, '"' + Delimiter + '"', [rfReplaceAll]) + '"' ;
+end;
+
+procedure setRounds();
+var
+  //i: integer;
+  elemszam: integer;
+begin
+
+  lista[0].azonos := dev485[0].azonos;
+  lista[0].lamrgb.rossze := 20;
+  lista[0].lamrgb.gossze := 0;
+  lista[0].lamrgb.bossze := 0;
+  //devList[i].nilmeg := 0; // 1 //2 strToBool(elements[3]);
+
+  lista[1].azonos := dev485[1].azonos;
+  lista[1].lamrgb.rossze := 20;
+  lista[1].lamrgb.gossze := 0;
+  lista[1].lamrgb.bossze := 0;
+  //devList[i].nilmeg := 0; // 1 //2 strToBool(elements[3]);
+
+  lista[2].azonos := dev485[2].azonos;
+  lista[2].lamrgb.rossze := 20;
+  lista[2].lamrgb.gossze := 0;
+  lista[2].lamrgb.bossze := 0;
+  //devList[i].nilmeg := 0; // 1 //2 strToBool(elements[3]);
+
+  lista[3].azonos := dev485[3].azonos;
+  lista[3].lamrgb.rossze := 20;
+  lista[3].lamrgb.gossze := 0;
+  lista[3].lamrgb.bossze := 0;
+  //devList[i].nilmeg := 0; // 1 //2 strToBool(elements[3]);
+
+  elemszam := 2;
+
+  SLDLL_SetLista(elemszam, lista);
+end;
+
+//ez az eljárás csak a funkciók tesztelésére szolgál: statikusan feltölti a dev485-öt eszközökkel
+procedure fillDeviceListWithDevices(dev485 : PDEVLIS); 
+begin
+  SetLength(dev485^, 3);
+  dev485^[0].azonos := 16388;
+  dev485^[0].produc := 'Teszt Elek';
+  dev485^[0].manufa := 'Valaki Zrt.';
+  dev485^[1].azonos := 124;
+  dev485^[1].produc := 'Teszt Elek';
+  dev485^[1].manufa := 'Valaki Zrt.';
+  dev485^[2].azonos := 125;
+  dev485^[2].produc := 'Teszt Elek';
+  dev485^[2].manufa := 'Valaki Zrt.';
+end;
+
+function convertDeviceListToJSON(dev485 : PDEVLIS):string; 
+//TODO: konkatenálásnak van-e hatékonyabb változata Delphi-ben?
+//Delphi 2009-es verziótól vezették be a TStringBuilder-t, így ezt nem tudom használni
+var
+  buffer: string;
+  deviceType: string;
+  i: integer;
+begin
+  buffer := '[';  //JSON-tömböt fogunk készíteni
+  i:=-1;
+  while dev485^[i+1].azonos <> 0 do
+  begin
+    //mez?neveket jó lenne lekérdezhet?vé tenni, nem beégetni a kódba
+      //Run-time type information (RTTI) visszaadja a mez?nevet, ezt kéne beszúrni a JSON-be -> ha változik a struct, akkor dinamikusan változni fog a hozzá készült JSON is
+    //ennek hiányában statikus JSON-t készítünk, ilyen formátumban fog kinézni a JSON mindig
+    inc(i);
+    buffer := buffer + Format('{"azonos":%d,', [dev485^[i].azonos]);
+    //eszköz típusának eldöntése
+    //megkapjuk, ha azonosítója valamint 0xc000 (binárisan: 1100 0000 0000 0000) érték között logikai/bitenkénti AND-m?veletet végzünk
+    case dev485^[i].azonos AND $c000 of
+      SLLELO: deviceType := 'L'; //ha az eszköz lámpa
+      SLNELO: deviceType := 'N'; //ha az eszköz nyíl
+      SLHELO: deviceType := 'H'; //ha az eszköz hangszóró
+    else  deviceType := '0'; // nem meghatározható az eszköz típusa
+    end;
+    buffer := buffer + Format('"tipus":"%s"},',  [deviceType]);
+    writeln(buffer);
+  end;
+  buffer[length(buffer)] := ']'; //a vessz?t írja felül, tömböt lezár 
+  writeln(buffer);
+  writeln('Array dev485 has been converted to JSON-string successfully!');
+  writeln('-------------');
+  result := buffer;
+end;
+
+procedure RemoveSpecialChars(var str : string); //in-out-os paraméterként adom át a string-et
+  const
+    InvalidChars : string = ' "[]{}';
+  var
+    i : integer;
+  begin
+    for i := 0 to length(InvalidChars) do
+    begin
+      str := StringReplace(str, InvalidChars[i], '', [rfReplaceAll]);
+    end;
+end;
+//kérdés: dev485 paraméterben legyen átadva (referencia szerint)?
+function convertJSONToDeviceList(json_source: string):DEVLIS; //dev485-öt adja vissza
+var
+  //[{"azonos" : 16388, "tipus" : "L"},{"azonos": 120, "tipus" : "0"}, ... ]
+  jsonArrayElements: TStringList;
+  jsonField: TStringList;
+  json_element: string;
+  i : integer;
+  k : integer;
+  dev485 : DEVLIS;
+begin
+  SetLength(dev485, MAX_DEVICECOUNT);
+  jsonArrayElements := TStringList.Create();
+  jsonField := TStringList.Create();
+  RemoveSpecialChars(json_source); //már az elején le kell tisztázni a json-t, különben több felesleges eleme lesz a split után a jsonArrayElements tömbnek
+  Split(',', json_source, jsonArrayElements);
+  k := 0;
+  for i := 0 to jsonArrayElements.Count - 1 do
+  begin
+    json_element := jsonArrayElements[i];
+    writeln('json_element ' + json_element);
+    if not AnsiContainsText(json_element, 'azonos') then
+    begin
+      writeln('');
+      continue;
+    end;
+
+    //jsonElement-ben így néz ki: azonos:16388
+    Split(':', json_element, jsonField);
+    dev485[k].azonos := StrToInt(jsonField[1]); //16388 kerül bele
+    dev485[k].produc := 'Somodi László';
+    dev485[k].manufa := 'Pluszs Kft.';
+	  writeln(Format('%d. eszkoz azonos: %d', [k, dev485[k].azonos]));
+	  inc(k);
+  end;
+  writeln('Array dev485 has been created from JSON-string successfully!');
+  result := dev485;
+end;
+
+procedure DeviceListToXML(dev485: PDEVLIS; const outPath:string);
+var
+  XML : IXMLDOCUMENT;
+  RootNode : IXMLNODE;
+  i : integer;
+begin
+  XML := NewXMLDocument();
+      XML.Encoding := 'utf-8';
+      XML.Options := [doNodeAutoIndent];
+
+      RootNode := XML.AddChild('device');
+      i := 0;
+	    while dev485^[i].azonos <> 0 do
+      begin
+        RootNode.Attributes['azonos'] := dev485^[0].azonos;
+        case(dev485^[0].azonos AND $c000) of
+                SLLELO:
+                begin
+                  RootNode.Attributes['tipus'] := 'L'; //lámpa
+                end;
+                SLNELO:
+                begin
+                  RootNode.Attributes['tipus'] := 'N';  //nyíl
+                end;
+                SLHELO:
+                begin
+                  RootNode.Attributes['tipus'] := 'H';   //hangszóró
+                end;
+          end;
+        inc(i);
+      end;
+      XML.SaveToFile(Format('%s\scanned_devices.xml', [outPath]));
+end;
+
+end.

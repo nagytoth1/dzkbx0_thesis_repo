@@ -1,0 +1,40 @@
+@startuml
+abstract Device <<Serializable>>{
+ [NonSerialized]
+ - const int SLLELO = 0x4000
+ - const int SLNELO = 0x8000
+ - const int SLHELO = 0xc000
+ - const string PRODUC = "Somodi László"
+ - const string MANUFA = "Pluszs Kft."
+ - char tipus 
+ [Serialized]
+ - uint azonos
+ + Device(uint azonos)
+ - char DecideDevType()
+ --VAGY--
+ + Device CreateDevice()
+}
+class LEDLight{
+ - Color color
+ + LEDLight(uint azonos)
+ + LEDLight(uint azonos, Color c)
+}
+class LEDArrow{
+ + enum Direction { LEFT, RIGHT, BOTH }
+ - Direction direction;
+ + LEDArrow(uint azonos)
+ + LEDArrow(uint azonos, Direction irany)
+ + LEDArrow(uint azonos, Color c, Direction direction)
+}
+class Speaker{
+ - float volume
+ + Speaker(uint azonos)
+ + Speaker(uint azonos, float volume)
+}
+Device <|-- Speaker
+Device <|-- LEDLight
+LEDLight <|-- LEDArrow
+
+hide class circle
+hide abstract circle
+@enduml
