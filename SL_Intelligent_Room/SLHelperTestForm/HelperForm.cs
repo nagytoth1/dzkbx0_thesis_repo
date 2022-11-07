@@ -19,15 +19,14 @@ namespace SLHelperTestForm
 
 
             //ha nem volt még meghívva az open, akkor felméréskor 1114-et dob
-            label1.Text = FormHelper.OpenSLDLL(this.Handle).ToString();
-            label2.Text = FormHelper.DetectDevices().ToString();
-            
-            FormHelper.ConvertDeviceListToJSON(out string json);
-            Console.WriteLine(json);
+            label1.Text = FormHelper.CallOpen(this.Handle).ToString();
+            label2.Text = FormHelper.CallFelmeres().ToString();
+            FormHelper.CallFillDev485Static();
             FormHelper.FillDevicesList();
             List<Device> devlist = FormHelper.Devices;
             listBox1.DataSource = devlist;
-
+            string path = Application.StartupPath;
+            Console.WriteLine(path);
 
         }
     }

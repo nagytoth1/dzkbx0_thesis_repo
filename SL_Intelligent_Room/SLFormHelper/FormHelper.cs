@@ -19,26 +19,53 @@ namespace SLFormHelper
             get { return new List<Device>(devices); }
         }
 
-        //[DllImport(@"SL_2\SLDLL.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "SLDLL_Open")]
-        //extern public static int SLDLL_Open(IntPtr handle, int message, [MarshalAs(UnmanagedType.AnsiBStr)] out IntPtr nevlei, [MarshalAs(UnmanagedType.AnsiBStr)] out IntPtr device);
-        [DllImport(@"..\..\..\SL_2\converter.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "Open")]
-        extern public static int OpenSLDLL(IntPtr handle);
+        #region CallMethods - I want only them public 
+        public static int CallOpen(IntPtr handle)
+        {
+            try
+            {
+                return OpenSLDLL(handle);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return e.Message.GetHashCode();
+            }
+        }
+        public static int CallFelmeres()
+        {
+            int result = DetectDevices();
 
-        //function SLDLL_Felmeres: Dword; stdcall; external SLDLL_PATH;
-        //2 eszköz -> tömb, SetList függvény, megfelelő paraméterlistával, elemek felmérés, megadod a tömböt, és feltölti, ha a SetList elindul
-        //amikor visszajön a SetList, adja vissza a tömböt, nézzük meg, mi van benne dev485
-        //function Open(wndhnd:DWord): DWord; stdcall; - ő az SLDLL_Felmeres és SLDLL_Listelem metódusokat hívja
-        [DllImport(@"..\..\..\SL_2\converter.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "DetectDevices")]
-        extern public static int DetectDevices();
+            if(result == 255)
+            {
+                Console.WriteLine("dev485 empty"); //TODO: saját kivétel ide   
+            }
+            return result;
+        }
+        public static void FillDevicesList()
+        {
+            byte result = ConvertDeviceListToJSON(out string jsonstring); //calls a Delphi-function to convert dev485 to a more understandable json-format
+            //from this json-format, we create list of SerializedDevices
+            Console.WriteLine(result);
 
-        //function convertDeviceListToJSON(dev485 : PDEVLIS):string; stdcall;
-        [DllImport(@"..\..\..\SL_2\converter.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "convertDeviceListToJSON")]
-        extern public static void ConvertDeviceListToJSON([MarshalAs(UnmanagedType.BStr)] [Out] out string outputStr);
-        //procedure fillDeviceListWithDevices(dev485 : PDEVLIS); stdcall;
-        [DllImport(@"..\..\..\SL_2\converter.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "fillDeviceListWithDevices")]
-        extern public static void FillDev485WithStaticData();
+            if (result == 255) //ha dev485 üres
+            {
+                Console.WriteLine("dev485 empty"); //TODO: saját kivétel ide   
+                return;
+            }
+                
+            List<SerializedDevice> serialized = JsonConvert.DeserializeObject<List<SerializedDevice>>(jsonstring);
 
-        #region XMLHandling
+            for (int i = 0; i < serialized.Count; i++)
+                devices.Add(serialized[i].CreateDevice());
+        }
+        public static byte CallFillDev485Static()
+        {
+            byte result = FillDev485WithStaticData();
+            if(result == 254)
+                Console.WriteLine("dev485 already filled"); //TODO: saját kivétel ide 
+            return result;
+        }
         public static void XMLToDeviceList()
         {
             createReader(out XmlReader reader);
@@ -57,6 +84,7 @@ namespace SLFormHelper
                     devices.Add(dev.CreateDevice());
                 }
         }
+        #endregion
         private static void createReader(out XmlReader reader)
         {
             reader = null;
@@ -73,44 +101,23 @@ namespace SLFormHelper
                 Console.WriteLine(e.Message);
             }
         }
-        #endregion
+        [DllImport(@"converterDLL\relay.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "openDLL")]
+        extern private static int OpenSLDLL(IntPtr handle);
 
-        #region CallMethods - I want only them public 
-        private static int CallOpen(IntPtr handle)
-        {
-            try
-            {
-                return OpenSLDLL(handle);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return e.Message.GetHashCode();
-            }
-        }
-        private static int CallFelmeres()
-        {
-            try
-            {
-                return DetectDevices();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return e.Message.GetHashCode();
-            }
-        }
-        public static void FillDevicesList()
-        {
-            ConvertDeviceListToJSON(out string jsonstring); //calls a Delphi-function to convert dev485 to a more understandable json-format
-            //from this json-format, we create list of SerializedDevices
-            List<SerializedDevice> serialized = JsonConvert.DeserializeObject<List<SerializedDevice>>(jsonstring);
+        //2 eszköz -> tömb, SetList függvény, megfelelő paraméterlistával, elemek felmérés, megadod a tömböt, és feltölti, ha a SetList elindul
+        //amikor visszajön a SetList, adja vissza a tömböt, nézzük meg, mi van benne dev485
+        [DllImport(@"converterDLL\relay.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "detectDevices")]
+        extern private static int DetectDevices();
 
-            for (int i = 0; i < serialized.Count; i++)
-                devices.Add(serialized[i].CreateDevice());
-        }
-        #endregion
+        //function convertDeviceListToJSON(dev485 : PDEVLIS):string; stdcall;
+        [DllImport(@"converterDLL\relay.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "convertDeviceListToJSON")]
+        extern private static byte ConvertDeviceListToJSON([MarshalAs(UnmanagedType.BStr)] [Out] out string outputStr);
 
+        //procedure fillDeviceListWithDevices(dev485 : PDEVLIS); stdcall;
+        [DllImport(@"converterDLL\relay.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "fillDeviceListWithDevices")]
+        extern private static byte FillDev485WithStaticData();
 
+        [DllImport(@"converterDLL\relay.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "convertDeviceListToXML")]
+        extern private static byte ConvertDeviceListToXML();
     }
 }

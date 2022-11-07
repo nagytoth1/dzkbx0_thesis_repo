@@ -1,16 +1,25 @@
-library converterDLL;
+library relay;
 
 uses
   SysUtils,
   Classes,
-  ExtCtrls,  Messages, 
-  Dialogs, StrUtils,
-  XMLIntf, XMLDoc, Types,
+  ExtCtrls,
+  Messages,
+  Dialogs,
+  StrUtils,
+  XMLIntf,
+  XMLDoc,
+  Types,
   SLDLL,
   converter in '..\converter.pas';
 
-procedure fillDeviceListWithDevices(); stdcall;
+function fillDeviceListWithDevices(): Byte; stdcall;
 begin
+  if(Assigned(dev485)) or (length(dev485) > 0) then
+  begin
+    result := DEV485_ALREADY_FILLED;
+    exit;
+  end;
   SetLength(dev485, 3);
   dev485[0].azonos := $c004;
   dev485[0].produc := 'Teszt Elek';
@@ -22,9 +31,10 @@ begin
   dev485[2].produc := 'Teszt Elek';
   dev485[2].manufa := 'Valaki Zrt.';
   writeln('Dev485 filled  with static elements');
+  result := EXIT_SUCCESS;
 end;
 
-procedure convertDeviceListToJSON(out outputStr: WideString); stdcall;
+function convertDeviceListToJSON(out outputStr: WideString): Byte; stdcall;
 //TODO: is there a more efficient way of concatenating strings in Delphi? 
 //I don't think the '+' is the most efficient in Delphi as it is not in C# as well
 //TStringBuilder was introduced in Delphi version 2009, therefore that's not an option in our case
@@ -32,6 +42,11 @@ var
   buffer: WideString;
   i: integer;
 begin
+  if(not Assigned(dev485)) or (length(dev485) = 0) then
+  begin
+    result := DEV485_EMPTY;
+    exit;
+  end;
   buffer := '[';  //JSON-array is going to be created
   i:=-1;
   while dev485[i+1].azonos <> 0 do
@@ -45,6 +60,7 @@ begin
   writeln(buffer);
   writeln('Array dev485 has been converted to JSON-string successfully!');
   outputStr := buffer;
+  result := EXIT_SUCCESS;
 end;
 
 //it functions as a source handler (simplifying the source) if we see it as a compiler
@@ -99,12 +115,17 @@ begin
   result := dev485;
 end;
 
-procedure DeviceListToXML(const outPath:string);
+function convertDeviceListToXML(const outPath:string): Byte;
 var
   XML : IXMLDOCUMENT;
   RootNode : IXMLNODE;
   i : integer;
 begin
+  if(not Assigned(dev485)) or (length(dev485) = 0) then
+  begin
+    result := DEV485_EMPTY;
+    exit;
+  end;
   XML := NewXMLDocument();
       XML.Encoding := 'utf-8';
       XML.Options := [doNodeAutoIndent];
@@ -116,17 +137,17 @@ begin
         inc(i);
       end;
       XML.SaveToFile(Format('%s\scanned_devices.xml', [outPath]));
+      result := EXIT_SUCCESS;
 end;
 
-//function  SLDLL_Open(wndhnd, msgert: Dword; mianev: PDLLNEV; devata: PDEVSEL): Dword; stdcall; external SLDLL_PATH;
-function Open(wndhnd:DWord): DWord; stdcall;
+function openDLL(wndhnd:DWord): DWord; stdcall;
 var
  nevlei, devusb: pchar;
 begin
-  Result := SLDLL_Open(wndhnd, WM_USER + 0, @nevlei, @devusb);
+  result := SLDLL_Open(wndhnd, WM_USER + 0, @nevlei, @devusb);
 end;
 
-function DetectDevices(): DWord; stdcall;
+function detectDevices(): DWord; stdcall;
 var 
   res, i : integer;
 begin
@@ -135,6 +156,11 @@ begin
   res := SLDLL_Listelem(@dev485);
   showmessage(Format('ListElem eredmenye %d', [res]));
   i := 0;
+  if(not Assigned(dev485)) or (length(dev485) = 0) then
+  begin
+    result := DEV485_EMPTY;
+    exit;
+  end;
   while i < drb485 do
   begin
     writeln(Format('%d', [dev485[i].azonos]));
@@ -144,12 +170,13 @@ begin
   result := res;
 end;
 
-exports Open, 
-DetectDevices, 
-convertDeviceListToJSON, 
-fillDeviceListWithDevices;
-
 {$R *.res}
+
+exports openDLL, 
+detectDevices, 
+convertDeviceListToJSON, 
+fillDeviceListWithDevices,
+convertDeviceListToXML;
 
 begin
 end.
