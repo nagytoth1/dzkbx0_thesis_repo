@@ -26,8 +26,9 @@
 	
 	\chapter*{Bevezetés}
 	\addcontentsline{toc}{chapter}{Bevezetés}
-	\verb*|#TODO|: Bevezető szöveg...
-	
+	Az ember kognitív képességeinek fejlesztésére mindig is szükség volt, van, és lesz is a jövőben. Ez a megállapításom különösen beigazolódni látszik egy Covid-világjárvány utáni időszakban, amikor is sorra jelennek meg olyan jelentések \emph{TODO referencia erre}
+	, amelyek azt támasztják alá, hogy a lezárások ideje alatt nőtt a különböző mentális betegségek (pl. demencia, \emph{TODO példák}
+	) kialakulásának kockázata. Nem beszélve arról, hogy a digitális eszközök használata számtalan alkalommal hosszas órákon keresztül képes lekötni a figyelmünket, ezért bizonyos külső ingerekre egyre lassabban, egyre kisebb amplitúdóval (nagyobb közömbösséggel) vagyunk képesek reagálni.
 	\chapter{Programozási nyelvekről általában}
 	\section{A programozási nyelvek formális nyelvek?}
 	\begin{definicio}
@@ -120,22 +121,22 @@
 	\section{Használt adatszerkezetek}
 	Ahogy említettem, a programozási nyelvek döntő része típusos, ezenfelül kisebb-nagyobb különbséggel hasonló adatszerkezeteket értelmez.
 	\begin{enumerate}[label=\alph*)]
-		\item elemi adattípusok: Olyan típusok, amiket nem tudunk további részekre bontani, csak egyben értelmezhetjük őket. Ilyen például a double lebegőpontos típus, amely 8 byte-ként számít egy , igaz, hogy csak az első byte-ra van mutatónk, de nincs értelme byte-okra darabolni, és megnézni az értékeket, mivel egyben értelmezendő, a műveleteket 4 byte-on fogjuk tudni vele végezni. Primitív adattípusoknak is nevezzük őket.\\
-		Vegyük például a C\verb*|#| programozási nyelvet, milyen elemi típusai vannak?
+		\item \emph{elemi adattípusok}: Olyan típusok, amiket nem tudunk további részekre bontani, csak egyben értelmezhetjük őket. Ilyen például a \verb*|double| lebegőpontos típus, amely 8 byte-on képes lebegőpontos számot ábrázolni. Igaz, hogy csak az első byte-ra van mutatónk, de nincs értelme további byte-okra darabolni, és megnézni az értékeket, mivel egyben értelmezendő, a műveleteket 4 byte-on fogjuk tudni vele végezni. Primitív adattípusoknak is nevezzük őket.\\
+		Vegyük például a C\# programozási nyelvet, milyen elemi típusai vannak?
 			\begin{enumerate}
 				\item egész:
 				\begin{tabular}{ccc}
-					Előjeles változat & Előjel nélküli változat & Méret \\
-					sbyte & byte & 1 Byte \\
-					short & ushort & 2 Byte \\
-					int & uint & 4 Byte \\
-					long & ulong & 8 Byte \\
+					Előjeles változat & Előjel nélküli változat & Méret (Byte) \\
+					sbyte & byte & 1 \\
+					short & ushort & 2 \\
+					int & uint & 4 \\
+					long & ulong & 8 \\
 				\end{tabular}
 				\item lebegőpontos:
 				\begin{tabular}{cc}
-					Név & Méret \\
-					float & 4 Byte \\
-					double & 8 Byte
+					Név & Méret (Byte) \\
+					float & 4 \\
+					double & 8
 				\end{tabular}
 				\item logikai: 
 				\begin{tabular}{cc}
@@ -143,16 +144,18 @@
 				\end{tabular}
 				\item karakteres: 
 				\begin{tabular}{cc}
-					char & kódolástól függ\footnote{text}
+					char & kódolástól függ\footnote{text} TODO
 				\end{tabular}
 			\end{enumerate}
+	\item \emph{összetett adattípusok}: Az összetett adattípusok elemi típusokra szedhetők szét, vagyis primitív és/vagy további összetett típusú változókból épülnek fel, ezeket mezőknek hívjuk. Az összetett adattípusú változó memóriaterülete kiszámítható az adattagok összegével.\\
+	C\#-ban a \verb*|struct| és a \verb*|class| kulcsszavakkal tudunk összetett típusokat definiálni.
 	\end{enumerate}
-	Elemi adattípusaink: logikai, egész, lebegőpontos, karakter típusú változók
-	
 	\section{Mi a helyzet az algoritmusokkal?}
-	Adatokat tudunk tárolni, de nyilvánvalóan azért, mert tervünk van velük, valamit szeretnénk velük kezdeni. Az adatszerkezeteken végzett véges elemi lépéssorozatot algoritmusnak nevezzük. Az adatszerkezetek algoritmusok nélkül olyanok, mint a matematikai műveletek operátorok (összeadás, kivonás, stb.) nélkül, és -- ha már említettem a természetes nyelveket -- végül: mint a főnevek igék nélkül.
+	Adatokat tudunk tárolni, de nyilvánvalóan azért, mert tervünk van velük, valamit szeretnénk velük kezdeni. Az adatszerkezeteken végzett véges elemi lépéssorozatot algoritmusnak nevezzük. Az adatszerkezetek algoritmusok nélkül olyanok, mint a matematikai műveletek operátorok (összeadás, kivonás, stb.) nélkül, végül -- ha már említettem a természetes nyelveket--: mint a főnevek igék nélkül.
 	\section{Kommunikáció adatszerkezeteken keresztül}
-	
+	A Marshalling egy olyan folyamat, amely összetett típusok átalakítására szolgál, hogy egy nyelv adatszerkezetét a másikkal megértessük. Magyar fordításával nem találkoztam ennek a kifejezésnek, de a legjobban talán úgy lehetne megfogalmazni, mint: átrendezés, rendszerezés, tehát befogadhatóvá tesszük az adatszerkezeteinket.
+	\par
+	A Marshalling sajnos nem minden esetben szolgáltat tökéletes megoldást, szakdolgozati projektünkön keresztül például látni fogjuk, hogy a kód portolhatósága, újrahasznosíthatósága végett megéri szabványos formátumokon keresztül (pl. JSON-, XML-formátumok) kommunikálni, hogy más felületekre való költöztetés esetén kompatibilitási probléma többé már ne merülhessen fel.
 	\begin{comment}
 		Ezek később lesznek hasznosak
 		\begin{tetel}
