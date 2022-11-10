@@ -20,28 +20,40 @@ namespace SLFormHelper
         }
 
         #region CallMethods - I want only them public 
+        /// <summary>
+        /// Calls the function in converterDLL that calls SLDLL_Open to use SLDLL's functionality.
+        /// </summary>
+        /// <param name="handle">Form's Handle, SLDLL_Open requires it</param>
+        /// <returns></returns>
+        /// <exception cref="SLDLLException">When SLDLL_Open was already called.</exception>
         public static int CallOpen(IntPtr handle)
         {
-            try
-            {
-                return OpenSLDLL(handle);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return e.Message.GetHashCode();
-            }
+            int result = OpenSLDLL(handle);
+            if (result == 1247)
+                throw new SLDLLException("You have already called SLDLL_Open");
+            //if (result == 1626) - what is error 1626?
+                //throw new SLDLLException("");
+            return result;
         }
+        /// <summary>
+        /// Detects devices from the USB-port.
+        /// </summary>
+        /// <returns></returns>
         public static int CallFelmeres()
         {
             int result = DetectDevices();
 
             if(result == 255)
-            {
-                Console.WriteLine("dev485 empty"); //TODO: saját kivétel ide   
-            }
+                throw new Dev485Exception("Dev485 is null or empty");
             return result;
         }
+
+        /// <summary>
+        /// Converts array `dev485` (in Delphi's converterDLL) into a standard JSON-formatted string.<para/>
+        /// From the JSON, it creates Device instances depending on the type of device getting detected by converterDLL and adds it to a list in this FormHelper.
+        /// List can be reached by calling property FormHelper.Devices
+        /// </summary>
+        /// <exception cref="Dev485Exception">When empty or unitialized array is given.</exception>
         public static void FillDevicesList()
         {
             byte result = ConvertDeviceListToJSON(out string jsonstring); //calls a Delphi-function to convert dev485 to a more understandable json-format
@@ -49,22 +61,25 @@ namespace SLFormHelper
             Console.WriteLine(result);
 
             if (result == 255) //ha dev485 üres
-            {
-                Console.WriteLine("dev485 empty"); //TODO: saját kivétel ide   
-                return;
-            }
+                throw new Dev485Exception("Dev485 is null or empty");
                 
             List<SerializedDevice> serialized = JsonConvert.DeserializeObject<List<SerializedDevice>>(jsonstring);
 
             for (int i = 0; i < serialized.Count; i++)
                 devices.Add(serialized[i].CreateDevice());
         }
-        public static byte CallFillDev485Static()
+        /// <summary>
+        /// Fills dev485 with static data, like so: 
+        /// <para/>1xLEDLight, 
+        /// 1xSpeaker 
+        /// and 1xLEDArrow device) 
+        /// </summary>
+        public static void CallFillDev485Static()
         {
             byte result = FillDev485WithStaticData();
-            if(result == 254)
-                Console.WriteLine("dev485 already filled"); //TODO: saját kivétel ide 
-            return result;
+            if (result == 254)
+                throw new Dev485Exception("Dev485 is already filled");
+                //Console.WriteLine("dev485 already filled"); //TODO: saját kivétel ide 
         }
         public static void XMLToDeviceList()
         {

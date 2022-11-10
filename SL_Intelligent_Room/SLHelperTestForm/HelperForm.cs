@@ -19,7 +19,7 @@ namespace SLHelperTestForm
 
 
             //ha nem volt még meghívva az open, akkor felméréskor 1114-et dob
-            label1.Text = FormHelper.CallOpen(this.Handle).ToString();
+            label1.Text = FormHelper.CallOpen(this.Handle).ToString(); //what is error 1626?
             label2.Text = FormHelper.CallFelmeres().ToString();
             FormHelper.CallFillDev485Static();
             FormHelper.FillDevicesList();

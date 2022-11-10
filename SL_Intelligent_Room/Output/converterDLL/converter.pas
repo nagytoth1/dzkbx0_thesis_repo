@@ -15,17 +15,20 @@ const
   DEV485_EMPTY = 255;
   DEV485_ALREADY_FILLED = 254;
   EXIT_SUCCESS = 0;
+  PRODUCER = 'Somodi László';
+  MANUFACTURER = 'Pluszs Kft.';
 var
   drb485: integer;
-  dev485:DEVLIS;
-  lista: LISTBL;
-  devList: LISTBL;
+  dev485:DEVLIS; //where is it set?
+  lista: LISTBL; //what is this var for?
+  devList: LISTBL; //where is devList set?
 //exported methods
 function fillDeviceListWithDevices(): Byte; stdcall; external CONVERTERDLL_PATH;
 function convertDeviceListToJSON(out outputStr: WideString): Byte; stdcall; external CONVERTERDLL_PATH;
 function convertDeviceListToXML(const outPath:string): Byte; external CONVERTERDLL_PATH;
 function openDLL(wndhnd:DWord): DWord; stdcall; external CONVERTERDLL_PATH;
 function detectDevices(): DWord; stdcall; external CONVERTERDLL_PATH;
+function setTurnForEachDevice(turn : byte):integer; stdcall; external CONVERTERDLL_PATH;
 
 //private methods
 procedure Split (const Delimiter: Char; Input: string; const Strings: TStrings);

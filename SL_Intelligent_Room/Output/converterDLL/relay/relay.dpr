@@ -10,7 +10,7 @@ uses
   XMLIntf,
   XMLDoc,
   Types,
-  SLDLL,
+  SLDLL in '..\resources\SLDLL.pas',
   converter in '..\converter.pas';
 
 function fillDeviceListWithDevices(): Byte; stdcall;
@@ -66,7 +66,7 @@ end;
 //it functions as a source handler (simplifying the source) if we see it as a compiler
 procedure RemoveSpecialChars(var str : string); //string is given by as reference
   const
-    charsToRemove : string = ' "[]{}'; 
+    charsToRemove = ' "[]{}'+sLineBreak;
   var
     i : integer;
   begin
@@ -77,39 +77,60 @@ procedure RemoveSpecialChars(var str : string); //string is given by as referenc
 end;
 //question: should dev485 be rather given in as parameter?
 //in C# we don't need this, we will implement it for C#-environment
+function extractValueFromJSONField(const json_element: string, const key: string):string;
+var 
+	value:string;
+	jsonField: TStringList;
+begin
+	value := '';
+	jsonField := TStringList.Create();
+	//jsonElement looks like this: azonos:16388
+	Split(':', json_element, jsonField);
+	if jsonField[0] = fieldName then 
+	 	value := jsonField[1]; //'16388'
+	result := value;
+end;
+
+function reduceJSONSourceToElements(const json_source: string):TStringList;
+var 
+	jsonArrayElements: TStringList;
+begin
+	jsonArrayElements := TStringList.Create();
+	
+	RemoveSpecialChars(json_source);
+  	Split(',', json_source, jsonArrayElements);
+	
+	result := jsonArrayElements; //'azonos:16388, '
+end;
+
 function convertJSONToDeviceList(json_source: string):DEVLIS; //returns array dev485
 var
   //input looks like this: [{"azonos" : 16388, "tipus" : "L"},{"azonos": 120, "tipus" : "0"}, ... ]
   jsonArrayElements: TStringList;
-  jsonField: TStringList;
   json_element: string;
   i : integer;
   k : integer;
   dev485 : DEVLIS;
 begin
   SetLength(dev485, MAX_DEVICECOUNT);
-  jsonArrayElements := TStringList.Create();
-  jsonField := TStringList.Create();
-  RemoveSpecialChars(json_source); //at the beginning we should simplify JSON or else we will have more unnecessary JSON-elements in our jsonArrayElements
-  Split(',', json_source, jsonArrayElements);
-  k := 0;
+  jsonArrayElements := ReduceJSONToElements(json_source);
+  k := 0; //the index of dev485 gets incremented only if field 'azonos' is found with its value
   for i := 0 to jsonArrayElements.Count - 1 do
   begin
     json_element := jsonArrayElements[i];
-    writeln('json_element ' + json_element);
-    if not AnsiContainsText(json_element, 'azonos') then
-    begin
-      writeln('');
-      continue;
-    end; 
-    //jsonElement looks like now: azonos:16388
-    Split(':', json_element, jsonField);
-    dev485[k].azonos := StrToInt(jsonField[1]); //dev485[k].azonos gets the value 16388 as an integer
-    //these 2 fields are given
-    dev485[k].produc := 'Somodi László'; 
-    dev485[k].manufa := 'Pluszs Kft.';
-	  writeln(Format('%d. eszkoz azonos: %d', [k, dev485[k].azonos]));
-	  inc(k);
+    writeln('json_element ' + json_element); 
+	json_value := extractValueFromJSONField(json_element, 'azonos');
+	
+	if json_value = '' then
+		continue;
+
+	//TODO: what if json_value can not be parsed to int?
+    dev485[k].azonos := StrToInt(json_value); //dev485[k].azonos gets the value 16388 as an integer
+    //these 2 fields are constants
+    dev485[k].produc := PRODUCER; 
+    dev485[k].manufa := MANUFACTURER;
+	writeln(Format('%d. eszkoz azonos: %d', [k, dev485[k].azonos]));
+	inc(k);
   end;
   writeln('Array dev485 has been created from JSON-string successfully!');
   result := dev485;
@@ -145,6 +166,7 @@ var
  nevlei, devusb: pchar;
 begin
   result := SLDLL_Open(wndhnd, WM_USER + 0, @nevlei, @devusb);
+  showmessage(nevlei);
 end;
 
 function detectDevices(): DWord; stdcall;
@@ -155,12 +177,20 @@ begin
   showmessage(Format('Felmeres eredmenye %d', [res]));
   res := SLDLL_Listelem(@dev485);
   showmessage(Format('ListElem eredmenye %d', [res]));
-  i := 0;
-  if(not Assigned(dev485)) or (length(dev485) = 0) then
+  
+  if(not Assigned(dev485)) then //if dev485 == null
+  begin
+	result := DEV485_NULL;
+	exit;
+  end;
+
+  if (length(dev485) = 0) then //if dev485's length is set to 0
   begin
     result := DEV485_EMPTY;
     exit;
   end;
+
+  i := 0;
   while i < drb485 do
   begin
     writeln(Format('%d', [dev485[i].azonos]));
@@ -168,6 +198,99 @@ begin
   end;
 
   result := res;
+end;
+
+function setTurnForEachDevice(turn : byte, json_data: string):integer;
+begin
+var
+  RES, i: integer;
+  EDB: integer;
+  prgString, prgLine: string;
+  actDeviceType: string;
+  actDeviceSettings: TStringList;
+begin
+	//this method will be used in a loop, therefore "out of bounds" values can not get assigned
+	//only used for checking for errors
+	if (turn < 0) or (turn >= SLProgram.Count) then 
+	begin
+    	showmessage('Wrong turn number: ' + inttostr(turn));
+		result := TURNNUM_OUTOFBOUNDS;
+		exit;
+  	end;
+
+	//decode the JSON of the current turn (type + settings fields)
+	actDeviceType := extractValueFromJSONField(jsonField)
+	prgLine := SLProgram[turn];
+	programElements := TStringList.Create();
+	Split('/', prgLine, programElements);
+
+	EDB := programElements.Count; //count of array - XMLNodes or JSON-array length
+	if EDB <> drb485: //if the array is not the same size as length of devicelist, we can't run the method properly
+	begin
+		Result := DEVCOUNT_IDENTITY_ERROR;
+		exit;
+	end;
+		
+	for i := 0 to EDB - 1 do
+	begin
+		try
+		elements := TStringList.Create();
+		prgString := programElements[i];
+		Split('|', prgString, elements); //splits the settings for different devices
+
+		devList[i].azonos := dev485[i].azonos;
+		case(dev485[i].azonos AND $c000) of
+		SLLELO: //LEDLight
+		begin
+			setLEDDevice(
+				strToInt(elements[0]), 
+				strToInt(elements[1]), 
+				strToInt(elements[2]), 
+				strToInt(elements[3]));
+		end;
+		SLNELO: //LEDArrow
+		begin
+			setLEDDevice(
+				strToInt(elements[0]), 
+				strToInt(elements[1]), 
+				strToInt(elements[2]), 
+				strToInt(elements[3]));
+		end;
+		SLHELO: //Speaker
+		begin 
+			setSpeaker(
+				strToInt(elements[0]), 	//volume, e.g: 10
+				strToInt(elements[1]), 	//index from table e.g: 1
+				strToInt(elements[2])); //length
+		end;
+
+		end; //case
+		except
+		showmessage('Elem beállítási hiba');
+		end;
+
+	end; //for
+	try
+		RES := SLDLL_SetLista(EDB, devList);
+	except
+		showmessage('Eszközbeállítási hiba: ' + inttostr(RES));
+	end; //try
+end;
+function setLEDDevice(i, red, green, blue, direction:byte):integer;
+begin
+	devList[i].vilrgb.rossze := red;
+	devList[i].vilrgb.gossze := green;
+	devList[i].vilrgb.bossze := blue;
+	devList[i].nilmeg := direction;
+end;
+function setSpeaker(i, volume, id, length:byte):integer;
+begin
+	devList[i].handrb := 1;
+	devList[i].hantbp := @H; //array for sound settings - 
+	//TODO: do we need array?
+	H[0].hangho := length; //100;
+	H[0].hangso := id; //1;
+	H[0].hanger := volume; //10;
 end;
 
 {$R *.res}

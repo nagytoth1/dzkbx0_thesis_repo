@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.28307.2092
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLFormHelper", "SLFormHelper\SLFormHelper.csproj", "{615B8A24-F3A3-44C8-A6F1-F16D374721AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLHelperTest", "SLHelperTest\SLHelperTest.csproj", "{E7461759-820E-4320-A659-5D26803A1CFA}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLHelperTestForm", "SLHelperTestForm\SLHelperTestForm.csproj", "{B5C2E4AA-B7AB-487F-B907-DADD9C74B98B}"
 EndProject
 Global
@@ -19,10 +17,6 @@ Global
 		{615B8A24-F3A3-44C8-A6F1-F16D374721AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{615B8A24-F3A3-44C8-A6F1-F16D374721AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{615B8A24-F3A3-44C8-A6F1-F16D374721AA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E7461759-820E-4320-A659-5D26803A1CFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E7461759-820E-4320-A659-5D26803A1CFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E7461759-820E-4320-A659-5D26803A1CFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E7461759-820E-4320-A659-5D26803A1CFA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B5C2E4AA-B7AB-487F-B907-DADD9C74B98B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B5C2E4AA-B7AB-487F-B907-DADD9C74B98B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5C2E4AA-B7AB-487F-B907-DADD9C74B98B}.Release|Any CPU.ActiveCfg = Release|Any CPU

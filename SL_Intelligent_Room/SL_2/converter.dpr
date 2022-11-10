@@ -15,7 +15,7 @@ const
 function fillDeviceListWithDevices() : integer; stdcall;
 begin
   if (assigned(dev485)) or (length(dev485) > 0) then
-	Result := 400;
+	  Result := 400;
   SetLength(dev485, 3);
   dev485[0].azonos := $c004;
   dev485[0].produc := 'Teszt Elek';
@@ -37,7 +37,7 @@ var
   buffer: WideString;
   i: integer;
 begin
-  if not (assigned(dev485)) or (length(dev485) = 0) then
+  if not assigned(dev485) (length(dev485) = 0) then
   begin
     outputStr := '[]';
     exit;

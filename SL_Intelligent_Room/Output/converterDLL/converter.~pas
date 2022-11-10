@@ -7,13 +7,13 @@ uses
   ExtCtrls,  Messages, 
   Dialogs, StrUtils,
   XMLIntf, XMLDoc, Types,
-  SLDLL;
+  SLDLL in 'resources\SLDLL.pas';
 const
   MAX_DEVICECOUNT = 100;
   UZESAJ = WM_USER + 0;
   CONVERTERDLL_PATH = 'relay.dll';
   DEV485_EMPTY = 255;
-  DEV485_ALREADY_FILLED
+  DEV485_ALREADY_FILLED = 254;
   EXIT_SUCCESS = 0;
 var
   drb485: integer;

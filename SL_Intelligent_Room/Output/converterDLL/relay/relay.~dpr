@@ -15,9 +15,9 @@ uses
 
 function fillDeviceListWithDevices(): Byte; stdcall;
 begin
-  if(not Assigned(dev485)) or (length(dev485) = 0) then
+  if(Assigned(dev485)) or (length(dev485) > 0) then
   begin
-    result := DEV485_EMPTY;
+    result := DEV485_ALREADY_FILLED;
     exit;
   end;
   SetLength(dev485, 3);
