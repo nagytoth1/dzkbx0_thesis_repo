@@ -10,8 +10,8 @@ uses
   XMLIntf,
   XMLDoc,
   Types,
-  SLDLL in '..\resources\SLDLL.pas',
-  converter in '..\converter.pas';
+  converter in '..\converter.pas',
+  SLDLL in '..\SLDLL.pas';
 
 function fillDeviceListWithDevices(): Byte; stdcall;
 begin
@@ -85,7 +85,8 @@ var
   i : integer;
   k : integer;
   dev485 : DEVLIS;
-  dev_azonos: word;
+  dev_azonos: SmallInt;
+  json_value: string;
 begin
   SetLength(dev485, MAX_DEVICECOUNT);
   jsonArrayElements := reduceJSONSourceToElements(json_source);
@@ -93,14 +94,14 @@ begin
   for i := 0 to jsonArrayElements.Count - 1 do
   begin
     json_element := jsonArrayElements[i];
-    writeln('json_element ' + json_element); 
+    writeln('json_element ' + json_element);
     json_value := extractValueFromJSONField(json_element, 'azonos');
     if json_value = '' then
 		continue;
 	
 	// if the given string does not represent a valid integer (invalid), result is -1
     dev_azonos := strToIntDef(json_value, -1);
-    if dev_azonos = -1 then 
+    if dev_azonos = -1 then
         showmessage(Format('Invalid deviceID %s', [json_value]));
         continue;
     dev485[k].azonos := dev_azonos; //dev485[k].azonos gets the value '16388' as an integer
@@ -113,7 +114,7 @@ begin
   writeln('Array dev485 has been created from JSON-string successfully!');
   result := dev485;
 end;
-function extractValueFromJSONField(const json_element: string, const key: string):string;
+function extractValueFromJSONField(const json_element, key:string):string;
 var 
 	value:string;
 	jsonField: TStringList;
@@ -123,11 +124,11 @@ begin
 	//jsonElement looks like this: azonos:16388
 	Split(':', json_element, jsonField);
 	//if jsonField fails to be split, result value is going to be ''
-	if Length(jsonField) <> 0 and jsonField[0] = fieldName then 
+	if (jsonField.Count <> 0) and (jsonField[0] = key) then
 	 	value := jsonField[1]; //'16388'
 	result := value;
 end;
-function reduceJSONSourceToElements(const json_source: string):TStringList;
+function reduceJSONSourceToElements(var json_source: string):TStringList;
 var 
 	jsonArrayElements: TStringList;
 begin
@@ -202,31 +203,20 @@ begin
   result := res;
 end;
 
-function setTurnForEachDevice(turn : byte, json_source: string):integer;
-begin
+function setTurnForEachDevice(turn : byte; json_source: string):integer;
 var
-	validationResult := byte;
 	i: integer;
 	devCount: integer;
 	jsonArrayElements: TStringList;
 	json_element: string;
-	actDeviceType: string;
+	actDeviceType: char;
 	actDeviceSettings: TStringList;
 begin
-	//this method will be used in a loop, therefore "out of bounds" values can not get assigned
-	//only used for checking for errors
-	if (turn < 0) or (turn >= SLProgram.Count) then 
-	begin
-    	showmessage('Wrong turn number: ' + inttostr(turn));
-		result := TURNNUM_OUTOFBOUNDS;
-		exit;
-  	end;
-
 	//decode the JSON of the current turn (type + settings fields)
 	jsonArrayElements := reduceJSONSourceToElements(json_source);
 	devCount := jsonArrayElements.Count; //count of array - XMLNodes or JSON-array length
 	
-	if devCount <> drb485: //if the array is not the same size as length of devicelist, we can't run the method properly
+	if devCount <> drb485 then //if the array is not the same size as length of devicelist, we can't run the method properly
 	begin
 		Result := DEVCOUNT_IDENTITY_ERROR;
 		exit;
@@ -235,102 +225,95 @@ begin
 	for i := 0 to devCount - 1 do
 	begin
 		json_element := jsonArrayElements[i]; //loads the actual device
-    	writeln('json_element ' + json_element); 
-		
-		actDeviceType := extractValueFromJSONField(jsonField, 'type'); //gets the type of the device
-		Split('|', extractValueFromJSONField(jsonField, 'settings'), actDeviceSettings);
-    	
-		if(validateExtractedDeviceValues(actDeviceType, actDeviceSettings) <> 0) then
+    	writeln('json_element ' + json_element);
+    //I want the first char of string 
+		actDeviceType := extractValueFromJSONField(json_element, 'type')[1]; //gets the type of the device
+    actDeviceSettings := TStringList.Create();
+		Split('|', extractValueFromJSONField(json_element, 'settings'), actDeviceSettings);
+
+		if validateExtractedDeviceValues(actDeviceType, actDeviceSettings) <> 0 then
 		begin 
 			continue;
 		end;
-		
+
 		devList[i].azonos := dev485[i].azonos;
-		setDeviceByType(actDeviceType);
-		end; //case
-	end; //for
-	try
-		result := SLDLL_SetLista(devCount, devList);
-	except
-		showmessage('SLDLL_SetLista resulted in error: ' + inttostr(RES));
-	end; //try
+		setDeviceByType(i, actDeviceType, actDeviceSettings);
+  end; //case
+  result := SLDLL_SetLista(devCount, devList);
 end;
 
-function validateExtractedDeviceValues(const actDeviceType, actDeviceSettings: string):byte;
+function validateExtractedDeviceValues(const actDeviceType:string; const actDeviceSettings: TStringList):byte;
 begin
 	if actDeviceType = '' then
 	begin
-		//result := DEVTYPE_UNDEFINED;
-		writeln(Format('%d DEVTYPE_UNDEFINED', [i]));
+		writeln('DEVTYPE_UNDEFINED');
 		result := DEVTYPE_UNDEFINED;
 		exit;
 	end;
-	if length(actDeviceSettings) < 3 then
+	if actDeviceSettings.Count < 3 then
 	begin
-		writeln(Format('%d DEVSETTINGS_INVALID_FORMAT', [i]));
+		writeln('DEVSETTINGS_INVALID_FORMAT');
 		result := DEVSETTINGS_INVALID_FORMAT;
 		exit;
 	end;
 	result := 0;
 end;
-procedure setDeviceByType(const actDeviceType: string);
+procedure setDeviceByType(const i: integer; const actDeviceType: char; const actDeviceSettings: TStringList);
 begin
 	case(actDeviceType) of
 		'L': setLEDDevice( 	//LEDLight
+        i,
 				strToIntDef(actDeviceSettings[0], 0), 	//red
 				strToIntDef(actDeviceSettings[1], 0), 	//green
 				strToIntDef(actDeviceSettings[2], 0), 	//blue
 				strToIntDef(actDeviceSettings[3], 0)); 	//direction
 		'N': setLEDDevice( 	//LEDArrow
+        i,
 				strToIntDef(actDeviceSettings[0], 0), 	//red
 				strToIntDef(actDeviceSettings[1], 0), 	//green
 				strToIntDef(actDeviceSettings[2], 0), 	//blue
 				strToIntDef(actDeviceSettings[3], 0));	//direction
 		'H': setSpeaker( //Speaker
+        i,
 				strToIntDef(actDeviceSettings[0], 0), 	//volume, e.g: 10
 				strToIntDef(actDeviceSettings[1], 0), 	//index from table e.g: 1
 				strToIntDef(actDeviceSettings[2], 0)); 	//length
+  end;
 end;
 function setLEDDevice(i, red, green, blue, direction:byte):byte;
-var 
-	code : byte;
 begin
-	code := 0;
 	try
-		devList[i].vilrgb.rossze := red;
-		devList[i].vilrgb.gossze := green;
-		devList[i].vilrgb.bossze := blue;
-		devList[i].nilmeg := direction;	
+		devList[i].lamrgb.rossze := red;
+		devList[i].lamrgb.gossze := green;
+		devList[i].lamrgb.bossze := blue;
+		//devList[i] := direction;
+    result := EXIT_SUCCESS;
 	except
 		showmessage('LEDDevice setting failed.');
-		code := DEVSETTING_FAILED;
-	finally
-		result := code;
+		result := DEVSETTING_FAILED;
+  end;
 end;
 function setSpeaker(i, volume, id, length:byte):integer;
-var 
-	code : byte;
 begin
-	code := 0;
 	try
 		devList[i].handrb := 1;
 		devList[i].hantbp := @H; //array for sound settings - 
 		//TODO: do we need array?
 		H[0].hangho := length; //100;
 		H[0].hangso := id; //1;
-		H[0].hanger := volume; //10;	
+		H[0].hanger := volume; //10;
+    result := EXIT_SUCCESS;
 	except
 		showmessage('LEDDevice setting failed.');
-		code := DEVSETTING_FAILED;
-	finally
-		result := code;
-	end;
+		result := DEVSETTING_FAILED;
+  end;
 end;
 {$R *.res}
-exports openDLL, 
-		detectDevices, 
-		convertDeviceListToJSON, 
+exports openDLL,
+		detectDevices,
+		convertDeviceListToJSON,
 		fillDeviceListWithDevices,
-		convertDeviceListToXML;
+		convertDeviceListToXML,
+    setTurnForEachDevice;
 begin
 end.
