@@ -26,7 +26,7 @@
 	
 	\chapter*{Bevezetés}
 	\addcontentsline{toc}{chapter}{Bevezetés}
-	Az ember kognitív képességeinek fejlesztésére mindig is szükség volt, van, és lesz is a jövőben. Ez a megállapításom különösen beigazolódni látszik egy Covid-világjárvány utáni időszakban, amikor is sorra jelennek meg olyan jelentések \emph{TODO referencia erre}
+	Az ember kognitív képességeinek fejlesztésére mindig is szükség volt, van, és lesz is a jövőben. Ez a megállapításom különösen beigazolódni látszik egy COVID-világjárvány utáni időszakban, amikor is sorra jelennek meg olyan jelentések \emph{TODO referencia erre} \cite{brain1}
 	, amelyek azt támasztják alá, hogy a lezárások ideje alatt nőtt a különböző mentális betegségek (pl. demencia, \emph{TODO példák}
 	) kialakulásának kockázata. Nem beszélve arról, hogy a digitális eszközök használata számtalan alkalommal hosszas órákon keresztül képes lekötni a figyelmünket, ezért bizonyos külső ingerekre egyre lassabban, egyre kisebb amplitúdóval (nagyobb közömbösséggel) vagyunk képesek reagálni.
 	\chapter{Programozási nyelvekről általában}
@@ -35,11 +35,11 @@
 		Legyen $\mathbb{A} = \{a_1, a_2, ... a_n\}$ véges, nemüres ($ \mathbb{A} \neq \emptyset$) halmaz, ezt a nyelv ábécéjének, elemeit betűknek vagy jeleknek nevezzük. $\mathbb{A}$ halmaz elemeiből képezzük annak hatványait, ekkor 
 		\begin{enumerate}
 			\item $\mathbb{A} ^ {0}$ az üres szó ($\epsilon$) egyelemű halmazát, 
-			\item $\mathbb{A} ^ {1} $ az egybetűs szavak halmazát (\,$\mathbb{A}^{1}\subseteq\mathbb{A}\wedge\mathbb{A}\subseteq\mathbb{A}^{1} \iff \mathbb{A}^{1}=\mathbb{A}$\,), 
-			\item $\mathbb{A}^{2}$ a kétbetűs szavak halmazát jelenti, 
-			\item $\mathbb{A}^{n}$ az n betűből álló szavak halmazát jelenti és így tovább.
+			\item $\mathbb{A} ^ {1} $ az egybetűs szavak (\,$\mathbb{A}^{1}\subseteq\mathbb{A}\wedge\mathbb{A}\subseteq\mathbb{A}^{1} \iff \mathbb{A}^{1}=\mathbb{A}$\,), 
+			\item $\mathbb{A}^{2}$ a kétbetűs szavak, 
+			\item $\mathbb{A}^{n}$ az $n$ hosszú szavak halmazát jelenti és így tovább.
 		\end{enumerate}
-	Jelölje $A^{*}=A^{0}\ \cup\ A^{1}\ \cup\ A^{2}\ \cup\ \dots\ \cup\  A^{n}$ az ábécé elemeiből képzett véges szavak/jelsorozatok halmazát (ezt $\mathbb{A}$ ábécé feletti univerzumnak hívjuk). Ekkor  $\mathbb{A}$-ból kirakható szavak $\mathbb{A}^{*}$ halmazának egy részhalmazát \textbf{formális nyelvnek} nevezzük. Szokásos még az $\mathbb{A}$ ábécé feletti formális nyelv megnevezés is. A hatványok a halmaz önmagával vett \emph{Descartes-szorzatait} jelentik.
+	Jelölje $A^{*}=A^{0}\ \cup\ A^{1}\ \cup\ A^{2}\ \cup\ \dots\ \cup\  A^{n}$ az ábécé elemeiből képzett véges szavak vagy más néven jelsorozatok halmazát (ezt az $\mathbb{A}$ ábécé feletti univerzumnak hívjuk). Ekkor  $\mathbb{A}$-ból kirakható szavak $\mathbb{A}^{*}$ halmazának egy részhalmazát \textbf{formális nyelvnek} nevezzük. Szokásos még az $\mathbb{A}$ ábécé feletti formális nyelv megnevezés is. A hatványok a halmaz önmagával vett \emph{Descartes-szorzatait} jelentik.
 	\cite{formnyelvek}
 	\end{definicio}
 	
@@ -144,7 +144,7 @@
 				\end{tabular}
 				\item karakteres: 
 				\begin{tabular}{cc}
-					char & kódolástól függ\footnote{text} TODO
+					char & kódolástól függ\footnote{ASCII kódolás esetén 1 karakter 7, míg UTF-8 kódolás esetében 8 biten}
 				\end{tabular}
 			\end{enumerate}
 	\item \emph{összetett adattípusok}: Az összetett adattípusok elemi típusokra szedhetők szét, vagyis primitív és/vagy további összetett típusú változókból épülnek fel, ezeket mezőknek hívjuk. Az összetett adattípusú változó memóriaterülete kiszámítható az adattagok összegével.\\
@@ -155,7 +155,22 @@
 	\section{Kommunikáció adatszerkezeteken keresztül}
 	A Marshalling egy olyan folyamat, amely összetett típusok átalakítására szolgál, hogy egy nyelv adatszerkezetét a másikkal megértessük. Magyar fordításával nem találkoztam ennek a kifejezésnek, de a legjobban talán úgy lehetne megfogalmazni, mint: átrendezés, rendszerezés, tehát befogadhatóvá tesszük az adatszerkezeteinket.
 	\par
-	A Marshalling sajnos nem minden esetben szolgáltat tökéletes megoldást, szakdolgozati projektünkön keresztül például látni fogjuk, hogy a kód portolhatósága, újrahasznosíthatósága végett megéri szabványos formátumokon keresztül (pl. JSON-, XML-formátumok) kommunikálni, hogy más felületekre való költöztetés esetén kompatibilitási probléma többé már ne merülhessen fel.
+	A Marshalling sajnos nem minden esetben szolgáltat tökéletes megoldást, szakdolgozati projektünkön keresztül például látni fogjuk, hogy a kód további portolhatósága, újrahasznosíthatósága végett megéri szabványos formátumokon keresztül (pl. JSON-, XML-formátumok) kommunikálni, hogy más felületekre való költöztetés esetén kompatibilitási probléma többé már ne merülhessen fel.
+	\section{Mik a stub-ok?}
+	A stub-ok hívó (aki csak az implementált metódus fejlécét\footnote{a metódus fejlécét szignatúrának is nevezzük: ez a metódus visszatérési típusát (a void is visszatérési típus!), a függvény nevét, valamint a paraméterlistáját együttesen teszi ki}) és a hívott (ahol a két kód szerződésében lévő publikus/,,meghirdetett''/exportált metódusok -- és még akár továbbiak is -- implementálva vannak) fél között elhelyezkedő mini egységek.
+	
+	\chapter{Szakdolgozati projektünkről}
+	A szakdolgozat mellé készített projektemet Sipos Levente hallgatótársammal fejlesztjük. Ez arról szól, hogy Keresztes Péter tanár úr által Delphi-ben készített metódusokat hívjuk meg C\#-os környezetben. A C\# és Delphi nyelvek összehangolása az én feladatom, a végső termék terveim szerint egy megfelelően dokumentált, jól kitesztelt C\# DLL-állomány lesz, úgynevezett helper-metódusokkal, amelyeket Levente az ő grafikus alkalmazásában tud meghívni.
+	\section{Miről is szól a projektünk?}
+	Egy mentális egészségfejlesztésre használatos alkalmazást fejlesztésére vállalkoztunk 2022 szeptemberében, amely elméleti alapjait Somodi László futballedző munkásságának köszönhetjük, ezekről titoktartási szerződésünk %ezt betehetnénk ide vagy hivatkozzunk rá
+	révén csak nagyon érintőlegesen fogok beszámolni a későbbiekben. A készített alkalmazásunk gyakorlatilag különböző fény- és hangjelzések kibocsátására alkalmas eszközök (több LED-ből felépülő lámpák, nyilak és hangszórók) vezérléséből áll, egy ún. \emph{intelligens szobában} az eredeti tervek szerint 8 eszköz (a készített program azonban tetszőleges, $n$ darabszámú eszköz vezérlésére lett felkészítve) együttes vezérlését kell kezelnünk megadott időközönként (ezeket ütemnek fogjuk nevezni). A program azzal indít, hogy felméri az USB-porton csatlakoztatott, egymással RJ-21 csatlakozókkal sorba kapcsolt eszközöket, őket a típusának megfelelő azonosítóval látja el. Az azonosító meghatározza, hogy egy eszköz milyen típusú. 
+	Egy feladatsor több egymást követő ütemből áll, mely a programban azt fogja jelenti, hogy x másodperc késleltetéssel a felmért eszköz tömb elemeinek tulajdonságait (mezőit) a feladatsor aktuális ütemének megfelelően módosítjuk. Mivel minden eszközt együttesen vezérlünk, a program ütemenként az összes eszköz állapotát felül fogja írni, ezért szükségünk van egy olyan állapotra is, ami azt közli az adott eszközzel, hogy éppen semmit ne csináljon (várakozzon). Ez a fényeszközök esetében egyszerűen (0,0,0) RGB-színkód\footnote{Az RGB-színkódolás egy szín leírását három komponens, vörös (Red), zöld (Green) és kék (Blue) színek arányától teszi függővé.} közlését, míg hangeszköz esetén egy 0 dB hangerejű tetszőleges frekvenciájú hangjelzés kiküldését fogja jelenteni.
+	Somodi László edzővel való együttműködésünk Dr. Király Roland tanár úr segítségével jöhetett létre, akinek múltbéli tapasztalatait és az alkalmazással kapcsolatos ötleteit folyamatos egyeztetések, konzultációk útján tudtuk segítségül hívni.
+	\section{Problémák, akadályozó tényezők}
+	A következő problémákba ütköztünk eddig:
+	
+	
+	
 	\begin{comment}
 		Ezek később lesznek hasznosak
 		\begin{tetel}
