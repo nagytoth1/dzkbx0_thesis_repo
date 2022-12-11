@@ -1,12 +1,15 @@
 \documentclass[tocnopagenum]{thesis-ekf}
 %a4paper, 12pt, 1.5-es sortávolság, margók
-\usepackage[T1]{fontenc}
 \PassOptionsToPackage{defaults=hu-min}{magyar.ldf}
 \usepackage[magyar]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
 \usepackage{mathtools,amssymb,amsthm,pdfpages}
 \footnotestyle{rule=fourth}
 \usepackage{comment}
 \usepackage{enumitem}
+\usepackage{booktabs}
+
 
 \newtheorem{tetel}{Tétel}[chapter]
 \theoremstyle{definition}
@@ -164,13 +167,30 @@
 	\section{Miről is szól a projektünk?}
 	Egy mentális egészségfejlesztésre használatos alkalmazást fejlesztésére vállalkoztunk 2022 szeptemberében, amely elméleti alapjait Somodi László futballedző munkásságának köszönhetjük, ezekről titoktartási szerződésünk %ezt betehetnénk ide vagy hivatkozzunk rá
 	révén csak nagyon érintőlegesen fogok beszámolni a későbbiekben. A készített alkalmazásunk gyakorlatilag különböző fény- és hangjelzések kibocsátására alkalmas eszközök (több LED-ből felépülő lámpák, nyilak és hangszórók) vezérléséből áll, egy ún. \emph{intelligens szobában} az eredeti tervek szerint 8 eszköz (a készített program azonban tetszőleges, $n$ darabszámú eszköz vezérlésére lett felkészítve) együttes vezérlését kell kezelnünk megadott időközönként (ezeket ütemnek fogjuk nevezni). A program azzal indít, hogy felméri az USB-porton csatlakoztatott, egymással RJ-21 csatlakozókkal sorba kapcsolt eszközöket, őket a típusának megfelelő azonosítóval látja el. Az azonosító meghatározza, hogy egy eszköz milyen típusú. 
-	Egy feladatsor több egymást követő ütemből áll, mely a programban azt fogja jelenti, hogy x másodperc késleltetéssel a felmért eszköz tömb elemeinek tulajdonságait (mezőit) a feladatsor aktuális ütemének megfelelően módosítjuk. Mivel minden eszközt együttesen vezérlünk, a program ütemenként az összes eszköz állapotát felül fogja írni, ezért szükségünk van egy olyan állapotra is, ami azt közli az adott eszközzel, hogy éppen semmit ne csináljon (várakozzon). Ez a fényeszközök esetében egyszerűen (0,0,0) RGB-színkód\footnote{Az RGB-színkódolás egy szín leírását három komponens, vörös (Red), zöld (Green) és kék (Blue) színek arányától teszi függővé.} közlését, míg hangeszköz esetén egy 0 dB hangerejű tetszőleges frekvenciájú hangjelzés kiküldését fogja jelenteni.
+	Egy feladatsor több egymást követő ütemből áll, mely a programban azt fogja jelenti, hogy x másodperc késleltetéssel a felmért eszköz tömb elemeinek tulajdonságait (mezőit) a feladatsor aktuális ütemének megfelelően módosítjuk. Mivel minden eszközt együttesen vezérlünk, a program ütemenként az összes eszköz állapotát felül fogja írni, ezért szükségünk van egy olyan állapotra is, ami azt közli az adott eszközzel, hogy éppen semmit ne csináljon (várakozzon). Ez a fényeszközök esetében egyszerűen (0,0,0) RGB-színkód\footnote{Az RGB-színkódolás egy szín leírását három komponens, vörös (\textbf{R}ed), zöld (\textbf{G}reen) és kék (\textbf{B}lue) alapszínek arányától teszi függővé.} közlését, míg hangeszköz esetén egy 0 dB hangerejű tetszőleges frekvenciájú hangjelzés kiküldését fogja jelenteni.
 	Somodi László edzővel való együttműködésünk Dr. Király Roland tanár úr segítségével jöhetett létre, akinek múltbéli tapasztalatait és az alkalmazással kapcsolatos ötleteit folyamatos egyeztetések, konzultációk útján tudtuk segítségül hívni.
 	\section{Problémák, akadályozó tényezők}
 	A következő problémákba ütköztünk eddig:
 	
+	\section{DLL-függvények bemutatása}
+	A következőkben a Keresztes Péter tanár úr által Delphi-ben implementált metódusokat, ezek kezelésének lehetőségeit fogom részletezni.
+	Általánosságban elmondható, hogy minden függvény egész típusú értékkel tér vissza, amely érték tájékoztat a lefutás eredményességéről: amennyiben a hívott metódus sikeresen (hiba, kivétel nélkül) lefutott, 0-val tér vissza, ahogy ezt egyébként az operációs rendszerek processzeinél is megszokhattuk. Ettől eltérő értékek az egyes hibatípusokat hivatottak meghatározni a Win32-szabvány\footnote{A Win32-es hibakódok szabványa szerint minden hibakódnak a $0x0000$ (decimálisan: 0) és $0xFFFFFF$ (decimálisan: $16\,777\,215$) közötti tartományban kell lennie.} keretein belül. Ezen hibakódok projektünkre vonatkozó részét az alábbi táblázatban \ref{tab:errcodes} összegyűjtöttem.
+	\subsection{DLL megnyitása}
+	A program indulásakor elsőként lefutó \verb*|SLDLL_Open| függvényt hívva elkezdhetjük az SLDLL további metódusainak használatát.
+	\subsection{Eszközök felmérése}
+	\verb*|SLDLL_Felmeres|
+	\subsection{Hibakódok}
+	\begin{table}[h!]
+		\input{errcodes.tex}
+		\caption{Hibakódok a Win32-szabványból}
+		\label{tab:errcodes}
+	\end{table}
 	
 	
+	
+	
+	\cite{errcodes}
+	Ezen hibakódokat C\#-ban megfelelő, egyénileg definiált kivételekkel, és sokkal kifejezőbb üzenetekkel váltom fel. 
 	\begin{comment}
 		Ezek később lesznek hasznosak
 		\begin{tetel}
