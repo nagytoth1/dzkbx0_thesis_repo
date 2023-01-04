@@ -2,23 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Xml;
 
 namespace SLFormHelper
 {
     public static class FormHelper //konténerosztály
     {
-        private static List<Device> devices = new List<Device>();
-        public static List<Device> Devices
-        {
-            get { return new List<Device>(devices); }
-        }
-
+        private const string XMLPATH = "scanned_devices.xml";
+        public const string DLLPATH = "SLDLL_relay\\relay.dll";
         #region CallMethods - I want only them public 
         /// <summary>
         /// Calls the function in converterDLL that calls SLDLL_Open to use SLDLL's functionality.
@@ -31,8 +23,8 @@ namespace SLFormHelper
             int result = OpenSLDLL(handle);
             if (result == 1247)
                 throw new SLDLLException("You have already called SLDLL_Open");
-            //if (result == 1626) - what is error 1626?
-                //throw new SLDLLException("");
+            if (result == 1626)
+                throw new USBDisconnectedException("There is no USB device connected.");
             return result;
         }
         /// <summary>
@@ -45,6 +37,21 @@ namespace SLFormHelper
 
             if(result == 255)
                 throw new Dev485Exception("Dev485 is null or empty");
+            if (result == 1114)
+                throw new SLDLLException("You should call SLDLL_Open first!");
+            return result;
+        }        
+        /// <summary>
+        /// Set 'dev485', the array of devices in Delphi-code.
+        /// </summary>
+        /// <returns></returns>
+        public static int CallListElem()
+        {
+            int result = ListElem();
+            if(result == 255)
+                throw new Dev485Exception("Dev485 is null or empty");
+            if (result == 1114)
+                throw new SLDLLException("You should call SLDLL_Open first!");
             return result;
         }
 
@@ -105,34 +112,52 @@ namespace SLFormHelper
             reader = null;
             try
             {
-                reader = XmlReader.Create("scanned_devices.xml");
+                reader = XmlReader.Create(XMLPATH);
             }
             catch (FileNotFoundException)
             {
-                Console.WriteLine("scanned_devices.xml not found");
+                throw new FileNotFoundException(string.Format("{0} not found", XMLPATH));
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                throw;
             }
         }
-        [DllImport(@"converterDLL\relay.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "openDLL")]
-        extern private static int OpenSLDLL(IntPtr handle);
+        /// <summary>
+        /// A DLL használatának megkezdése.
+        /// </summary>
+        /// <param name="hwnd">A HWND a Win32 API része. A HWND-ek lényegében olyan értékekkel rendelkező mutatók (IntPtr), amelyek egy Form adataira mutatnak.
+        /// <br></br>Ha egy Control HWND-jét szeretnéd látni, használd a Control.Handle mezőt! Ez egy IntPtr típusú változó (egy pointer), amelynek értéke egy HWND-cím.
+        /// <br></br>Mivel a HWND-k nem a .NET részei, ezért őket manuálisan kell felszabadítani, a Garbage Collector itt nem lesz a segítségünkre.
+        /// <br></br>A felszabadítást a Control.DestroyHandle() paranccsal lehet megtenni a Control életciklusának végén.
+        /// <br></br>Az objektumok megsemmisítésének felelőssége szokatlan a .NETben, ebből fakadóan könnyen hibák és memóriaszivárgás forrása lehet.
+        /// </param>
+        /// <returns>Numerikus érték, amely a végrehajtás sikerességéről tájékoztat.</returns>
+        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "openDLL")]
+        extern private static int OpenSLDLL(IntPtr hwnd);
 
         //2 eszköz -> tömb, SetList függvény, megfelelő paraméterlistával, elemek felmérés, megadod a tömböt, és feltölti, ha a SetList elindul
         //amikor visszajön a SetList, adja vissza a tömböt, nézzük meg, mi van benne dev485
-        [DllImport(@"converterDLL\relay.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "detectDevices")]
+        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "detectDevices")]
         extern private static int DetectDevices();
+        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "listelem")]
+        extern private static byte ListElem();
 
         //function convertDeviceListToJSON(dev485 : PDEVLIS):string; stdcall;
-        [DllImport(@"converterDLL\relay.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "convertDeviceListToJSON")]
+        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "convertDeviceListToJSON")]
         extern private static byte ConvertDeviceListToJSON([MarshalAs(UnmanagedType.BStr)] [Out] out string outputStr);
 
         //procedure fillDeviceListWithDevices(dev485 : PDEVLIS); stdcall;
-        [DllImport(@"converterDLL\relay.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "fillDeviceListWithDevices")]
+        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "fillDeviceListWithDevices")]
         extern private static byte FillDev485WithStaticData();
 
-        [DllImport(@"converterDLL\relay.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "convertDeviceListToXML")]
+        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "convertDeviceListToXML")]
         extern private static byte ConvertDeviceListToXML();
+        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "setTurnForEachDevice")]
+        extern private static byte SetTurnForEachDevice();
+
+
+        private static List<Device> devices = new List<Device>();
+        public static List<Device> Devices { get { return new List<Device>(devices); } }
     }
 }
