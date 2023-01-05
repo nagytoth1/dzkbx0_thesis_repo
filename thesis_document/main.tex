@@ -169,8 +169,26 @@
 	révén csak nagyon érintőlegesen fogok beszámolni a későbbiekben. A készített alkalmazásunk gyakorlatilag különböző fény- és hangjelzések kibocsátására alkalmas eszközök (több LED-ből felépülő lámpák, nyilak és hangszórók) vezérléséből áll, egy ún. \emph{intelligens szobában} az eredeti tervek szerint 8 eszköz (a készített program azonban tetszőleges, $n$ darabszámú eszköz vezérlésére lett felkészítve) együttes vezérlését kell kezelnünk megadott időközönként (ezeket ütemnek fogjuk nevezni). A program azzal indít, hogy felméri az USB-porton csatlakoztatott, egymással RJ-21 csatlakozókkal sorba kapcsolt eszközöket, őket a típusának megfelelő azonosítóval látja el. Az azonosító meghatározza, hogy egy eszköz milyen típusú. 
 	Egy feladatsor több egymást követő ütemből áll, mely a programban azt fogja jelenti, hogy x másodperc késleltetéssel a felmért eszköz tömb elemeinek tulajdonságait (mezőit) a feladatsor aktuális ütemének megfelelően módosítjuk. Mivel minden eszközt együttesen vezérlünk, a program ütemenként az összes eszköz állapotát felül fogja írni, ezért szükségünk van egy olyan állapotra is, ami azt közli az adott eszközzel, hogy éppen semmit ne csináljon (várakozzon). Ez a fényeszközök esetében egyszerűen (0,0,0) RGB-színkód\footnote{Az RGB-színkódolás egy szín leírását három komponens, vörös (\textbf{R}ed), zöld (\textbf{G}reen) és kék (\textbf{B}lue) alapszínek arányától teszi függővé.} közlését, míg hangeszköz esetén egy 0 dB hangerejű tetszőleges frekvenciájú hangjelzés kiküldését fogja jelenteni.
 	Somodi László edzővel való együttműködésünk Dr. Király Roland tanár úr segítségével jöhetett létre, akinek múltbéli tapasztalatait és az alkalmazással kapcsolatos ötleteit folyamatos egyeztetések, konzultációk útján tudtuk segítségül hívni.
-	\section{Problémák, akadályozó tényezők}
-	A következő problémákba ütköztünk eddig:
+		\subsection{Delphi és C\# programozási nyelvek összehasonlítása}
+	Először is érdemes leszögeznünk, hogy a továbbiakban Delphi alatt nem a fejlesztői környezetet, amely az Object Pascal nyelvvel dolgozott együtt, hanem inkább a programozási nyelvet értjük, jelenleg az Object Pascal megnevezés úgynevezett ,,umbrella term'' formájában él tovább.\footnote{Az umbrella term olyan kifejezés, amely több fogalmat rendel önmaga alá, fogalmak egy csoportját, kategóriáját jelenti. Magyar megfelelője: gyűjtőfogalom} \cite{sof_delphi}
+	
+	A Delphi nyelv (megjelenési éve: 1986, a Borland nevű cég jóvoltából) idősebb nyelvnek számít a C\#-hoz (megjelenési éve: 2001, a Microsoft 
+	jóvoltából) viszonyítva, ebből fakadóan egy stabilabb, kiforrottabb, időtállóbb eszköznek számít a programozók kezében. 
+	
+	Mindkét nyelv \textbf{objektumorientált}, ami azt jelenti, hogy bizonyos, logikailag összetartozó adatokat (mezőket), valamint a rajtuk végezhető műveleteket (metódusokat) egy egységbe zárunk, ezt az egységet a továbbiakban osztálynak nevezzük. Az osztály mezőit és metódusait különböző láthatósági szintekkel vértezhetjük fel, ezzel tudjuk védeni az osztályunk kritikus részeit más osztályokkal szemben. Az osztályok között akár öröklődéssel akár objektum-összetétellel viszonyokat alakíthatunk ki.
+	
+	A két nyelv \textbf{erősen típusosnak} számít, mivel egy változó definiálásakor meg kell mondanunk azt is, hogy milyen típusú értékeket szeretnénk abban tárolni, a típusok már a forráskódban explicit módon megjelennek, így az adott nyelv fordítóprogramja fel van készítve a változó típusaira, amely változó hatókörén \footnote{Hatókör, illetve scope alatt a program azon részét, kontextusát értjük, amely magába foglalja az adott változót. Ezen kontextusban vizsgálva a változó "életben van", tehát a memóriában hely van lefoglalva számára, nevére vagy memóriacímére hivatkozva értékét felülírhatjuk, kiolvashatjuk.} belül nem is változhat meg. Ahogy azt már korábban is említettem, a változó típusa meghatározza, hogy az értéket hogyan kell értelmezni a memóriában, a megadott típusnak mely műveletei vannak értelmezve, így például \verb|string| típuson nem értelmezhetünk logikai ÉS (konjunkció)-műveletet.
+	
+	A készült kódok teljesítménye alapján is érdemes összehasonlítani a két nyelvet. Ehhez először is külön kell választanunk a fordításhoz és a futtatáshoz szükséges időt, lévén ezek fordított (nem interpretált) nyelvek, ezért ezek nem szimultán módon\footnote{nem egyidőben, nem egyszerre} történnek. A Delphi fordítóprogramja azonnal gépi kódot\footnote{TODO: mit értünk gépi kód alatt} készít, míg a C\# esetében első lépésben egy köztes nyelvű\footnote{TODO: IL-ről írni} kód készül, amelyet a .NET virtuális gép képes futtatni. Fordítási időben a Delphi-kód nyertesnek számít, futásidőben azonban közel ekvivalens a két nyelv révén készített kód.
+	Ha ennél is tovább megyünk, akkor a C\#-nak nagy előnye származik abból a Delphivel való összevetésben, hogy aszinkron\footnote{TODO: aszinkron magyarázata} kódolási lehetőséget is biztosít, amely felgyorsítja a végrehajtást, jobban ki tudja használni a rendelkezésre álló CPU teljesítményét. A LINQ használata \verb|yield| kulcsszóval az iterációkban biztosítja, hogy csak akkor van végrehajtva a kód, amikor ténylegesen szükség van rá (lusta kiértékelés). A delegate-ek használata szintén növelheti a C\#-kódok teljesítményét, bár a Delphi is rendelkezik ehhez hasonló funkciókkal\footnote{TODO: függvénypointer-ek?}.
+	\begin{comment}
+	TODO: esetleg ide jöhetne egy C\# és Delphi futásidő-összehasonlítási ábra
+	\end{comment}
+	\cite{perf_comp}
+	
+	A fejlesztés folyamán elkészített \textbf{modulokat} a C\# \verb|namespace|, Delphiben \verb|unit| 
+	
+	Ami közös még a két nyelvben, hogy a fejlesztés moduljaiból Win32 szabványnak megfelelő DLL-ek készülhetnek a segítségükkel, ezek szintén lefordított, gépi kódú állományok, amelyek más szoftver forráskódjában felhasználhatóak, lényegében így válnak futtatható állománnyá.
 	
 	\section{DLL-függvények bemutatása}
 	A következőkben a Keresztes Péter tanár úr által Delphi-ben implementált metódusokat, ezek kezelésének lehetőségeit fogom részletezni.
@@ -185,12 +203,9 @@
 		\caption{Hibakódok a Win32-szabványból}
 		\label{tab:errcodes}
 	\end{table}
-	
-	
-	
-	
 	\cite{errcodes}
 	Ezen hibakódokat C\#-ban megfelelő, egyénileg definiált kivételekkel, és sokkal kifejezőbb üzenetekkel váltom fel. 
+	\subsection{DLL-ek üzenetküldése Win32-ben}
 	\begin{comment}
 		Ezek később lesznek hasznosak
 		\begin{tetel}
@@ -209,7 +224,8 @@
 			Megjegyzés szövege.
 		\end{megjegyzes}
 	\end{comment}
-	
+	\section{Problémák, akadályozó tényezők}
+	A következő problémákba ütköztünk eddig:
 	\chapter*{Összegzés}
 	\addcontentsline{toc}{chapter}{Összegzés}
 	\verb*|#TODO|: Összefoglalás...
