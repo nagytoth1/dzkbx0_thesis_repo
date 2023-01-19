@@ -1,0 +1,44 @@
+unit relay_h;
+
+interface
+
+uses SLDLL, Classes, XMLIntf, XMLDoc, Sysutils, Types, Messages, Dialogs;
+
+//a pas szolgál header-fájlnak: konstansok, típusok, metódus-deklarációk
+//function  SLDLL_Open(wndhnd, msgert: Dword; mianev: PDLLNEV; devata: PDEVSEL): Dword; stdcall; external SLDLL_PATH;
+const
+  MAX_DEVICECOUNT = 100;
+  UZESAJ = WM_USER + 0;
+  PRODUCER = 'Somodi László';
+  MANUFACTURER = 'Pluszs Kft.';
+  RELAY_PATH = 'relayproject.dll';
+  //error codes instead of exceptions - the cause thrown exceptions cannot be detected by C# PInvoke
+  DEV485_NULL = 255;
+  DEV485_EMPTY = 254;
+  DEV485_ALREADY_FILLED = 253;
+  TURNNUM_OUTOFBOUNDS = 252;
+  DEVCOUNT_IDENTITY_ERROR = 251;
+  DEVTYPE_UNDEFINED = 250;
+  DEVSETTINGS_INVALID_FORMAT = 249;
+  DEVSETTING_FAILED = 248;
+  EXIT_SUCCESS = 0;
+
+//exportált metódusok, ezeket hívhatjuk C#-ból majd
+// A DLL használatbavételének indítása
+function Open(wndhnd:DWord; uzesaj:DWord): DWord; stdcall; external RELAY_PATH;
+// A dev485 tömb beállítása -> uzfeld-metódus C#-os megfelel?je fogja hívni
+function Listelem(): Dword; stdcall; external RELAY_PATH; //uzfeld fogja hívni
+// Az elérhet? eszközök felmérésének indítása
+function Felmeres(): DWord; stdcall; external RELAY_PATH;
+//dev485 tömb átkonvertálása JSON-formátumra - JSON-szerializálásnak is nevezhetjük
+function ConvertDEV485ToJSON(out outputStr: WideString): byte; stdcall; external RELAY_PATH;
+//dev485 tömb átkonvertálása XML-formátumra - XML-szerializálásnak is nevezhetjük
+function ConvertDEV485ToXML(const outPath:string): byte; stdcall; external RELAY_PATH;
+//kiküld egy ütemet MINDEN eszköznek (ami nem csinál semmit, 'üres' jelet kap)
+function SetTurnForEachDeviceJSON(turn:byte; json_source: string):integer; stdcall; external RELAY_PATH;
+//statikus eszközökkel tölti fel a dev485-tömböt
+//tesztelésre használjuk - megkülönböztetés miatt snake_case konvencióval nevezem el
+function fill_devices_list_with_devices(): byte; stdcall; external RELAY_PATH;
+
+implementation
+end.

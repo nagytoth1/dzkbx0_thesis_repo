@@ -33,7 +33,7 @@ namespace SLFormHelper
         /// <returns></returns>
         public static int CallFelmeres()
         {
-            int result = DetectDevices();
+            int result = Felmeres();
 
             if(result == 255)
                 throw new Dev485Exception("Dev485 is null or empty");
@@ -45,9 +45,9 @@ namespace SLFormHelper
         /// Set 'dev485', the array of devices in Delphi-code.
         /// </summary>
         /// <returns></returns>
-        public static int CallListElem()
+        public static int CallListelem()
         {
-            int result = ListElem();
+            int result = Listelem();
             if(result == 255)
                 throw new Dev485Exception("Dev485 is null or empty");
             if (result == 1114)
@@ -90,7 +90,7 @@ namespace SLFormHelper
         }
         public static void XMLToDeviceList()
         {
-            createReader(out XmlReader reader);
+            CreateXMLReader(out XmlReader reader);
 
             if (reader == null)
                 return;
@@ -107,7 +107,7 @@ namespace SLFormHelper
                 }
         }
         #endregion
-        private static void createReader(out XmlReader reader)
+        private static void CreateXMLReader(out XmlReader reader)
         {
             reader = null;
             try
@@ -118,7 +118,7 @@ namespace SLFormHelper
             {
                 throw new FileNotFoundException(string.Format("{0} not found", XMLPATH));
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw;
             }
@@ -133,27 +133,27 @@ namespace SLFormHelper
         /// <br></br>Az objektumok megsemmisítésének felelőssége szokatlan a .NETben, ebből fakadóan könnyen hibák és memóriaszivárgás forrása lehet.
         /// </param>
         /// <returns>Numerikus érték, amely a végrehajtás sikerességéről tájékoztat.</returns>
-        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "openDLL")]
+        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "Open")]
         extern private static int OpenSLDLL(IntPtr hwnd);
 
         //2 eszköz -> tömb, SetList függvény, megfelelő paraméterlistával, elemek felmérés, megadod a tömböt, és feltölti, ha a SetList elindul
         //amikor visszajön a SetList, adja vissza a tömböt, nézzük meg, mi van benne dev485
-        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "detectDevices")]
-        extern private static int DetectDevices();
-        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "listelem")]
-        extern private static byte ListElem();
+        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "Felmeres")]
+        extern private static int Felmeres();
+        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "Listelem")]
+        extern private static byte Listelem();
 
         //function convertDeviceListToJSON(dev485 : PDEVLIS):string; stdcall;
-        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "convertDeviceListToJSON")]
+        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "ConvertDEV485ToJSON")]
         extern private static byte ConvertDeviceListToJSON([MarshalAs(UnmanagedType.BStr)] [Out] out string outputStr);
 
         //procedure fillDeviceListWithDevices(dev485 : PDEVLIS); stdcall;
-        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "fillDeviceListWithDevices")]
+        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "fill_devices_list_with_devices")]
         extern private static byte FillDev485WithStaticData();
 
-        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "convertDeviceListToXML")]
+        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "ConvertDEV485ToXML")]
         extern private static byte ConvertDeviceListToXML();
-        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "setTurnForEachDevice")]
+        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "SetTurnForEachDeviceJSON")]
         extern private static byte SetTurnForEachDevice();
 
 

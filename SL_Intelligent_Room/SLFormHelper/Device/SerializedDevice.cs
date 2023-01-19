@@ -18,7 +18,7 @@ namespace SLFormHelper
 
         public Device CreateDevice()
         {
-            switch (azonos & 0xc000) //ha ez működik, a típus kiszedhető a JSON-ből
+            switch (azonos & 0xc000)
             {
                 case SLLELO:
                     return new LEDLight(azonos);
