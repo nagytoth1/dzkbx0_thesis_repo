@@ -21,10 +21,10 @@ namespace SLFormHelper
         public static int CallOpen(IntPtr handle)
         {
             int result = OpenSLDLL(handle);
-            if (result == 1247)
-                throw new SLDLLException("You have already called SLDLL_Open");
-            if (result == 1626)
-                throw new USBDisconnectedException("There is no USB device connected.");
+            /*if (result == 1247)
+                throw new SLDLLException("You have already called SLDLL_Open");*/
+            //if (result == 1626)
+            //    throw new USBDisconnectedException("There is no USB device connected.");
             return result;
         }
         /// <summary>

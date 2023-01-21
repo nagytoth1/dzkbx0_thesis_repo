@@ -31,6 +31,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.listBox1 = new System.Windows.Forms.ListBox();
+            this.btnOpen = new System.Windows.Forms.Button();
+            this.btnFelmeres = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -60,16 +62,39 @@
             this.listBox1.Size = new System.Drawing.Size(382, 104);
             this.listBox1.TabIndex = 2;
             // 
+            // btnOpen
+            // 
+            this.btnOpen.Location = new System.Drawing.Point(16, 145);
+            this.btnOpen.Name = "btnOpen";
+            this.btnOpen.Size = new System.Drawing.Size(181, 82);
+            this.btnOpen.TabIndex = 3;
+            this.btnOpen.Text = "Open";
+            this.btnOpen.UseVisualStyleBackColor = true;
+            this.btnOpen.Click += new System.EventHandler(this.btnOpen_Click);
+            // 
+            // btnFelmeres
+            // 
+            this.btnFelmeres.Location = new System.Drawing.Point(220, 145);
+            this.btnFelmeres.Name = "btnFelmeres";
+            this.btnFelmeres.Size = new System.Drawing.Size(178, 82);
+            this.btnFelmeres.TabIndex = 4;
+            this.btnFelmeres.Text = "Felmer";
+            this.btnFelmeres.UseVisualStyleBackColor = true;
+            this.btnFelmeres.Click += new System.EventHandler(this.btnFelmeres_Click);
+            // 
             // HelperForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 449);
+            this.Controls.Add(this.btnFelmeres);
+            this.Controls.Add(this.btnOpen);
             this.Controls.Add(this.listBox1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Name = "HelperForm";
             this.Text = "DLLTestForm";
+            this.Load += new System.EventHandler(this.HelperForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -80,6 +105,8 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.Button btnOpen;
+        private System.Windows.Forms.Button btnFelmeres;
     }
 }
 

@@ -11,17 +11,16 @@ namespace SLHelperTestForm
         public HelperForm()
         {
             InitializeComponent();
-            Console.WriteLine("Form handle: 0x{0:X}", this.Handle.ToInt64());
-            label1.Text = FormHelper.CallOpen(this.Handle).ToString();
-            label2.Text = FormHelper.CallFelmeres().ToString();
-            /*//Console.WriteLine(FormHelper.CallListElem());
-            //FormHelper.CallFillDev485Static();
-            FormHelper.FillDevicesList();
-            List<Device> devlist = FormHelper.Devices;
-            listBox1.DataSource = devlist;*/
         }
 
-        private int drb485;
+        private void HelperForm_Load(object sender, EventArgs e)
+        {
+            Console.WriteLine("Form handle: 0x{0:X}", this.Handle.ToInt64());
+            label1.Text = FormHelper.CallOpen(this.Handle).ToString();
+        }
+
+        private long drb485;
+        private bool dev485Set = false;
         /// <summary>
         /// Ez lényegében a Delphi-ből érkező uzfeld-metódus C#-os változata
         /// Feldolgozza a Win32-es üzeneteket a Form és a rendszer/DLL között.
@@ -30,7 +29,18 @@ namespace SLHelperTestForm
         protected override void WndProc(ref Message msg)
         {
             //TODO: itt van a baj, amikor az msg értékeit (WParam, LParam) akarjuk elérni, akkor baj van
-            //int responseCode = Marshal.ReadInt32(msg.WParam); //32bites egész értéket olvasunk ki belőle
+            int responseCode = msg.WParam.ToInt32();
+            switch (responseCode)
+            {
+                case FELMOK:
+                    Console.WriteLine("FELMOK");
+                    drb485 = msg.LParam.ToInt64();
+                    Console.WriteLine("Dev485 darabszáma {0}", drb485);
+                    FormHelper.CallListelem();
+                    break;
+                default:
+                    break;
+            }
             //if (responseCode == 0) return;
             //switch (responseCode)
             //{
@@ -99,7 +109,7 @@ namespace SLHelperTestForm
         private const sbyte FELMHD = -4;                             // Nincs egy darab sem hibakód (elvben sem lehet ilyen)
         private const sbyte FELMDE = -5;                             // A 16 és 64 bites darabszám nem egyforma (elvben sem lehet ilyen)
 
-        public int DRB485
+        public long DRB485
         {
             get
             {
@@ -111,6 +121,21 @@ namespace SLHelperTestForm
                     throw new ArgumentOutOfRangeException("Az eszközök darabszáma nem lehet negatív!");
                 drb485 = value;
             }
+        }
+
+        private void btnOpen_Click(object sender, EventArgs e)
+        {
+            label1.Text = FormHelper.CallOpen(this.Handle).ToString();
+        }
+        private void btnFelmeres_Click(object sender, EventArgs e)
+        {
+            if (dev485Set)
+                btnFelmeres.Enabled = false;
+            label2.Text = FormHelper.CallFelmeres().ToString();
+            FormHelper.FillDevicesList();
+            List<Device> devlist = FormHelper.Devices;
+            listBox1.DataSource = devlist;
+            dev485Set = true;
         }
     }
 }

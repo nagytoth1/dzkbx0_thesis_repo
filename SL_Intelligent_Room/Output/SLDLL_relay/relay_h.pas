@@ -11,7 +11,7 @@ const
   UZESAJ = WM_USER + 0;
   PRODUCER = 'Somodi László';
   MANUFACTURER = 'Pluszs Kft.';
-  RELAY_PATH = 'relayproject.dll';
+  RELAY_PATH = 'relay.dll';
   //error codes instead of exceptions - the cause thrown exceptions cannot be detected by C# PInvoke
   DEV485_NULL = 255;
   DEV485_EMPTY = 254;
