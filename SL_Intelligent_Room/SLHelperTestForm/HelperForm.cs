@@ -15,11 +15,10 @@ namespace SLHelperTestForm
 
         private void HelperForm_Load(object sender, EventArgs e)
         {
-            Console.WriteLine("Form handle: 0x{0:X}", this.Handle.ToInt64());
             label1.Text = FormHelper.CallOpen(this.Handle).ToString();
         }
 
-        private long drb485;
+        private int drb485;
         private bool dev485Set = false;
         /// <summary>
         /// Ez lényegében a Delphi-ből érkező uzfeld-metódus C#-os változata
@@ -28,59 +27,48 @@ namespace SLHelperTestForm
         /// <param name="msg">A feldolgozandó Win32-szabványnak megfelelő üzenet.</param>
         protected override void WndProc(ref Message msg)
         {
-            //TODO: itt van a baj, amikor az msg értékeit (WParam, LParam) akarjuk elérni, akkor baj van
-            int responseCode = msg.WParam.ToInt32();
-            switch (responseCode)
+            if (msg.Msg == 0x0400)
             {
-                case FELMOK:
-                    Console.WriteLine("FELMOK");
-                    drb485 = msg.LParam.ToInt64();
-                    Console.WriteLine("Dev485 darabszáma {0}", drb485);
-                    FormHelper.CallListelem();
-                    break;
-                default:
-                    break;
+                int responseCode = msg.WParam.ToInt32();
+                if (responseCode != 0)
+                switch (responseCode)
+                {
+                    //-------Pozitív válaszkódok (tájékoztatások) esetei--------
+                    case FELMOK:
+                            this.DRB485 = (int)msg.LParam;
+                            Console.WriteLine($"Drb485 = {drb485}");
+                            FormHelper.CallListelem();
+                        break;
+                    //itt van egy while/for-ciklus, de egyébként nem csinál semmit
+                    case AZOOKE: break;
+                    //megváltoztattam az eszköz számát, akkor jön ez a válasz  
+                    case LEDRGB: break;
+                    //ledbea(PELVSTA(Msg.LParam) ^); - relayelni
+                    case NYIRGB: break;
+                    //nyilbe(PELVSTA(Msg.LParam)^); - relayelni
+                    case HANGEL: break;
+                    //hanbea(PELVSTA(Msg.LParam)^); - relayelni - elég a Msg.LPARAM-ot átadni mindhárom esetben - egész szám értékként kell átadni
+                    case STATKV: break;
+                    //itt kapom vissza az értéket
+                    case LISVAL: break; //A lista_hívás adja vissza message-ben
+                    //-------Negatív válaszkódok (hibakódok) esetei--------
+                    case USBREM: break;
+                    // Az USB vezérlő eltávolításra került
+                    case VALTIO: break;
+                    // Válaszvárás time-out következett be
+                    case FELMHK: break;
+                    // Felmérés vége hibával
+                    //s := Format(ENDHIK, [Msg.LParam]);
+                    case FELMHD: break;
+                    // Nincs egy darab sem hibakód (elvben sem lehet ilyen)
+                    //s := DARSEM;
+                    case FELMDE: break;
+                    // A 16 és 64 bites darabszám nem egyforma
+                    //s := DARELT;
+                    default:
+                        break;
+                }
             }
-            //if (responseCode == 0) return;
-            //switch (responseCode)
-            //{
-            //    //-------Pozitív válaszkódok (tájékoztatások) esetei--------
-            //    case FELMOK:
-            //        this.DRB485 = Marshal.ReadInt32(msg.LParam);
-            //        //SLDLL_Listelem(@dev485);
-
-            //        break;
-            //    //itt van egy while/for-ciklus, de egyébként nem csinál semmit
-            //    case AZOOKE: break;
-            //    //megváltoztattam az eszköz számát, akkor jön ez a válasz  
-            //    case LEDRGB: break;
-            //    //ledbea(PELVSTA(Msg.LParam) ^); - relayelni
-            //    case NYIRGB: break;
-            //    //nyilbe(PELVSTA(Msg.LParam)^); - relayelni
-            //    case HANGEL: break;
-            //    //hanbea(PELVSTA(Msg.LParam)^); - relayelni - elég a Msg.LPARAM-ot átadni mindhárom esetben - egész szám értékként kell átadni
-            //    case STATKV: break;
-            //    //itt kapom vissza az értéket
-            //    case LISVAL: break;
-            //    //A lista_hívás adja vissza message-ben
-
-            //    //-------Negatív válaszkódok (hibakódok) esetei--------
-            //    case USBREM: break;
-            //    // Az USB vezérlő eltávolításra került
-            //    case VALTIO: break;
-            //    // Válaszvárás time-out következett be
-            //    case FELMHK: break;
-            //    // Felmérés vége hibával
-            //    //s := Format(ENDHIK, [Msg.LParam]);
-            //    case FELMHD: break;
-            //    // Nincs egy darab sem hibakód (elvben sem lehet ilyen)
-            //    //s := DARSEM;
-            //    case FELMDE: break;
-            //    // A 16 és 64 bites darabszám nem egyforma
-            //    //s := DARELT;
-            //    default:
-            //        break;
-            //}
             base.WndProc(ref msg);
         }
 
@@ -109,7 +97,7 @@ namespace SLHelperTestForm
         private const sbyte FELMHD = -4;                             // Nincs egy darab sem hibakód (elvben sem lehet ilyen)
         private const sbyte FELMDE = -5;                             // A 16 és 64 bites darabszám nem egyforma (elvben sem lehet ilyen)
 
-        public long DRB485
+        public int DRB485
         {
             get
             {

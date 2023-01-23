@@ -48,7 +48,7 @@ namespace SLFormHelper
         public static int CallListelem()
         {
             int result = Listelem();
-            if(result == 255)
+            if (result == 255)
                 throw new Dev485Exception("Dev485 is null or empty");
             if (result == 1114)
                 throw new SLDLLException("You should call SLDLL_Open first!");
@@ -65,7 +65,6 @@ namespace SLFormHelper
         {
             byte result = ConvertDeviceListToJSON(out string jsonstring); //calls a Delphi-function to convert dev485 to a more understandable json-format
             //from this json-format, we create list of SerializedDevices
-            Console.WriteLine(result);
 
             if (result == 255) //ha dev485 üres
                 throw new Dev485Exception("Dev485 is null or empty");
@@ -86,7 +85,6 @@ namespace SLFormHelper
             byte result = FillDev485WithStaticData();
             if (result == 254)
                 throw new Dev485Exception("Dev485 is already filled");
-                //Console.WriteLine("dev485 already filled"); //TODO: saját kivétel ide 
         }
         public static void XMLToDeviceList()
         {
@@ -97,6 +95,7 @@ namespace SLFormHelper
 
             SerializedDevice dev;
             while (reader.Read())
+            {
                 if (reader.HasAttributes && reader.Name == "device")
                 {
                     Console.WriteLine($"Eszköz azonosítója: {reader.GetAttribute("azonos")}");
@@ -105,6 +104,8 @@ namespace SLFormHelper
                     dev.Azonos = devID;
                     devices.Add(dev.CreateDevice());
                 }
+            }
+                
         }
         #endregion
         private static void CreateXMLReader(out XmlReader reader)
