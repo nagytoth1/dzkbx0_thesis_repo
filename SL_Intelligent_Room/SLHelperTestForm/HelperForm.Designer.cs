@@ -33,6 +33,8 @@
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.btnOpen = new System.Windows.Forms.Button();
             this.btnFelmeres = new System.Windows.Forms.Button();
+            this.btnKek = new System.Windows.Forms.Button();
+            this.btnUres = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -82,11 +84,33 @@
             this.btnFelmeres.UseVisualStyleBackColor = true;
             this.btnFelmeres.Click += new System.EventHandler(this.btnFelmeres_Click);
             // 
+            // btnKek
+            // 
+            this.btnKek.Location = new System.Drawing.Point(16, 244);
+            this.btnKek.Name = "btnKek";
+            this.btnKek.Size = new System.Drawing.Size(181, 63);
+            this.btnKek.TabIndex = 5;
+            this.btnKek.Text = "Legyen kék!";
+            this.btnKek.UseVisualStyleBackColor = true;
+            this.btnKek.Click += new System.EventHandler(this.btnKek_Click);
+            // 
+            // btnUres
+            // 
+            this.btnUres.Location = new System.Drawing.Point(220, 244);
+            this.btnUres.Name = "btnUres";
+            this.btnUres.Size = new System.Drawing.Size(181, 63);
+            this.btnUres.TabIndex = 5;
+            this.btnUres.Text = "Legyen üres?!";
+            this.btnUres.UseVisualStyleBackColor = true;
+            this.btnUres.Click += new System.EventHandler(this.btnUres_Click);
+            // 
             // HelperForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 449);
+            this.Controls.Add(this.btnUres);
+            this.Controls.Add(this.btnKek);
             this.Controls.Add(this.btnFelmeres);
             this.Controls.Add(this.btnOpen);
             this.Controls.Add(this.listBox1);
@@ -107,6 +131,8 @@
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Button btnOpen;
         private System.Windows.Forms.Button btnFelmeres;
+        private System.Windows.Forms.Button btnKek;
+        private System.Windows.Forms.Button btnUres;
     }
 }
 

@@ -13,22 +13,22 @@ uses
 //dpr implements the methods defined in pas + creates its own methods + propagates methods with exportlist
 //signatures of private, not exported, implemented methods
 //creates Delphi stringlist from given JSON-array
-function reduceJSONSourceToElements(var json_source: string):TStringList; Forward;
+function reduceJSONSourceToElements(var json_source: WideString):TStringList; Forward;
 //searches for the key in a JSON-element, returns with a value paired to it
 //for example: from input "azonos":10 method is going to return 10
 function extractValueFromJSONField(const json_element, key: string):string; Forward;
 //splits string by given delimiter character
 procedure split(const Delimiter: Char; Input: string; const Strings: TStrings); Forward;
 //removes unnecessary characters from JSON-input string, prepares it
-procedure removeSpecialChars(var str : string); Forward;
+procedure removeSpecialChars(var str : WideString); Forward;
 //creates dev485 from JSON-format
-function convertJSONToDEV485(json_source: string):DEVLIS; Forward;
+function convertJSONToDEV485(var json_source: WideString):DEVLIS; Forward;
 //checks whether the settings of the devices are correct
 function validateExtractedDeviceValues(const actDeviceType:string; const actDeviceSettings: TStringList):byte; Forward;
 //decides which type the given device belongs to (LED-arrow, LED-light or Speaker) and calls the corresponding set-method
-procedure setDeviceByType(const i: integer; const actDeviceType: char; const actDeviceSettings: TStringList);Forward;
+procedure setDeviceByType(const i: integer; var actDeviceType: string; var actDeviceSettings: string);Forward;
 //sets a device of a LED-arrow and LED-light type
-function setLEDDevice(i, red, green, blue, direction:byte):byte; Forward;
+function setLEDDevice(i, red, green, blue, direction:integer):byte; Forward;
 //sets a device of a Speaker type
 function setSpeaker(i, volume, id, length:byte):integer;Forward;
 
@@ -66,59 +66,39 @@ begin
 end;
 
 //sets the pointer of dev485 - called in uzfeld-method
-function Listelem(): Dword; stdcall;
+function Listelem(out outputStr: WideString; var eszkozDarabszam: integer): dword; stdcall;
 begin
-  result := SLDLL_Listelem(@dev485);
-  {
-  if(not Assigned(dev485)) then //if dev485 == null
-  begin
-	  result := DEV485_NULL;
-	exit;
-  end;
-  if length(dev485) = 0 then //if dev485's length is set to 0
-  begin
-    result := DEV485_EMPTY;
-    exit;
-  end;
-  }
+  result := SLDLL_Listelem(@dev485); //itt tuti, hogy ismeri dev485-öt
+  drb485 := eszkozDarabszam;
   showmessage(Format('Listelem sikeres, eredmenye %d dev485 = %p &dev485[0] = %p &dev485[1] = %p', [Result, dev485, @dev485[0], @dev485[1]]));
+  ConvertDEV485ToJSON(outputStr);
 end;
 
-function SetTurnForEachDeviceJSON(turn : byte; json_source: string):integer; stdcall;
+function SetTurnForEachDeviceJSON(var turn : byte; var json_source: WideString):integer; stdcall;
 var
 	i: integer;
-	devCount: integer;
 	jsonArrayElements: TStringList;
-	json_element: string;
-	actDeviceType: char;
-	actDeviceSettings: TStringList;
+	json_element1, json_element2: string;
+	actDeviceType: string;
+	actDeviceSettings: string;
 begin
 	//decode the JSON of the current turn (type + settings fields)
 	jsonArrayElements := reduceJSONSourceToElements(json_source);
-	devCount := jsonArrayElements.Count; //count of array - XMLNodes or JSON-array length
-	
-	if devCount <> drb485 then //if the array is not the same size as length of devicelist, we can't run the method properly
+	for i := 0 to drb485 - 1 do //for [0;drb485] inclusive
 	begin
-		Result := DEVCOUNT_IDENTITY_ERROR;
-		exit;
-	end;
-
-	for i := 0 to devCount - 1 do
-	begin
-		json_element := jsonArrayElements[i]; //loads the actual device
-    	writeln('json_element ' + json_element);
+		json_element1 := jsonArrayElements[i]; //loads the actual device
+		json_element2 := jsonArrayElements[i+1]; //loads the actual device
     //I want the first char of string 
-		actDeviceType := extractValueFromJSONField(json_element, 'type')[1]; //gets the type of the device
-    showmessage(format('actDeviceType=%c', [actDeviceType]));
-    actDeviceSettings := TStringList.Create();
-		split('|', extractValueFromJSONField(json_element, 'settings'), actDeviceSettings);
-
-		if validateExtractedDeviceValues(actDeviceType, actDeviceSettings) <> 0 then continue;
-
+		actDeviceType := extractValueFromJSONField(json_element1, 'type'); //gets the type of the device
+    actDeviceSettings := extractValueFromJSONField(json_element2, 'settings'); //255|0|0|1
+		//if validateExtractedDeviceValues(actDeviceType, actDeviceSettings) <> 0 then continue;
+    showmessage(actDeviceSettings);
 		devList[i].azonos := dev485[i].azonos;
 		setDeviceByType(i, actDeviceType, actDeviceSettings);
+    showmessage(format('azonos=%d rossze=%d gossze=%d bossze=%d', [devList[i].azonos, devList[i].vilrgb.rossze, devList[i].vilrgb.gossze, devList[i].vilrgb.bossze]));
   end; //case
-  result := SLDLL_SetLista(devCount, devList);
+  result := SLDLL_SetLista(drb485, devList);
+  showmessage(format('setlista = %d', [result]));
 end;
 
 function ConvertDEV485ToXML(const outPath:string): byte; stdcall;
@@ -158,6 +138,7 @@ var
   buffer: WideString;
   i: integer;
 begin
+{
   if (drb485 = 0) or (not Assigned(dev485)) then
   begin
   	showmessage(format('Dev485 is empty drb485 = %d  dev485 = %p', [drb485, @dev485]));
@@ -165,13 +146,14 @@ begin
     result := DEV485_EMPTY;
     exit;
   end;
+}
   buffer := '[';  //JSON-array is going to be created
-  i:=-1;
-  while dev485[i+1].azonos <> 0 do
+  i:=0;
+  while i < drb485 do
   begin
-    inc(i);
     buffer := buffer + Format('{"azonos":%d},', [dev485[i].azonos]);
     writeln(buffer);
+    inc(i);
   end;
   buffer[length(buffer)] := ']'; 
   //the comma (,) at the type of the last device is unnecessary and makes the JSON-invalid, so rather we just overwrite it with the 'end of array'-character
@@ -182,7 +164,7 @@ begin
 end;
 
 //it functions as a source handler (simplifying the source) if we see it as a compiler
-procedure removeSpecialChars(var str : string); //string is given by as reference
+procedure removeSpecialChars(var str : WideString); //string is given by as reference
   const
     charsToRemove = ' "[]{}'+sLineBreak;
   var
@@ -196,7 +178,7 @@ end;
 
 //question: should dev485 be rather given in as parameter?
 //in C# we don't need this, we will implement it for C#-environment
-function convertJSONToDEV485(json_source: string):DEVLIS; //returns array dev485
+function convertJSONToDEV485(var json_source: WideString):DEVLIS; //returns array dev485
 var
   //input looks like this: [{"azonos" : 16388, "tipus" : "L"},{"azonos": 120, "tipus" : "0"}, ... ]
   jsonArrayElements: TStringList;
@@ -247,7 +229,7 @@ begin
 	result := value;
 end;
 
-function reduceJSONSourceToElements(var json_source: string):TStringList;
+function reduceJSONSourceToElements(var json_source: WideString):TStringList;
 var 
 	jsonArrayElements: TStringList;
 begin
@@ -284,36 +266,53 @@ begin
 	result := 0;
 end;
 
-procedure setDeviceByType(const i: integer; const actDeviceType: char; const actDeviceSettings: TStringList);
+procedure setDeviceByType(const i: integer; var actDeviceType: string; var actDeviceSettings: string);
+var 
+	settingsElements: TStringList;
 begin
-	case(actDeviceType) of
-		'L': setLEDDevice( 	//LEDLight
+  settingsElements := TStringList.Create;
+  split('|', actDeviceSettings, settingsElements);
+	if actDeviceType = 'L' then
+  begin
+    setLEDDevice( 	//LEDLight
         i,
-				strToIntDef(actDeviceSettings[0], 0), 	//red
-				strToIntDef(actDeviceSettings[1], 0), 	//green
-				strToIntDef(actDeviceSettings[2], 0), 	//blue
-				strToIntDef(actDeviceSettings[3], 0)); 	//direction
-		'N': setLEDDevice( 	//LEDArrow
+				strToIntDef(settingsElements[0], 0), 	//red
+				strToIntDef(settingsElements[1], 0), 	//green
+				strToIntDef(settingsElements[2], 0), 	//blue
+				strToIntDef(settingsElements[3], 0)); 	//direction
+  end
+  else if actDeviceType = 'N' then
+  begin
+      devList[i].vilrgb.rossze := strToInt(settingsElements[0]);
+      devList[i].vilrgb.gossze := strToInt(settingsElements[1]);
+      devList[i].vilrgb.bossze := strToInt(settingsElements[2]);
+      devList[i].nilmeg := strToInt(elements[3]);
+      {
+      setLEDDevice( 	//LEDArrow
         i,
-				strToIntDef(actDeviceSettings[0], 0), 	//red
-				strToIntDef(actDeviceSettings[1], 0), 	//green
-				strToIntDef(actDeviceSettings[2], 0), 	//blue
-				strToIntDef(actDeviceSettings[3], 0));	//direction
-		'H': setSpeaker( //Speaker
+				strToIntDef(settingsElements[0], 0), 	//red
+				strToIntDef(settingsElements[1], 0), 	//green
+				strToIntDef(settingsElements[2], 0), 	//blue
+				strToIntDef(settingsElements[3], 0));	//direction
+        }
+  end
+  else
+  begin
+    setSpeaker( //Speaker
         i,
-				strToIntDef(actDeviceSettings[0], 0), 	//volume, e.g: 10
-				strToIntDef(actDeviceSettings[1], 0), 	//index from table e.g: 1
-				strToIntDef(actDeviceSettings[2], 0)); 	//length
+				strToIntDef(settingsElements[0], 0), 	//volume, e.g: 10
+				strToIntDef(settingsElements[1], 0), 	//index from table e.g: 1
+				strToIntDef(settingsElements[2], 0)); 	//length
   end;
 end;
 
-function setLEDDevice(i, red, green, blue, direction:byte):byte;
+function setLEDDevice(i, red, green, blue, direction:integer):byte;
 begin
 	try
-		devList[i].lamrgb.rossze := red;
-		devList[i].lamrgb.gossze := green;
-		devList[i].lamrgb.bossze := blue;
-		//TODO: devList[i] := direction; - ir?ny?
+		devList[i].vilrgb.rossze := red;
+		devList[i].vilrgb.gossze := green;
+		devList[i].vilrgb.bossze := blue;
+    devList[i].nilmeg := strToInt(direction); //LED-lampanal ez 2 lesz
     result := EXIT_SUCCESS;
 	except
 		showmessage('LEDDevice setting failed.');

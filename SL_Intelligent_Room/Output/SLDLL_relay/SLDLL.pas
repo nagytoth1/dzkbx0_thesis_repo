@@ -44,12 +44,16 @@ const
 // Ezek az egyes elemek azonosítói
 //
   SLLELO	                = $4000;                          // LED  lámpa elõtag
-  SLNELO                  = $8000;                          // LED nyíil elõtag
+  SLNELO                  = $8000;                          // LED nyíl elõtag
   SLHELO                  = $c000;                          // SLH elõtag
 //
 // Legfeljebb ennyi elemet tud egyszerre kezelni
 //
   MAXRES	                = 21;                             // Legfeljebb ennyi elemnek van hely
+//
+// Egy menetben ennyi hangot tud lejátszani
+//
+  HANMAX                  = 16;                             // Ennyi hangnak van hely
 //
 // Válaszkódok
 //
@@ -150,14 +154,10 @@ type
     case Integer of
       1:
       (
-        lamrgb: HABASZ;                                     // A LED lámpa RGB értékei                     2     3
+        vilrgb: HABASZ;                                     // A LED lámpa vagy nyíl RGB értékei           2     3
+        nilmeg: Byte;                                       // A lámpa vagy a nyíl iránya                  5     1
       );
       2:
-      (
-        nilrgb: HABASZ;                                     // A nyíl RGB értékei                          2     3
-        jobrai: BOOL;                                       // A nyíl iránya                               5     4
-      );
-      3:
       (
         handrb: Byte;                                       // A hang darabszáma                           2     1
         hantbp: PHANGL;                                     // A táblázatra mutató pointer                 3     4
@@ -268,14 +268,15 @@ function SLLDLL_Upgrade(filnam: PChar; var drbkod: Dword; amitir: Word): Dword; 
 //                                                                                  //
 //  Paraméterek:                                                                    //
 //                (in)  rgbert      A beállítandó RGB értékek táblázata             //
-//                (in)  amital      A beállítandó LED-lámpa azonosítója             //
+//                (in)  amital      A beállítandó panel azonosítója                 //
 //                                                                                  //
 //  Visszatérési érték:                                                             //
 //                NO_ERROR                    A beállítás sikeresen elindult        //
 //                ERROR_DLL_INIT_FAILED       A DLL még nem volt elindítva          //
 //                ERROR_INVALID_DATA          Az azonosító típusjelölõ bitpárosa    //
-//                                            nem "SLLELO" érték, azaz nem          //
-//                                            LED lámpa panel kerül megszólításra   //
+//                                            nem "SLNELO" vagy "SLLELO" érték,     //
+//                                            azaz nem LED nyíl, vagy LED lámpa     //
+//                                            panel kerül megszólításra.            //
 //                egyéb értékek               Windows mûveleti hibakódok            //
 //                                                                                  //
 //////////////////////////////////////////////////////////////////////////////////////
@@ -287,19 +288,23 @@ function SLLDLL_LEDLampa(rgbert: HABASZ; amital: Word): Dword; stdcall; external
 //                                                                                  //
 //  Paraméterek:                                                                    //
 //                (in)  rgbert      A beállítandó RGB értékek táblázata             //
-//                (in)  jobrai      A beállítandó irány (jobbra = True)             //
-//                (in)  amital      A beállítandó LED nyíl azonosítója              //
+//                (in)  nilmeg      A beállítandó irány (0 = balra                  //
+//                                                       1 = jobbra                 //
+//                                                       2 = lámpa)                 //
+//                (in)  amital      A beállítandó panel azonosítója                 //
 //                                                                                  //
 //  Visszatérési érték:                                                             //
 //                NO_ERROR                    A beállítás sikeresen elindult        //
 //                ERROR_DLL_INIT_FAILED       A DLL még nem volt elindítva          //
 //                ERROR_INVALID_DATA          Az azonosító típusjelölõ bitpárosa    //
-//                                            nem "SLNELO" érték, azaz nem          //
-//                                            LED nyíl panel kerül megszólításra    //
+//                                            nem "SLNELO" vagy "SLLELO" érték,     //
+//                                            azaz nem LED nyíl, vagy LED lámpa     //
+//                                            panel kerül megszólításra, vagy a     //
+//                                            feladat száma nem korrekt.            //
 //                egyéb értékek               Windows mûveleti hibakódok            //
 //                                                                                  //
 //////////////////////////////////////////////////////////////////////////////////////
-function SLLDLL_LEDNyil(rgbert: HABASZ; jobrai: BOOL; amital: Word): Dword; stdcall; external SLDLL_PATH;
+function SLLDLL_LEDNyil(rgbert: HABASZ; nilmeg: Dword; amital: Word): Dword; stdcall; external SLDLL_PATH;
 //
 //////////////////////////////////////////////////////////////////////////////////////
 //                                                                                  //
@@ -324,7 +329,7 @@ function SLLDLL_Hangkuldes(hangho: Integer;const amitku: HANGLA; amital: Word): 
 //
 //////////////////////////////////////////////////////////////////////////////////////
 //                                                                                  //
-//  A DLL által elérhetõ eszközök felmérésének indítása.                            //
+//  A DLL által elérhetõ panel állapotának lekérdezése.                             //
 //                                                                                  //
 //  Paraméter:                                                                      //
 //                (in)  amitke      A lekérdezenõ panel azonosítója                 //
@@ -356,7 +361,7 @@ function SLDLL_GetStatus(amitke: Word): Dword; stdcall; external SLDLL_PATH;
 //                NO_ERROR                    A végrehajtás sikeresen befejezõdött  //
 //                ERROR_INVALID_DATA          Az azonosító típusjelölõ bitpárosa    //
 //                                            hibás, vagy nincs ilyen eszköz        //
-//                ERROR_BAD_LENGTH            A hanghossz 0, vagy nagyobb mint 16   //
+//                ERROR_BAD_LENGTH            A nagyobb mint 16                     //
 //                egyéb értékek               Windows mûveleti hibakódok            //
 //                                                                                  //
 //////////////////////////////////////////////////////////////////////////////////////

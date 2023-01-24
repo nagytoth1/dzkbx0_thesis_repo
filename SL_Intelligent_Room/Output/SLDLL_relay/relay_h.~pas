@@ -4,14 +4,13 @@ interface
 
 uses SLDLL, Classes, XMLIntf, XMLDoc, Sysutils, Types, Messages, Dialogs;
 
-//a pas szolgál header-fájlnak: konstansok, típusok, metódus-deklarációk
-//function  SLDLL_Open(wndhnd, msgert: Dword; mianev: PDLLNEV; devata: PDEVSEL): Dword; stdcall; external SLDLL_PATH;
+//pas serves as a header-file: constants, variables, types, method-declarations
 const
   MAX_DEVICECOUNT = 100;
   UZESAJ = WM_USER + 0;
   PRODUCER = 'Somodi László';
   MANUFACTURER = 'Pluszs Kft.';
-  RELAY_PATH = 'relayproject.dll';
+  RELAY_PATH = 'relay.dll';
   //error codes instead of exceptions - the cause thrown exceptions cannot be detected by C# PInvoke
   DEV485_NULL = 255;
   DEV485_EMPTY = 254;
@@ -22,22 +21,28 @@ const
   DEVSETTINGS_INVALID_FORMAT = 249;
   DEVSETTING_FAILED = 248;
   EXIT_SUCCESS = 0;
+ 
+var
+  drb485: integer;
+  dev485:DEVLIS;
+  devList: LISTBL;
+  H: HANGLA;
 
-//exportált metódusok, ezeket hívhatjuk C#-ból majd
-// A DLL használatbavételének indítása
-function Open(wndhnd:DWord; uzesaj:DWord): DWord; stdcall; external RELAY_PATH;
-// A dev485 tömb beállítása -> uzfeld-metódus C#-os megfelel?je fogja hívni
-function Listelem(): Dword; stdcall; external RELAY_PATH; //uzfeld fogja hívni
-// Az elérhet? eszközök felmérésének indítása
+//exported, public methods, these can be called from C#
+// start using DLL
+function Open(wndhnd:DWord): DWord; stdcall; external RELAY_PATH;
+// setting dev485 array -> uzfeld-method's alternative in C# is going to call this
+function Listelem(out outputStr: WideString, var eszkozDarabszam: integer): dword; stdcall; external RELAY_PATH; //uzfeld fogja hívni
+// start of scanning available devices
 function Felmeres(): DWord; stdcall; external RELAY_PATH;
-//dev485 tömb átkonvertálása JSON-formátumra - JSON-szerializálásnak is nevezhetjük
+//converting dev485 to JSON-format - JSON-serializing
 function ConvertDEV485ToJSON(out outputStr: WideString): byte; stdcall; external RELAY_PATH;
-//dev485 tömb átkonvertálása XML-formátumra - XML-szerializálásnak is nevezhetjük
+//converting dev485 to XML-format - XML-serializing
 function ConvertDEV485ToXML(const outPath:string): byte; stdcall; external RELAY_PATH;
-//kiküld egy ütemet MINDEN eszköznek (ami nem csinál semmit, 'üres' jelet kap)
+//sends an array of statements to ALL devices, this is going to be 1 turn (the passive device during the turn gets 'empty' signal)
 function SetTurnForEachDeviceJSON(turn:byte; json_source: string):integer; stdcall; external RELAY_PATH;
-//statikus eszközökkel tölti fel a dev485-tömböt
-//tesztelésre használjuk - megkülönböztetés miatt snake_case konvencióval nevezem el
+//fills dev485 with dummy devices
+//used only for testing purposes - therefore I used snake_case naming convention to differentiate it
 function fill_devices_list_with_devices(): byte; stdcall; external RELAY_PATH;
 
 implementation

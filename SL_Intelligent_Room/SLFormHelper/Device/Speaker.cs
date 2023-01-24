@@ -24,7 +24,10 @@ namespace SLFormHelper
 
         public override string ToString()
         {
-            return string.Format("{0} {1} volume", base.ToString(), volume);
+            StringBuilder sb = new StringBuilder("{");
+            sb.Append(string.Format("\"type\" : \"N\",\"settings\" : \"{0}|{1}|{2}\"", volume));
+            sb.Append("}");
+            return sb.ToString();
         }
     }
 }

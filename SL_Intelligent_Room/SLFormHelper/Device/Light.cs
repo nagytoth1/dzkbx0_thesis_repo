@@ -9,7 +9,7 @@ namespace SLFormHelper
 {
     public class LEDLight:Device
     {
-        protected Color color;
+        protected Color color; //rgb - milyen színnel világítson
 
         public LEDLight(uint azonos)
             : this(azonos, Color.Red) { }
@@ -25,7 +25,10 @@ namespace SLFormHelper
 
         public override string ToString()
         {
-            return string.Format("{0} RGB({1}, {2}, {3})", base.ToString(), color.R, color.G, color.B);
+            StringBuilder sb = new StringBuilder("{");
+            sb.Append(string.Format("\"type\" : \"L\",\"settings\" : \"{0}|{1}|{2}|{3}\"", color.R, color.G, color.B));
+            sb.Append("}");
+            return sb.ToString();
         }
     }
 }

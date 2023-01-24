@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Xml;
 
 namespace SLFormHelper
@@ -45,13 +46,14 @@ namespace SLFormHelper
         /// Set 'dev485', the array of devices in Delphi-code.
         /// </summary>
         /// <returns></returns>
-        public static int CallListelem()
+        public static int CallListelem(ref int drb485)
         {
-            int result = Listelem();
+            int result = Listelem(out string json_format, ref drb485);
             if (result == 255)
                 throw new Dev485Exception("Dev485 is null or empty");
             if (result == 1114)
                 throw new SLDLLException("You should call SLDLL_Open first!");
+            FillDevicesList(ref json_format); //ez fogja feltölteni a C#-os listát
             return result;
         }
 
@@ -61,14 +63,8 @@ namespace SLFormHelper
         /// List can be reached by calling property FormHelper.Devices
         /// </summary>
         /// <exception cref="Dev485Exception">When empty or unitialized array is given.</exception>
-        public static void FillDevicesList()
+        public static void FillDevicesList(ref string jsonstring)
         {
-            byte result = ConvertDeviceListToJSON(out string jsonstring); //calls a Delphi-function to convert dev485 to a more understandable json-format
-            //from this json-format, we create list of SerializedDevices
-
-            if (result == 255) //ha dev485 üres
-                throw new Dev485Exception("Dev485 is null or empty");
-                
             List<SerializedDevice> serialized = JsonConvert.DeserializeObject<List<SerializedDevice>>(jsonstring);
 
             for (int i = 0; i < serialized.Count; i++)
@@ -105,7 +101,10 @@ namespace SLFormHelper
                     devices.Add(dev.CreateDevice());
                 }
             }
-                
+        }
+        public static void CallSetTurnForEachDevice(ref byte turn, ref string json_source)
+        {
+            SetTurnForEachDevice(ref turn, ref json_source);
         }
         #endregion
         private static void CreateXMLReader(out XmlReader reader)
@@ -141,8 +140,8 @@ namespace SLFormHelper
         //amikor visszajön a SetList, adja vissza a tömböt, nézzük meg, mi van benne dev485
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "Felmeres")]
         extern private static int Felmeres();
-        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "Listelem")]
-        extern private static byte Listelem();
+        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "Listelem")]
+        extern private static byte Listelem([MarshalAs(UnmanagedType.BStr)][Out] out string outputStr, [In] ref int drb485);
 
         //function convertDeviceListToJSON(dev485 : PDEVLIS):string; stdcall;
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "ConvertDEV485ToJSON")]
@@ -154,11 +153,24 @@ namespace SLFormHelper
 
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "ConvertDEV485ToXML")]
         extern private static byte ConvertDeviceListToXML();
-        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "SetTurnForEachDeviceJSON")]
-        extern private static byte SetTurnForEachDevice();
+        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "SetTurnForEachDeviceJSON")]
+        extern private static byte SetTurnForEachDevice([In] ref byte turn, [MarshalAs(UnmanagedType.BStr)][In] ref string json_source);
 
 
         private static List<Device> devices = new List<Device>();
         public static List<Device> Devices { get { return new List<Device>(devices); } }
+
+        public static string DevicesToJSON()
+        {
+            StringBuilder sb = new StringBuilder("[");
+            int i;
+            for (i = 0; i < devices.Count - 1; i++)
+            {
+                sb.Append(devices[i].ToString()).Append(",");
+            }
+            sb.Append(devices[i]).Append(']');
+
+            return sb.ToString();
+        }
     }
 }

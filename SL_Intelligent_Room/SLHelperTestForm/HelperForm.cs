@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using SLFormHelper;
@@ -36,8 +37,11 @@ namespace SLHelperTestForm
                     //-------Pozitív válaszkódok (tájékoztatások) esetei--------
                     case FELMOK:
                             this.DRB485 = (int)msg.LParam;
-                            Console.WriteLine($"Drb485 = {drb485}");
-                            FormHelper.CallListelem();
+                            if (!dev485Set)
+                            {
+                                FormHelper.CallListelem(ref drb485);
+                                dev485Set = true;
+                            }
                         break;
                     //itt van egy while/for-ciklus, de egyébként nem csinál semmit
                     case AZOOKE: break;
@@ -120,10 +124,28 @@ namespace SLHelperTestForm
             if (dev485Set)
                 btnFelmeres.Enabled = false;
             label2.Text = FormHelper.CallFelmeres().ToString();
-            FormHelper.FillDevicesList();
-            List<Device> devlist = FormHelper.Devices;
-            listBox1.DataSource = devlist;
             dev485Set = true;
+            listBox1.DataSource = FormHelper.Devices;
+        }
+
+        private void btnKek_Click(object sender, EventArgs e)
+        {
+            LEDArrow arrow = (LEDArrow)FormHelper.Devices[0];
+            arrow.Color = Color.Blue;
+            arrow.Direction = Direction.RIGHT;
+            byte turn = 1; string json_source = FormHelper.DevicesToJSON();
+            Console.WriteLine(json_source);
+            FormHelper.CallSetTurnForEachDevice(ref turn, ref json_source);
+        }
+
+        private void btnUres_Click(object sender, EventArgs e)
+        {
+            LEDArrow arrow = (LEDArrow)FormHelper.Devices[0];
+            arrow.Color = Color.Black;
+            arrow.Direction = Direction.BOTH;
+            byte turn = 1; string json_source = FormHelper.DevicesToJSON();
+            Console.WriteLine(json_source);
+            FormHelper.CallSetTurnForEachDevice(ref turn, ref json_source);
         }
     }
 }
