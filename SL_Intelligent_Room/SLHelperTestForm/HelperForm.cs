@@ -140,6 +140,8 @@ namespace SLHelperTestForm
 
         private void btnUres_Click(object sender, EventArgs e)
         {
+            //amikor ki van küldve neki a jel, akkor nem lehet meghívni a felmérést újra, mert mert másik állapotban van az eszköz
+            //TODO: ezt még lekezelni
             LEDArrow arrow = (LEDArrow)FormHelper.Devices[0];
             arrow.Color = Color.Black;
             arrow.Direction = Direction.BOTH;
