@@ -27,10 +27,6 @@ function convertJSONToDEV485(var json_source: WideString):DEVLIS; Forward;
 function validateExtractedDeviceValues(const actDeviceType:string; const actDeviceSettings: TStringList):byte; Forward;
 //decides which type the given device belongs to (LED-arrow, LED-light or Speaker) and calls the corresponding set-method
 procedure setDeviceByType(const i: integer; var actDeviceType: string; var actDeviceSettings: string);Forward;
-//sets a device of a LED-arrow and LED-light type
-function setLEDDevice(i, red, green, blue, direction:integer):byte; Forward;
-//sets a device of a Speaker type
-function setSpeaker(i, volume, id, length:byte):integer;Forward;
 
 function fill_devices_list_with_devices(): byte; stdcall;
 begin
@@ -62,7 +58,6 @@ end;
 function Felmeres(): DWord; stdcall;
 begin
   result := SLDLL_Felmeres();
-  showmessage(Format('Felmeres eredmenye %d &dev485 = %p &dev485[0] = %p', [result, @dev485, @dev485[0]]));
 end;
 
 //sets the pointer of dev485 - called in uzfeld-method
@@ -70,7 +65,6 @@ function Listelem(out outputStr: WideString; var eszkozDarabszam: integer): dwor
 begin
   result := SLDLL_Listelem(@dev485); //itt tuti, hogy ismeri dev485-öt
   drb485 := eszkozDarabszam;
-  showmessage(Format('Listelem sikeres, eredmenye %d dev485 = %p &dev485[0] = %p &dev485[1] = %p', [Result, dev485, @dev485[0], @dev485[1]]));
   ConvertDEV485ToJSON(outputStr);
 end;
 
@@ -84,22 +78,19 @@ var
 begin
 	//decode the JSON of the current turn (type + settings fields)
 	jsonArrayElements := reduceJSONSourceToElements(json_source);
-	for i := 0 to drb485 - 1 do //for 0 .. 1
+	for i := 0 to drb485 - 1 do //for [0;drb485] inclusive
 	begin
 		json_element1 := jsonArrayElements[i]; //loads the actual device
 		json_element2 := jsonArrayElements[i+1]; //loads the actual device
     //I want the first char of string 
 		actDeviceType := extractValueFromJSONField(json_element1, 'type'); //gets the type of the device
     actDeviceSettings := extractValueFromJSONField(json_element2, 'settings'); //255|0|0|1
-		//if validateExtractedDeviceValues(actDeviceType, actDeviceSettings) <> 0 then continue;
+		if validateExtractedDeviceValues(actDeviceType, actDeviceSettings) <> 0 then continue;
     showmessage(actDeviceSettings);
 		devList[i].azonos := dev485[i].azonos;
-    showmessage(format('i = %d actDeviceType = %s actDeviceSettings = %s',[i, actDeviceType, actDeviceSettings]));
 		setDeviceByType(i, actDeviceType, actDeviceSettings);
-    showmessage(format('azonos=%d rossze=%d gossze=%d bossze=%d', [devList[i].azonos, devList[i].vilrgb.rossze, devList[i].vilrgb.gossze, devList[i].vilrgb.bossze]));
   end; //case
   result := SLDLL_SetLista(drb485, devList);
-  showmessage(format('setlista = %d', [result]));
 end;
 
 function ConvertDEV485ToXML(const outPath:string): byte; stdcall;
@@ -275,65 +266,26 @@ begin
   split('|', actDeviceSettings, settingsElements);
 	if actDeviceType = 'L' then
   begin
-    setLEDDevice( 	//LEDLight
-        i,
-				strToIntDef(settingsElements[0], 0), 	//red
-				strToIntDef(settingsElements[1], 0), 	//green
-				strToIntDef(settingsElements[2], 0), 	//blue
-				strToIntDef(settingsElements[3], 0)); 	//direction
+      devList[i].vilrgb.rossze := strToInt(settingsElements[0]);
+      devList[i].vilrgb.gossze := strToInt(settingsElements[1]);
+      devList[i].vilrgb.bossze := strToInt(settingsElements[2]);
+      devList[i].nilmeg := 2;
   end
   else if actDeviceType = 'N' then
   begin
-      devList[i].vilrgb.rossze := strToInt(elements[0]);
-      devList[i].vilrgb.gossze := strToInt(elements[1]);
-      devList[i].vilrgb.bossze := strToInt(elements[2]);
-      devList[i].nilmeg := strToInt(elements[3]);
-      {
-      setLEDDevice( 	//LEDArrow
-        i,
-				strToIntDef(settingsElements[0], 0), 	//red
-				strToIntDef(settingsElements[1], 0), 	//green
-				strToIntDef(settingsElements[2], 0), 	//blue
-				strToIntDef(settingsElements[3], 0));	//direction
-        }
+      devList[i].vilrgb.rossze := strToInt(settingsElements[0]);
+      devList[i].vilrgb.gossze := strToInt(settingsElements[1]);
+      devList[i].vilrgb.bossze := strToInt(settingsElements[2]);
+      devList[i].nilmeg := strToInt(settingsElements[3]);
   end
   else
   begin
-    setSpeaker( //Speaker
-        i,
-				strToIntDef(settingsElements[0], 0), 	//volume, e.g: 10
-				strToIntDef(settingsElements[1], 0), 	//index from table e.g: 1
-				strToIntDef(settingsElements[2], 0)); 	//length
-  end;
-end;
-
-function setLEDDevice(i, red, green, blue, direction:integer):byte;
-begin
-	try
-		devList[i].vilrgb.rossze := red;
-		devList[i].vilrgb.gossze := green;
-		devList[i].vilrgb.bossze := blue;
-    devList[i].nilmeg := strToInt(direction); //LED-lampanal ez 2 lesz
-    result := EXIT_SUCCESS;
-	except
-		showmessage('LEDDevice setting failed.');
-		result := DEVSETTING_FAILED;
-  end;
-end;
-
-function setSpeaker(i, volume, id, length:byte):integer;
-begin
-	try
 		devList[i].handrb := 1;
 		devList[i].hantbp := @H; //array for sound settings - 
 		//TODO: do we need array?
-		H[0].hangho := length; //100;
-		H[0].hangso := id; //1;
-		H[0].hanger := volume; //10;
-    result := EXIT_SUCCESS;
-	except
-		showmessage('LEDDevice setting failed.');
-		result := DEVSETTING_FAILED;
+		H[0].hangho := strToInt(settingsElements[0]); //100;
+		H[0].hangso := strToInt(settingsElements[1]); //1;
+		H[0].hanger := strToInt(settingsElements[2]); //10;
   end;
 end;
 
