@@ -20,21 +20,16 @@ function extractValueFromJSONField(const json_element, key: string):string; Forw
 //splits string by given delimiter character
 procedure split(const Delimiter: Char; Input: string; const Strings: TStrings); Forward;
 //removes unnecessary characters from JSON-input string, prepares it
-procedure removeSpecialChars(var str : WideString); Forward;
+procedure removeSpecialChars(var outputStr: WideString); Forward;
 //creates dev485 from JSON-format
 function convertJSONToDEV485(var json_source: WideString):DEVLIS; Forward;
-//checks whether the settings of the devices are correct
-function validateExtractedDeviceValues(const actDeviceType:string; const actDeviceSettings: TStringList):byte; Forward;
 //decides which type the given device belongs to (LED-arrow, LED-light or Speaker) and calls the corresponding set-method
-procedure setDeviceByType(const i: integer; var actDeviceType: string; var actDeviceSettings: string);Forward;
-//sets a device of a LED-arrow and LED-light type
-function setLEDDevice(i, red, green, blue, direction:integer):byte; Forward;
-//sets a device of a Speaker type
-function setSpeaker(i, volume, id, length:byte):integer;Forward;
+procedure setDeviceByType(const i: integer; actDeviceType: char; var actDeviceSettings: string);Forward;
+function validateDeviceType(var i: integer; var actDeviceType: char):byte; Forward;
 
 function fill_devices_list_with_devices(): byte; stdcall;
 begin
-  if(Assigned(dev485)) or (length(dev485) > 0) then
+  if (Assigned(dev485)) or (length(dev485) > 0) then
   begin
     result := DEV485_ALREADY_FILLED;
     exit;
@@ -54,24 +49,23 @@ end;
 
 function Open(wndhnd:DWord): DWord; stdcall;
 var
- nevlei, devusb: pchar;
+	nevlei, devusb: pchar;
 begin
-  result := SLDLL_Open(wndhnd, UZESAJ, @nevlei, @devusb);
+	result := SLDLL_Open(wndhnd, UZESAJ, @nevlei, @devusb);
 end;
 
-function Felmeres(): DWord; stdcall;
+function Felmeres(out outputStr: WideString): DWord; stdcall;
 begin
-  result := SLDLL_Felmeres();
-  showmessage(Format('Felmeres eredmenye %d &dev485 = %p &dev485[0] = %p', [result, @dev485, @dev485[0]]));
+	result := SLDLL_Felmeres();
+	ConvertDEV485ToJSON(outputStr); //XML should be put here as well
+  	//ConvertDEV485ToXML('.');
 end;
 
-//sets the pointer of dev485 - called in uzfeld-method
-function Listelem(out outputStr: WideString; var eszkozDarabszam: integer): dword; stdcall;
+//sets the pointer of dev485 AND converts it to JSON (or XML)-format - called in uzfeld-method
+function Listelem(var eszkozDarabszam: integer): dword; stdcall;
 begin
-  result := SLDLL_Listelem(@dev485); //itt tuti, hogy ismeri dev485-öt
+  result := SLDLL_Listelem(@dev485);
   drb485 := eszkozDarabszam;
-  showmessage(Format('Listelem sikeres, eredmenye %d dev485 = %p &dev485[0] = %p &dev485[1] = %p', [Result, dev485, @dev485[0], @dev485[1]]));
-  ConvertDEV485ToJSON(outputStr);
 end;
 
 function SetTurnForEachDeviceJSON(var turn : byte; var json_source: WideString):integer; stdcall;
@@ -79,26 +73,43 @@ var
 	i: integer;
 	jsonArrayElements: TStringList;
 	json_element1, json_element2: string;
-	actDeviceType: string;
+	actDeviceType: char;
 	actDeviceSettings: string;
 begin
 	//decode the JSON of the current turn (type + settings fields)
 	jsonArrayElements := reduceJSONSourceToElements(json_source);
-	for i := 0 to drb485 - 1 do //for [0;drb485] inclusive
+	i := 0;
+	while i < drb485 do
 	begin
 		json_element1 := jsonArrayElements[i]; //loads the actual device
 		json_element2 := jsonArrayElements[i+1]; //loads the actual device
-    //I want the first char of string 
-		actDeviceType := extractValueFromJSONField(json_element1, 'type'); //gets the type of the device
-    actDeviceSettings := extractValueFromJSONField(json_element2, 'settings'); //255|0|0|1
-		//if validateExtractedDeviceValues(actDeviceType, actDeviceSettings) <> 0 then continue;
-    showmessage(actDeviceSettings);
+    	//I want the first char of string 
+		actDeviceType := extractValueFromJSONField(json_element1, 'type')[1]; //gets the type of the device
+		showmessage(format('actDevType = %s', [actDeviceType]));
+		result := validateDeviceType(i, actDeviceType); 
+		//check whether the type defined in JSON is equals to the type of the current connected device in dev485
+		if result <> 0 
+			then exit;
+    	actDeviceSettings := extractValueFromJSONField(json_element2, 'settings'); //255|0|0|1
 		devList[i].azonos := dev485[i].azonos;
 		setDeviceByType(i, actDeviceType, actDeviceSettings);
-    showmessage(format('azonos=%d rossze=%d gossze=%d bossze=%d', [devList[i].azonos, devList[i].vilrgb.rossze, devList[i].vilrgb.gossze, devList[i].vilrgb.bossze]));
-  end; //case
-  result := SLDLL_SetLista(drb485, devList);
-  showmessage(format('setlista = %d', [result]));
+    	inc(i);
+	end;
+	result := SLDLL_SetLista(drb485, devList);
+end;
+
+function validateDeviceType(var i: integer; var actDeviceType: char):byte;
+var
+	dev485Type: char;
+begin
+	dev485Type := 'L';
+	case dev485[i].azonos and $c000 of
+		SLNELO: dev485Type := 'N';
+		SLHELO: dev485Type := 'H';
+	end;
+	showmessage(format('correct type: %s actual type: %s',[dev485Type, actDeviceType]));
+	if actDeviceType = dev485Type then result := EXIT_SUCCESS 
+	else result := JSON_TYPE_ERROR;
 end;
 
 function ConvertDEV485ToXML(const outPath:string): byte; stdcall;
@@ -120,12 +131,11 @@ begin
 	RootNode := XML.AddChild('device');
 	
 	i := 0;
-	while dev485[i].azonos <> 0 do //that's the way of iterating through dev485 array (or using the drb485 variable)
+	while i < drb485 do //that's the way of iterating through dev485 array (or using the drb485 variable)
 	begin
-		RootNode.Attributes['azonos'] := dev485[0].azonos; //we don't need the type of the device
+		RootNode.Attributes['azonos'] := dev485[i].azonos; //we don't need the type of the device
 		inc(i);
 	end;
-	
 	XML.SaveToFile(Format('%s\scanned_devices.xml', [outPath]));
 	result := EXIT_SUCCESS;
 end;
@@ -138,7 +148,6 @@ var
   buffer: WideString;
   i: integer;
 begin
-{
   if (drb485 = 0) or (not Assigned(dev485)) then
   begin
   	showmessage(format('Dev485 is empty drb485 = %d  dev485 = %p', [drb485, @dev485]));
@@ -146,7 +155,6 @@ begin
     result := DEV485_EMPTY;
     exit;
   end;
-}
   buffer := '[';  //JSON-array is going to be created
   i:=0;
   while i < drb485 do
@@ -164,15 +172,17 @@ begin
 end;
 
 //it functions as a source handler (simplifying the source) if we see it as a compiler
-procedure removeSpecialChars(var str : WideString); //string is given by as reference
+procedure removeSpecialChars(var outputStr : WideString); //string is given by as reference
   const
     charsToRemove = ' "[]{}'+sLineBreak;
   var
     i : integer;
   begin
-    for i := 0 to length(charsToRemove) do
+  	i := 0;
+    while i < length(charsToRemove) do
     begin
-      str := StringReplace(str, charsToRemove[i], '', [rfReplaceAll]); //parameters: input string (source)
+      outputStr := StringReplace(outputStr, charsToRemove[i], '', [rfReplaceAll]); //parameters: input string (source)
+      inc(i);
     end;
 end;
 
@@ -188,7 +198,7 @@ var
   dev_azonos: SmallInt;
   json_value: string;
 begin
-  SetLength(dev485, MAX_DEVICECOUNT);
+  SetLength(dev485, drb485);
   jsonArrayElements := reduceJSONSourceToElements(json_source);
   k := 0; //the index of dev485 gets incremented only if field 'azonos' is found with its value
   for i := 0 to jsonArrayElements.Count - 1 do
@@ -196,10 +206,8 @@ begin
     json_element := jsonArrayElements[i];
     writeln('json_element ' + json_element);
     json_value := extractValueFromJSONField(json_element, 'azonos');
-    if json_value = '' then
-		continue;
-	
-	// if the given string does not represent a valid integer (invalid), result is -1
+    if json_value = '' then continue;
+	  	// if the given string does not represent a valid integer (invalid), result is -1
     dev_azonos := strToIntDef(json_value, -1);
     if dev_azonos = -1 then
         showmessage(Format('Invalid deviceID %s', [json_value]));
@@ -242,98 +250,51 @@ end;
 
 procedure split(const Delimiter: Char; Input: string; const Strings: TStrings);
 begin
-   Assert(Assigned(Strings));
-   Strings.Clear;
-   Strings.Delimiter := Delimiter;
-   Strings.DelimitedText :=  '"' +
-      StringReplace(Input, Delimiter, '"' + Delimiter + '"', [rfReplaceAll]) + '"' ;
+	Assert(Assigned(Strings));
+	Strings.Clear;
+	Strings.Delimiter := Delimiter;
+	Strings.DelimitedText :=  '"' + StringReplace(Input, Delimiter, '"' + Delimiter + '"', [rfReplaceAll]) + '"' ;
 end;
 
-function validateExtractedDeviceValues(const actDeviceType:string; const actDeviceSettings: TStringList):byte;
-begin
-	if actDeviceType = '' then
-	begin
-		writeln('DEVTYPE_UNDEFINED');
-		result := DEVTYPE_UNDEFINED;
-		exit;
-	end;
-	if actDeviceSettings.Count < 3 then
-	begin
-		writeln('DEVSETTINGS_INVALID_FORMAT');
-		result := DEVSETTINGS_INVALID_FORMAT;
-		exit;
-	end;
-	result := 0;
-end;
-
-procedure setDeviceByType(const i: integer; var actDeviceType: string; var actDeviceSettings: string);
+procedure setDeviceByType(const i: integer; actDeviceType: char; var actDeviceSettings: string);
 var 
 	settingsElements: TStringList;
 begin
-  settingsElements := TStringList.Create;
-  split('|', actDeviceSettings, settingsElements);
-	if actDeviceType = 'L' then
-  begin
-    setLEDDevice( 	//LEDLight
-        i,
-				strToIntDef(settingsElements[0], 0), 	//red
-				strToIntDef(settingsElements[1], 0), 	//green
-				strToIntDef(settingsElements[2], 0), 	//blue
-				strToIntDef(settingsElements[3], 0)); 	//direction
-  end
-  else if actDeviceType = 'N' then
-  begin
-      devList[i].vilrgb.rossze := strToInt(settingsElements[0]);
-      devList[i].vilrgb.gossze := strToInt(settingsElements[1]);
-      devList[i].vilrgb.bossze := strToInt(settingsElements[2]);
-      devList[i].nilmeg := strToInt(elements[3]);
-      {
-      setLEDDevice( 	//LEDArrow
-        i,
-				strToIntDef(settingsElements[0], 0), 	//red
-				strToIntDef(settingsElements[1], 0), 	//green
-				strToIntDef(settingsElements[2], 0), 	//blue
-				strToIntDef(settingsElements[3], 0));	//direction
-        }
-  end
-  else
-  begin
-    setSpeaker( //Speaker
-        i,
-				strToIntDef(settingsElements[0], 0), 	//volume, e.g: 10
-				strToIntDef(settingsElements[1], 0), 	//index from table e.g: 1
-				strToIntDef(settingsElements[2], 0)); 	//length
-  end;
-end;
-
-function setLEDDevice(i, red, green, blue, direction:integer):byte;
-begin
-	try
-		devList[i].vilrgb.rossze := red;
-		devList[i].vilrgb.gossze := green;
-		devList[i].vilrgb.bossze := blue;
-    devList[i].nilmeg := strToInt(direction); //LED-lampanal ez 2 lesz
-    result := EXIT_SUCCESS;
-	except
-		showmessage('LEDDevice setting failed.');
-		result := DEVSETTING_FAILED;
-  end;
-end;
-
-function setSpeaker(i, volume, id, length:byte):integer;
-begin
-	try
-		devList[i].handrb := 1;
-		devList[i].hantbp := @H; //array for sound settings - 
-		//TODO: do we need array?
-		H[0].hangho := length; //100;
-		H[0].hangso := id; //1;
-		H[0].hanger := volume; //10;
-    result := EXIT_SUCCESS;
-	except
-		showmessage('LEDDevice setting failed.');
-		result := DEVSETTING_FAILED;
-  end;
+	settingsElements := TStringList.Create;
+	split('|', actDeviceSettings, settingsElements);
+	if (settingsElements.Count < 3) or (settingsElements.Count > 4) then
+	begin
+		showmessage('DEVSETTINGS_INVALID_FORMAT');
+		exit;
+	end;
+	case actDeviceType of 
+		'L':
+		begin
+			devList[i].vilrgb.rossze := strToInt(settingsElements[0]);
+			devList[i].vilrgb.gossze := strToInt(settingsElements[1]);
+			devList[i].vilrgb.bossze := strToInt(settingsElements[2]);
+			devList[i].nilmeg := 2;
+		end;
+		'N':
+		begin
+			devList[i].vilrgb.rossze := strToInt(settingsElements[0]);
+			devList[i].vilrgb.gossze := strToInt(settingsElements[1]);
+			devList[i].vilrgb.bossze := strToInt(settingsElements[2]);
+			
+			if settingsElements.Count = 4 then devList[i].nilmeg := strToInt(settingsElements[3])
+			else devList[i].nilmeg := 2; //default - right arrow
+		end;
+		'H':
+		begin
+			devList[i].handrb := 1;
+			devList[i].hantbp := @H; //array for speaker sound settings
+			H[0].hangho := strToInt(settingsElements[0]); //100;
+			H[0].hangso := strToInt(settingsElements[1]); //1;
+			H[0].hanger := strToInt(settingsElements[2]); //10;
+		end;
+		else
+			showmessage('DEVTYPE_UNDEFINED')
+	end;
 end;
 
 {$R *.res}
