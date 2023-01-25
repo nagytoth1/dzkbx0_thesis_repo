@@ -10,6 +10,7 @@ namespace SLFormHelper
 {
     public static class FormHelper //konténerosztály
     {
+        private const string XMLPATH = "scanned_devices.xml";
         public const string DLLPATH = "SLDLL_relay\\relay.dll";
         #region CallMethods - I want only them public 
         /// <summary>
@@ -33,13 +34,12 @@ namespace SLFormHelper
         /// <returns></returns>
         public static int CallFelmeres()
         {
-            int result = Felmeres(out string json_format);
+            int result = Felmeres();
 
             if(result == 255)
                 throw new Dev485Exception("Dev485 is null or empty");
             if (result == 1114)
                 throw new SLDLLException("You should call SLDLL_Open first!");
-            FillDevicesList(ref json_format); //ez fogja feltölteni a C#-os listát
             return result;
         }        
         /// <summary>
@@ -48,11 +48,12 @@ namespace SLFormHelper
         /// <returns></returns>
         public static int CallListelem(ref int drb485)
         {
-            int result = Listelem(ref drb485);
+            int result = Listelem(out string json_format, ref drb485);
             if (result == 255)
                 throw new Dev485Exception("Dev485 is null or empty");
             if (result == 1114)
                 throw new SLDLLException("You should call SLDLL_Open first!");
+            FillDevicesList(ref json_format); //ez fogja feltölteni a C#-os listát
             return result;
         }
 
@@ -81,10 +82,6 @@ namespace SLFormHelper
             if (result == 254)
                 throw new Dev485Exception("Dev485 is already filled");
         }
-        public static void CallSetTurnForEachDevice(ref byte turn, ref string json_source)
-        {
-            SetTurnForEachDevice(ref turn, ref json_source);
-        }
         public static void XMLToDeviceList()
         {
             CreateXMLReader(out XmlReader reader);
@@ -104,6 +101,10 @@ namespace SLFormHelper
                     devices.Add(dev.CreateDevice());
                 }
             }
+        }
+        public static void CallSetTurnForEachDevice(ref byte turn, ref string json_source)
+        {
+            SetTurnForEachDevice(ref turn, ref json_source);
         }
         #endregion
         private static void CreateXMLReader(out XmlReader reader)
@@ -137,10 +138,10 @@ namespace SLFormHelper
 
         //2 eszköz -> tömb, SetList függvény, megfelelő paraméterlistával, elemek felmérés, megadod a tömböt, és feltölti, ha a SetList elindul
         //amikor visszajön a SetList, adja vissza a tömböt, nézzük meg, mi van benne dev485
-        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "Felmeres")]
-        extern private static int Felmeres([MarshalAs(UnmanagedType.BStr)][Out] out string outputStr);
-        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "Listelem")]
-        extern private static byte Listelem([In] ref int drb485);
+        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "Felmeres")]
+        extern private static int Felmeres();
+        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "Listelem")]
+        extern private static byte Listelem([MarshalAs(UnmanagedType.BStr)][Out] out string outputStr, [In] ref int drb485);
 
         //function convertDeviceListToJSON(dev485 : PDEVLIS):string; stdcall;
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "ConvertDEV485ToJSON")]

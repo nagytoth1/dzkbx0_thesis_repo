@@ -6,14 +6,20 @@ uses SLDLL, Classes, XMLIntf, XMLDoc, Sysutils, Types, Messages, Dialogs;
 
 //pas serves as a header-file: constants, variables, types, method-declarations
 const
+  MAX_DEVICECOUNT = 100;
   UZESAJ = WM_USER + 0;
   PRODUCER = 'Somodi László';
   MANUFACTURER = 'Pluszs Kft.';
   RELAY_PATH = 'relay.dll';
   //error codes instead of exceptions - the cause thrown exceptions cannot be detected by C# PInvoke
+  DEV485_NULL = 255;
   DEV485_EMPTY = 254;
   DEV485_ALREADY_FILLED = 253;
-  JSON_TYPE_ERROR = 252;
+  TURNNUM_OUTOFBOUNDS = 252;
+  DEVCOUNT_IDENTITY_ERROR = 251;
+  DEVTYPE_UNDEFINED = 250;
+  DEVSETTINGS_INVALID_FORMAT = 249;
+  DEVSETTING_FAILED = 248;
   EXIT_SUCCESS = 0;
  
 var
@@ -28,7 +34,7 @@ function Open(wndhnd:DWord): DWord; stdcall; external RELAY_PATH;
 // setting dev485 array -> uzfeld-method's alternative in C# is going to call this
 function Listelem(out outputStr: WideString; var eszkozDarabszam: integer): dword; stdcall; external RELAY_PATH; //uzfeld fogja hívni
 // start of scanning available devices
-function Felmeres(out outputStr: WideString): DWord; stdcall; external RELAY_PATH;
+function Felmeres(): DWord; stdcall; external RELAY_PATH;
 //converting dev485 to JSON-format - JSON-serializing
 function ConvertDEV485ToJSON(out outputStr: WideString): byte; stdcall; external RELAY_PATH;
 //converting dev485 to XML-format - XML-serializing
