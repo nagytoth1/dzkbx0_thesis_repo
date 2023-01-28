@@ -1,9 +1,10 @@
-﻿using System;
+﻿using SLFormHelper;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using SLFormHelper;
+using static SLFormHelper.FormHelper;
 
 namespace SLHelperTestForm
 {
@@ -16,7 +17,7 @@ namespace SLHelperTestForm
 
         private void HelperForm_Load(object sender, EventArgs e)
         {
-            label1.Text = FormHelper.CallOpen(this.Handle).ToString();
+            label1.Text = CallOpen(this.Handle).ToString();
         }
 
         private int drb485;
@@ -39,7 +40,7 @@ namespace SLHelperTestForm
                             this.DRB485 = (int)msg.LParam;
                             if (!dev485Set)
                             {
-                                FormHelper.CallListelem(ref drb485);
+                                CallListelem(ref drb485);
                                 dev485Set = true;
                             }
                         break;
@@ -117,37 +118,75 @@ namespace SLHelperTestForm
 
         private void btnOpen_Click(object sender, EventArgs e)
         {
-            label1.Text = FormHelper.CallOpen(this.Handle).ToString();
+            label1.Text = CallOpen(this.Handle).ToString();
         }
         private void btnFelmeres_Click(object sender, EventArgs e)
         {
             if (dev485Set)
                 btnFelmeres.Enabled = false;
-            label2.Text = FormHelper.CallFelmeres().ToString();
+            label2.Text = CallFelmeres().ToString();
             dev485Set = true;
-            listBox1.DataSource = FormHelper.Devices;
+            listBox1.DataSource = Devices;
         }
 
         private void btnKek_Click(object sender, EventArgs e)
         {
-            LEDArrow arrow = (LEDArrow)FormHelper.Devices[0];
-            arrow.Color = Color.Blue;
-            arrow.Direction = Direction.RIGHT;
-            byte turn = 1; string json_source = FormHelper.DevicesToJSON();
+            LEDArrow arrow; LEDLight light; Speaker speaker;
+            for (int i = 0; i < drb485; i++)
+            {
+                if (Devices[i] is LEDArrow)
+                {
+                    arrow = (LEDArrow)Devices[i];
+                    arrow.Color = Color.Blue;
+                    arrow.Direction = Direction.RIGHT;
+                    continue;
+                }
+                if (Devices[i] is LEDLight)
+                {
+                    light= (LEDLight)Devices[i];
+                    light.Color = Color.Blue;
+                    continue;
+                }
+                speaker= (Speaker)Devices[i];
+                speaker.Volume = 63; //0..63
+                speaker.Length = 600;
+                speaker.Index = 20;
+                Console.WriteLine(speaker.ToString());
+            }
+            byte turn = 1; string json_source = DevicesToJSON();
+            
             Console.WriteLine(json_source);
-            FormHelper.CallSetTurnForEachDevice(ref turn, ref json_source);
+            CallSetTurnForEachDevice(ref turn, ref json_source);
         }
 
         private void btnUres_Click(object sender, EventArgs e)
         {
             //amikor ki van küldve neki a jel, akkor nem lehet meghívni a felmérést újra, mert mert másik állapotban van az eszköz
             //TODO: ezt még lekezelni
-            LEDArrow arrow = (LEDArrow)FormHelper.Devices[0];
-            arrow.Color = Color.Black;
-            arrow.Direction = Direction.BOTH;
-            byte turn = 1; string json_source = FormHelper.DevicesToJSON();
+            for (int i = 0; i < drb485; i++)
+            {
+                if (Devices[i] is LEDArrow arrow)
+                {
+                    arrow.Color = Color.Black;
+                    arrow.Direction = Direction.RIGHT;
+                    continue;
+                }
+                if (Devices[i] is LEDLight light)
+                {
+                    light.Color = Color.Black;
+                    continue;
+                }
+                if (Devices[i] is Speaker speaker)
+                {
+                    speaker.Volume = 0;
+                    speaker.Length = 0;
+                    speaker.Index = 0;
+                    continue;
+                }
+            }
+            byte turn = 1; string json_source = DevicesToJSON();
             Console.WriteLine(json_source);
-            FormHelper.CallSetTurnForEachDevice(ref turn, ref json_source);
+            CallSetTurnForEachDevice(ref turn, ref json_source);
         }
     }
 }

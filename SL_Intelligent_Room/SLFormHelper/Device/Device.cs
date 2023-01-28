@@ -11,16 +11,11 @@ namespace SLFormHelper
 
         private uint azonos;
 
-        public uint Azonos { get => azonos; set => azonos = value; }
+        public uint Azonos { get => azonos;} //readonly!!! - comes from Delphi when Felmeres is called, so it should be forbidden to edit deviceID-s in C#
 
         public Device(uint azonos)
         {
             this.azonos = azonos;
-        }
-
-        public override string ToString()
-        {
-            return string.Format($"({this.GetType().Name};{Azonos};{PRODUC};{MANUFA})");
         }
     }
 }

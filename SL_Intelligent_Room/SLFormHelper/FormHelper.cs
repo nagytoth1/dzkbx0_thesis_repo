@@ -168,7 +168,7 @@ namespace SLFormHelper
             {
                 sb.Append(devices[i].ToString()).Append(",");
             }
-            sb.Append(devices[i]).Append(']');
+            sb.Append(devices[i].ToString()).Append(']');
 
             return sb.ToString();
         }

@@ -7,3 +7,6 @@
 *.log
 *.gz
 *.toc
+SL_Intelligent_Room/.vs/SL_Intelligent_Room/FileContentIndex/
+*.suo
+*.vsidx

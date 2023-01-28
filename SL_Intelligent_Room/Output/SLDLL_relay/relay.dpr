@@ -30,7 +30,7 @@ procedure setDeviceByType(const i: integer; var actDeviceType: string; var actDe
 //sets a device of a LED-arrow and LED-light type
 function setLEDDevice(i, red, green, blue, direction:integer):byte; Forward;
 //sets a device of a Speaker type
-function setSpeaker(i, volume, id, length:byte):integer;Forward;
+function setSpeaker(i, id, volume:byte; length:word):integer; Forward;
 
 function fill_devices_list_with_devices(): byte; stdcall;
 begin
@@ -95,7 +95,6 @@ begin
     showmessage(actDeviceSettings);
 		devList[i].azonos := dev485[i].azonos;
 		setDeviceByType(i, actDeviceType, actDeviceSettings);
-    showmessage(format('azonos=%d rossze=%d gossze=%d bossze=%d', [devList[i].azonos, devList[i].vilrgb.rossze, devList[i].vilrgb.gossze, devList[i].vilrgb.bossze]));
   end; //case
   result := SLDLL_SetLista(drb485, devList);
   showmessage(format('setlista = %d', [result]));
@@ -138,7 +137,6 @@ var
   buffer: WideString;
   i: integer;
 begin
-{
   if (drb485 = 0) or (not Assigned(dev485)) then
   begin
   	showmessage(format('Dev485 is empty drb485 = %d  dev485 = %p', [drb485, @dev485]));
@@ -146,7 +144,6 @@ begin
     result := DEV485_EMPTY;
     exit;
   end;
-}
   buffer := '[';  //JSON-array is going to be created
   i:=0;
   while i < drb485 do
@@ -268,70 +265,64 @@ end;
 
 procedure setDeviceByType(const i: integer; var actDeviceType: string; var actDeviceSettings: string);
 var 
-	settingsElements: TStringList;
+	elements: TStringList;
 begin
-  settingsElements := TStringList.Create;
-  split('|', actDeviceSettings, settingsElements);
+	elements := TStringList.Create;
+	split('|', actDeviceSettings, elements);
 	if actDeviceType = 'L' then
-  begin
-    setLEDDevice( 	//LEDLight
-        i,
-				strToIntDef(settingsElements[0], 0), 	//red
-				strToIntDef(settingsElements[1], 0), 	//green
-				strToIntDef(settingsElements[2], 0), 	//blue
-				strToIntDef(settingsElements[3], 0)); 	//direction
-  end
-  else if actDeviceType = 'N' then
-  begin
-      devList[i].vilrgb.rossze := strToInt(settingsElements[0]);
-      devList[i].vilrgb.gossze := strToInt(settingsElements[1]);
-      devList[i].vilrgb.bossze := strToInt(settingsElements[2]);
-      devList[i].nilmeg := strToInt(elements[3]);
-      {
-      setLEDDevice( 	//LEDArrow
-        i,
-				strToIntDef(settingsElements[0], 0), 	//red
-				strToIntDef(settingsElements[1], 0), 	//green
-				strToIntDef(settingsElements[2], 0), 	//blue
-				strToIntDef(settingsElements[3], 0));	//direction
-        }
-  end
-  else
-  begin
-    setSpeaker( //Speaker
-        i,
-				strToIntDef(settingsElements[0], 0), 	//volume, e.g: 10
-				strToIntDef(settingsElements[1], 0), 	//index from table e.g: 1
-				strToIntDef(settingsElements[2], 0)); 	//length
-  end;
+	begin
+		setLEDDevice( 	//LEDLight
+			i,
+			strToIntDef(elements[0], 0), 	//red
+			strToIntDef(elements[1], 0), 	//green
+			strToIntDef(elements[2], 0),  //blue
+			2);                           //direction - constantly 2
+	exit;
+	end;
+	if actDeviceType = 'N' then
+	begin
+		setLEDDevice( 	//LEDArrow
+			i,
+					strToIntDef(elements[0], 0), 	//red
+					strToIntDef(elements[1], 0), 	//green
+					strToIntDef(elements[2], 0), 	//blue
+					strToIntDef(elements[3], 0));	//direction
+		exit;
+	end;
+	if actDeviceType = 'H' then
+	begin
+		setSpeaker( //Speaker
+			i,
+			strToIntDef(elements[0], 0), 	//index from table e.g: 1	
+			strToIntDef(elements[1], 0), //volume, e.g: 10
+			strToIntDef(elements[2], 0)); //length
+	end;  
 end;
-
 function setLEDDevice(i, red, green, blue, direction:integer):byte;
 begin
 	try
-		devList[i].vilrgb.rossze := red;
-		devList[i].vilrgb.gossze := green;
-		devList[i].vilrgb.bossze := blue;
-    devList[i].nilmeg := strToInt(direction); //LED-lampanal ez 2 lesz
-    result := EXIT_SUCCESS;
+	devList[i].vilrgb.rossze := red;
+	devList[i].vilrgb.gossze := green;
+	devList[i].vilrgb.bossze := blue;
+	devList[i].nilmeg := direction;
+	result := EXIT_SUCCESS;
 	except
 		showmessage('LEDDevice setting failed.');
 		result := DEVSETTING_FAILED;
-  end;
+	end;
 end;
 
-function setSpeaker(i, volume, id, length:byte):integer;
+function setSpeaker(i, id, volume:byte; length:word):integer;
 begin
 	try
-		devList[i].handrb := 1;
-		devList[i].hantbp := @H; //array for sound settings - 
-		//TODO: do we need array?
-		H[0].hangho := length; //100;
-		H[0].hangso := id; //1;
-		H[0].hanger := volume; //10;
-    result := EXIT_SUCCESS;
+    	H[0].hangso := id; //C 261.6256 Hz melyik index?
+    	H[0].hanger := volume; //63
+		H[0].hangho := length; //300 msec
+		showmessage(format('setting speaker to %d %d %d values...', [H[0].hangso, H[0].hanger, H[0].hangho]));
+		SLLDLL_Hangkuldes(10, H, dev485[i].azonos);
+    	result := EXIT_SUCCESS;
 	except
-		showmessage('LEDDevice setting failed.');
+		showmessage('Speaker setting failed.');
 		result := DEVSETTING_FAILED;
   end;
 end;

@@ -16,7 +16,7 @@ namespace SLFormHelper
         private uint azonos;
         public uint Azonos { get => azonos; set => azonos = value; }
 
-        public Device CreateDevice()
+        public Device CreateDevice() //refactoring: should be an abstract factory
         {
             switch (azonos & 0xc000)
             {
@@ -25,6 +25,7 @@ namespace SLFormHelper
                 case SLNELO:
                     return new LEDArrow(azonos);
                 case SLHELO:
+                    Console.WriteLine("SLHELO");
                     return new Speaker(azonos);
                 default:
                     return null;
