@@ -1,8 +1,6 @@
 ﻿using SLFormHelper;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using static SLFormHelper.FormHelper;
 
@@ -147,10 +145,9 @@ namespace SLHelperTestForm
                     light.Color = Color.Blue;
                     continue;
                 }
-                speaker= (Speaker)Devices[i];
-                speaker.Volume = 63; //0..63
-                speaker.Length = 600;
-                speaker.Index = 20;
+                speaker = (Speaker)Devices[i]; //itt baj van, mert egy hangtömböt kéne kiküldeni
+                speaker.AddSound(Pitch.G_OKTAV3, volume:64, length:300);
+                speaker.AddSound(Pitch.D, volume:63, length:11000);
                 Console.WriteLine(speaker.ToString());
             }
             byte turn = 1; string json_source = DevicesToJSON();
@@ -178,9 +175,7 @@ namespace SLHelperTestForm
                 }
                 if (Devices[i] is Speaker speaker)
                 {
-                    speaker.Volume = 0;
-                    speaker.Length = 0;
-                    speaker.Index = 0;
+                    speaker.ClearSounds();
                     continue;
                 }
             }

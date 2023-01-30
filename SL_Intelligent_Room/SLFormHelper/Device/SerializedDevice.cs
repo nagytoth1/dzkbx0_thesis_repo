@@ -25,7 +25,6 @@ namespace SLFormHelper
                 case SLNELO:
                     return new LEDArrow(azonos);
                 case SLHELO:
-                    Console.WriteLine("SLHELO");
                     return new Speaker(azonos);
                 default:
                     return null;

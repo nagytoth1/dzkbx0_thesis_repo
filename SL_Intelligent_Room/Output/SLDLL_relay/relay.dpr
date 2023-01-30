@@ -24,13 +24,13 @@ procedure removeSpecialChars(var str : WideString); Forward;
 //creates dev485 from JSON-format
 function convertJSONToDEV485(var json_source: WideString):DEVLIS; Forward;
 //checks whether the settings of the devices are correct
-function validateExtractedDeviceValues(const actDeviceType:string; const actDeviceSettings: TStringList):byte; Forward;
+function validateExtractedDeviceValues(const actDeviceType:string; const elements: TStringList):byte; Forward;
 //decides which type the given device belongs to (LED-arrow, LED-light or Speaker) and calls the corresponding set-method
 procedure setDeviceByType(const i: integer; var actDeviceType: string; var actDeviceSettings: string);Forward;
 //sets a device of a LED-arrow and LED-light type
-function setLEDDevice(i, red, green, blue, direction:integer):byte; Forward;
+procedure setLEDDevice(i, red, green, blue, direction:integer); Forward;
 //sets a device of a Speaker type
-function setSpeaker(i, id, volume:byte; length:word):integer; Forward;
+procedure setSpeaker(i:integer; elements:TStringList); Forward;
 
 function fill_devices_list_with_devices(): byte; stdcall;
 begin
@@ -68,10 +68,11 @@ end;
 //sets the pointer of dev485 - called in uzfeld-method
 function Listelem(out outputStr: WideString; var eszkozDarabszam: integer): dword; stdcall;
 begin
-  result := SLDLL_Listelem(@dev485); //itt tuti, hogy ismeri dev485-öt
+  result := SLDLL_Listelem(@dev485); //itt tuti, hogy ismeri dev485-ï¿½t
   drb485 := eszkozDarabszam;
   showmessage(Format('Listelem sikeres, eredmenye %d dev485 = %p &dev485[0] = %p &dev485[1] = %p', [Result, dev485, @dev485[0], @dev485[1]]));
   ConvertDEV485ToJSON(outputStr);
+  //ConvertDEV485ToXML('devices.xml');
 end;
 
 function SetTurnForEachDeviceJSON(var turn : byte; var json_source: WideString):integer; stdcall;
@@ -88,16 +89,13 @@ begin
 	begin
 		json_element1 := jsonArrayElements[i]; //loads the actual device
 		json_element2 := jsonArrayElements[i+1]; //loads the actual device
-    //I want the first char of string 
+    	//I want the first char of string 
 		actDeviceType := extractValueFromJSONField(json_element1, 'type'); //gets the type of the device
-    actDeviceSettings := extractValueFromJSONField(json_element2, 'settings'); //255|0|0|1
-		//if validateExtractedDeviceValues(actDeviceType, actDeviceSettings) <> 0 then continue;
-    showmessage(actDeviceSettings);
+    	actDeviceSettings := extractValueFromJSONField(json_element2, 'settings'); //for example: 255|0|0|1
 		devList[i].azonos := dev485[i].azonos;
 		setDeviceByType(i, actDeviceType, actDeviceSettings);
   end; //case
-  result := SLDLL_SetLista(drb485, devList);
-  showmessage(format('setlista = %d', [result]));
+  //result := SLDLL_SetLista(drb485, devList);
 end;
 
 function ConvertDEV485ToXML(const outPath:string): byte; stdcall;
@@ -108,7 +106,6 @@ var
 begin
 	if(drb485 = 0) or (not Assigned(dev485)) then
 	begin
-		showmessage(format('Dev485 is empty drb485 = %d  dev485 = %p', [drb485, @dev485]));
 		result := DEV485_EMPTY;
 		exit;
 	end;
@@ -243,32 +240,17 @@ begin
    Strings.Clear;
    Strings.Delimiter := Delimiter;
    Strings.DelimitedText :=  '"' +
-      StringReplace(Input, Delimiter, '"' + Delimiter + '"', [rfReplaceAll]) + '"' ;
+   StringReplace(Input, Delimiter, '"' + Delimiter + '"', [rfReplaceAll]) + '"' ;
 end;
-
-function validateExtractedDeviceValues(const actDeviceType:string; const actDeviceSettings: TStringList):byte;
-begin
-	if actDeviceType = '' then
-	begin
-		writeln('DEVTYPE_UNDEFINED');
-		result := DEVTYPE_UNDEFINED;
-		exit;
-	end;
-	if actDeviceSettings.Count < 3 then
-	begin
-		writeln('DEVSETTINGS_INVALID_FORMAT');
-		result := DEVSETTINGS_INVALID_FORMAT;
-		exit;
-	end;
-	result := 0;
-end;
-
+//actDeviceSettings hangszórónál: "settings" : "10|1|100|20|2|200"
 procedure setDeviceByType(const i: integer; var actDeviceType: string; var actDeviceSettings: string);
 var 
 	elements: TStringList;
 begin
 	elements := TStringList.Create;
 	split('|', actDeviceSettings, elements);
+	if validateExtractedDeviceValues(actDeviceType, elements) <> 0 
+		then exit;
 	if actDeviceType = 'L' then
 	begin
 		setLEDDevice( 	//LEDLight
@@ -277,53 +259,86 @@ begin
 			strToIntDef(elements[1], 0), 	//green
 			strToIntDef(elements[2], 0),  //blue
 			2);                           //direction - constantly 2
-	exit;
+		exit;
 	end;
 	if actDeviceType = 'N' then
 	begin
 		setLEDDevice( 	//LEDArrow
 			i,
-					strToIntDef(elements[0], 0), 	//red
-					strToIntDef(elements[1], 0), 	//green
-					strToIntDef(elements[2], 0), 	//blue
-					strToIntDef(elements[3], 0));	//direction
+			strToIntDef(elements[0], 0), 	//red
+			strToIntDef(elements[1], 0), 	//green
+			strToIntDef(elements[2], 0), 	//blue
+			strToIntDef(elements[3], 0));	//direction
 		exit;
 	end;
 	if actDeviceType = 'H' then
 	begin
-		setSpeaker( //Speaker
-			i,
-			strToIntDef(elements[0], 0), 	//index from table e.g: 1	
-			strToIntDef(elements[1], 0), //volume, e.g: 10
-			strToIntDef(elements[2], 0)); //length
-	end;  
+		setSpeaker(i, elements);
+		exit;
+	end;
+	showmessage('Az eszkoz tipusa ismeretlen.');
+	exit;
 end;
-function setLEDDevice(i, red, green, blue, direction:integer):byte;
+//validates the settings of given device in case of JSON-format
+function validateExtractedDeviceValues(const actDeviceType:string; const elements: TStringList):byte;
+begin
+	if actDeviceType = '' then
+	begin
+		showmessage('Eszkoz tipusa nem meghatarozhato');
+		result := DEVTYPE_UNDEFINED;
+		exit;
+	end;
+	if elements.Count < 3 then
+	begin
+		showmessage('Eszkozbeallitasok ures vagy nem megfelelo formatumuak.');
+		result := DEVSETTINGS_INVALID_FORMAT;
+		exit;
+	end;
+	if (actDeviceType = 'N') and (elements.Count <> 4) then
+	begin
+		showmessage('Nyil beallitasa sikertelen: rossz JSON-formatum.');
+		result := DEVSETTINGS_INVALID_FORMAT;
+		exit;
+	end;
+	if (actDeviceType = 'H') and (elements.Count mod 3 <> 0) then
+	begin
+		showmessage('Hangszoro beallitasa sikertelen: rossz JSON-formatum.'); //when "settings"-field is not appropriate (empty, contains invalid number of elements)
+		result := DEVSETTINGS_INVALID_FORMAT;
+		exit;
+	end;
+	result := 0;
+end;
+procedure setLEDDevice(i, red, green, blue, direction:integer);
 begin
 	try
-	devList[i].vilrgb.rossze := red;
-	devList[i].vilrgb.gossze := green;
-	devList[i].vilrgb.bossze := blue;
-	devList[i].nilmeg := direction;
-	result := EXIT_SUCCESS;
+		devList[i].vilrgb.rossze := red;
+		devList[i].vilrgb.gossze := green;
+		devList[i].vilrgb.bossze := blue;
+		devList[i].nilmeg := direction;
 	except
 		showmessage('LEDDevice setting failed.');
-		result := DEVSETTING_FAILED;
 	end;
 end;
-
-function setSpeaker(i, id, volume:byte; length:word):integer;
+procedure setSpeaker(i: integer; elements: TStringList);
+var
+	j, k: integer;
 begin
+	j := 0;
+	k := 0;
+	while j < elements.Count - 2 do //6 db 0 1 2 3 4 5
+	begin
+		H[k].hangso := strToIntDef(elements[j], 0); //5 index
+		H[k].hanger := strToIntDef(elements[j+1], 0); //63 volume
+		H[k].hangho := strToIntDef(elements[j+2], 0); //1000 length
+		showmessage(format('setting speaker to hangindex = %d hangero = %d hanghossz = %d values...', [H[k].hangso, H[k].hanger, H[k].hangho]));
+		inc(j, 3);
+		inc(k);
+	end;
 	try
-    	H[0].hangso := id; //C 261.6256 Hz melyik index?
-    	H[0].hanger := volume; //63
-		H[0].hangho := length; //300 msec
-		showmessage(format('setting speaker to %d %d %d values...', [H[0].hangso, H[0].hanger, H[0].hangho]));
-		SLLDLL_Hangkuldes(10, H, dev485[i].azonos);
-    	result := EXIT_SUCCESS;
+		//showmessage(format('%d db hang kikuldese...', [k]));
+		SLLDLL_Hangkuldes(k, H, dev485[i].azonos);
 	except
 		showmessage('Speaker setting failed.');
-		result := DEVSETTING_FAILED;
   end;
 end;
 

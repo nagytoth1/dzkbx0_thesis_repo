@@ -1,42 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SLFormHelper
 {
-    enum Pitch
+    public partial class Speaker : Device
     {
-        C, E, EOktav //TODO: ...
-    }
-    public class Speaker : Device
-    {
-        private byte volume; //volume [0,63]
-        private byte index; //id from frequencies array [0,32]
-        private ushort length; //length in milliseconds [0, 10000] let's say it can't extend to more than 10 seconds
-
-        public Speaker(uint azonos) : this(azonos, 10, 20, 1000) { }
-
-        public Speaker(uint azonos, byte volume, byte index, ushort length):base(azonos)
-        {
-            this.volume = volume;
-            this.index = index;
-            this.length = length;
+        private readonly List<Sound> soundList;
+        public Speaker(uint azonos) : base(azonos) {
+            this.soundList = new List<Sound>();
         }
-
-        public byte Volume { get => volume; set => volume = value; }
-        public byte Index { get => index; set => index = value; }
-        public ushort Length { get => length; set => length = value; }
-
+        public void AddSound(Pitch pitch, byte volume, ushort length)
+        {
+            if (soundList.Count > 30)
+                throw new Exception("A lejátszható hangok listája megtelt.");
+            Sound soundToAdd;
+            try
+            {
+                soundToAdd = new Sound((byte)pitch, volume, length);
+                this.soundList.Add(soundToAdd);
+            }
+            catch(ArgumentOutOfRangeException) {
+                Console.WriteLine("Nem adom hozzá a hanglistához.");
+            }
+        }
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder('{');
-            sb.Append(string.Format("\"type\":\"H\",\"settings\":\"{0}|{1}|{2}\"", index, volume, length));
-            sb.Append('}');
-            //{"type":"H","settings":"10|10|1000"}
+            sb.Append(string.Format("\"type\":\"H\",\"settings\":\""));
+            if(soundList.Count == 0)
+                return sb.Append("\"}").ToString();
+            int i;
+            for (i = 0; i < soundList.Count - 1; i++)
+            {
+                sb.Append(soundList[i].ToString()).Append('|');
+            }
+            sb.Append(soundList[i].ToString())
+                .Append("\"}");
             return sb.ToString();
+        }
+
+        public void ClearSounds()
+        {
+            soundList.Clear();
         }
     }
 }
