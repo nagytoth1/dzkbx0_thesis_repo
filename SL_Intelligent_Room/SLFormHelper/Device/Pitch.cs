@@ -1,7 +1,10 @@
 ﻿namespace SLFormHelper
 {
-    //Levente can add sounds to speaker's soundList - he doesn't have to know how indices work in case of hangso
-    //it's a more intuitive way to control speakers and he can't give an index out of range (chance of getting error reduced)
+
+    /// <summary>
+    /// Levente can add sounds to speaker's soundList - he doesn't have to know how indices work in case of hangso<br></br>
+    /// This is a more intuitive way to control speakers and he can't give an index out of range (chance of getting error reduced)
+    /// </summary>
     public enum Pitch :byte
     {
         C_OKTAV4,

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +16,9 @@ namespace SLFormHelper
         private const int SLHELO = 0xc000;
 
         private uint azonos;
+
+        public SerializedDevice(uint devID) { this.azonos = devID; }
+        public SerializedDevice() { }
         public uint Azonos { get => azonos; set => azonos = value; }
 
         public Device CreateDevice() //refactoring: should be an abstract factory

@@ -38,7 +38,7 @@ namespace SLHelperTestForm
                             this.DRB485 = (int)msg.LParam;
                             if (!dev485Set)
                             {
-                                CallListelem(ref drb485);
+                                CallListelem(ref drb485, useJSON: true);
                                 dev485Set = true;
                             }
                         break;
@@ -148,12 +148,10 @@ namespace SLHelperTestForm
                 speaker = (Speaker)Devices[i]; //itt baj van, mert egy hangtömböt kéne kiküldeni
                 speaker.AddSound(Pitch.G_OKTAV3, volume:64, length:300);
                 speaker.AddSound(Pitch.D, volume:63, length:11000);
-                Console.WriteLine(speaker.ToString());
             }
-            byte turn = 1; string json_source = DevicesToJSON();
-            
+            string json_source = DevicesToJSON();
             Console.WriteLine(json_source);
-            CallSetTurnForEachDevice(ref turn, ref json_source);
+            CallSetTurnForEachDevice(ref json_source);
         }
 
         private void btnUres_Click(object sender, EventArgs e)
@@ -179,9 +177,9 @@ namespace SLHelperTestForm
                     continue;
                 }
             }
-            byte turn = 1; string json_source = DevicesToJSON();
+            string json_source = DevicesToJSON();
             Console.WriteLine(json_source);
-            CallSetTurnForEachDevice(ref turn, ref json_source);
+            CallSetTurnForEachDevice(ref json_source);
         }
     }
 }

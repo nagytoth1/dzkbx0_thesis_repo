@@ -10,3 +10,5 @@
 SL_Intelligent_Room/.vs/SL_Intelligent_Room/FileContentIndex/
 *.suo
 *.vsidx
+
+SL_Intelligent_Room/Output/devices.xml

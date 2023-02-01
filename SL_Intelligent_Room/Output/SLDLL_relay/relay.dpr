@@ -66,16 +66,14 @@ begin
 end;
 
 //sets the pointer of dev485 - called in uzfeld-method
-function Listelem(out outputStr: WideString; var eszkozDarabszam: integer): dword; stdcall;
+function Listelem(var eszkozDarabszam: integer): dword; stdcall;
 begin
-  result := SLDLL_Listelem(@dev485); //itt tuti, hogy ismeri dev485-ï¿½t
-  drb485 := eszkozDarabszam;
-  showmessage(Format('Listelem sikeres, eredmenye %d dev485 = %p &dev485[0] = %p &dev485[1] = %p', [Result, dev485, @dev485[0], @dev485[1]]));
-  ConvertDEV485ToJSON(outputStr);
-  //ConvertDEV485ToXML('devices.xml');
+	result := SLDLL_Listelem(@dev485);
+	drb485 := eszkozDarabszam;
+	showmessage(Format('Listelem sikeres, eredmenye %d dev485 = %p &dev485[0] = %p &dev485[1] = %p', [Result, dev485, @dev485[0], @dev485[1]]));
 end;
 
-function SetTurnForEachDeviceJSON(var turn : byte; var json_source: WideString):integer; stdcall;
+function SetTurnForEachDeviceJSON(var json_source: WideString):integer; stdcall;
 var
 	i: integer;
 	jsonArrayElements: TStringList;
@@ -95,13 +93,13 @@ begin
 		devList[i].azonos := dev485[i].azonos;
 		setDeviceByType(i, actDeviceType, actDeviceSettings);
   end; //case
-  //result := SLDLL_SetLista(drb485, devList);
+  result := SLDLL_SetLista(drb485, devList);
 end;
 
-function ConvertDEV485ToXML(const outPath:string): byte; stdcall;
+function ConvertDEV485ToXML(var outPath:WideString): byte; stdcall;
 var
-  XML : IXMLDOCUMENT;
-  RootNode : IXMLNODE;
+  xmlDocument : IXMLDOCUMENT;
+  rootNode, node : IXMLNODE;
   i : integer;
 begin
 	if(drb485 = 0) or (not Assigned(dev485)) then
@@ -110,23 +108,18 @@ begin
 		exit;
 	end;
     
-	XML := NewXMLDocument();
-	XML.Encoding := 'utf-8';
-	XML.Options := [doNodeAutoIndent];
-	RootNode := XML.AddChild('device');
-	
-	i := 0;
-	while dev485[i].azonos <> 0 do //that's the way of iterating through dev485 array (or using the drb485 variable)
-	begin
-		RootNode.Attributes['azonos'] := dev485[0].azonos; //we don't need the type of the device
-		inc(i);
-	end;
-	
-	XML.SaveToFile(Format('%s\scanned_devices.xml', [outPath]));
+	xmlDocument := NewXMLDocument();
+	xmlDocument.Encoding := 'utf-8';
+	xmlDocument.Options := [doNodeAutoIndent];
+	rootNode := xmlDocument.AddChild('devices');
+	node := rootNode.AddChild('device');
+	for i := 0 to drb485 - 1 do //that's the way of iterating through dev485 array (or using the drb485 variable)
+		node.Attributes['azonos'] := dev485[i].azonos; //we don't need the type of the device
+	xmlDocument.SaveToFile(outPath);
 	result := EXIT_SUCCESS;
 end;
 
-function ConvertDEV485ToJSON(out outputStr: WideString): byte; stdcall;
+function ConvertDEV485ToJSON(out outputStr: WideString; ): byte; stdcall;
 //TODO: is there a more efficient way of concatenating strings in Delphi? 
 //I don't think the '+' is the most efficient in Delphi as it is not in C# as well
 //TStringBuilder was introduced in Delphi version 2009, therefore that's not an option in our case
@@ -242,7 +235,7 @@ begin
    Strings.DelimitedText :=  '"' +
    StringReplace(Input, Delimiter, '"' + Delimiter + '"', [rfReplaceAll]) + '"' ;
 end;
-//actDeviceSettings hangszórónál: "settings" : "10|1|100|20|2|200"
+//actDeviceSettings hangszï¿½rï¿½nï¿½l: "settings" : "10|1|100|20|2|200"
 procedure setDeviceByType(const i: integer; var actDeviceType: string; var actDeviceSettings: string);
 var 
 	elements: TStringList;

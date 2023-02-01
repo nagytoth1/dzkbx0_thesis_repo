@@ -25,7 +25,7 @@ namespace SLFormHelper
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder("{");
-            sb.Append(string.Format("\"type\" : \"N\",\"settings\" : \"{0}|{1}|{2}|{3}\"", color.R, color.G, color.B, (byte)direction));
+            sb.Append(string.Format("\"type\":\"N\",\"settings\":\"{0}|{1}|{2}|{3}\"", color.R, color.G, color.B, (byte)direction));
             sb.Append("}");
             return sb.ToString();
         }

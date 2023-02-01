@@ -32,15 +32,15 @@ var
 // start using DLL
 function Open(wndhnd:DWord): DWord; stdcall; external RELAY_PATH;
 // setting dev485 array -> uzfeld-method's alternative in C# is going to call this
-function Listelem(out outputStr: WideString; var eszkozDarabszam: integer): dword; stdcall; external RELAY_PATH; //uzfeld fogja hívni
+function Listelem(var eszkozDarabszam: integer): dword; stdcall; external RELAY_PATH; //uzfeld fogja hívni
 // start of scanning available devices
 function Felmeres(): DWord; stdcall; external RELAY_PATH;
 //converting dev485 to JSON-format - JSON-serializing
 function ConvertDEV485ToJSON(out outputStr: WideString): byte; stdcall; external RELAY_PATH;
 //converting dev485 to XML-format - XML-serializing
-function ConvertDEV485ToXML(const outPath:string): byte; stdcall; external RELAY_PATH;
+function ConvertDEV485ToXML(var outPath:WideString): byte; stdcall; external RELAY_PATH;
 //sends an array of statements to ALL devices, this is going to be 1 turn (the passive device during the turn gets 'empty' signal)
-function SetTurnForEachDeviceJSON(var turn : byte; var json_source: WideString):integer; stdcall; external RELAY_PATH;
+function SetTurnForEachDeviceJSON(var json_source: WideString):integer; stdcall; external RELAY_PATH;
 //fills dev485 with dummy devices
 //used only for testing purposes - therefore I used snake_case naming convention to differentiate it
 function fill_devices_list_with_devices(): byte; stdcall; external RELAY_PATH;
