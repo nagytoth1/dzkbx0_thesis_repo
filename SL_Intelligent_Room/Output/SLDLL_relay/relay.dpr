@@ -119,7 +119,7 @@ begin
 	result := EXIT_SUCCESS;
 end;
 
-function ConvertDEV485ToJSON(out outputStr: WideString; ): byte; stdcall;
+function ConvertDEV485ToJSON(out outputStr: WideString): byte; stdcall;
 //TODO: is there a more efficient way of concatenating strings in Delphi? 
 //I don't think the '+' is the most efficient in Delphi as it is not in C# as well
 //TStringBuilder was introduced in Delphi version 2009, therefore that's not an option in our case

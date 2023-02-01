@@ -12,7 +12,7 @@ namespace SLFormHelper
     public static class FormHelper //konténerosztály
     {
         public const string XMLPATH = ".\\devices.xml";
-        public const string DLLPATH = "SLDLL_relay\\relay.dll";
+        public const string DLLPATH = "..\\SLDLL_relay\\relay.dll";
         #region CallMethods - I want only them public 
         /// <summary>
         /// Calls the function in converterDLL that calls SLDLL_Open to use SLDLL's functionality.

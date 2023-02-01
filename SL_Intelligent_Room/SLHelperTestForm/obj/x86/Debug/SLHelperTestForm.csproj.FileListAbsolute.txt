@@ -1,0 +1,11 @@
+D:\info\repo\dzkbx0_thesis_repo\SL_Intelligent_Room\Output\Debug\SLHelperTestForm.exe.config
+D:\info\repo\dzkbx0_thesis_repo\SL_Intelligent_Room\Output\Debug\SLHelperTestForm.exe
+D:\info\repo\dzkbx0_thesis_repo\SL_Intelligent_Room\Output\Debug\SLHelperTestForm.pdb
+D:\info\repo\dzkbx0_thesis_repo\SL_Intelligent_Room\SLHelperTestForm\obj\x86\Debug\SLHelperTestForm.csproj.AssemblyReference.cache
+D:\info\repo\dzkbx0_thesis_repo\SL_Intelligent_Room\SLHelperTestForm\obj\x86\Debug\SLHelperTestForm.HelperForm.resources
+D:\info\repo\dzkbx0_thesis_repo\SL_Intelligent_Room\SLHelperTestForm\obj\x86\Debug\SLHelperTestForm.Properties.Resources.resources
+D:\info\repo\dzkbx0_thesis_repo\SL_Intelligent_Room\SLHelperTestForm\obj\x86\Debug\SLHelperTestForm.csproj.GenerateResource.cache
+D:\info\repo\dzkbx0_thesis_repo\SL_Intelligent_Room\SLHelperTestForm\obj\x86\Debug\SLHelperTestForm.csproj.CoreCompileInputs.cache
+D:\info\repo\dzkbx0_thesis_repo\SL_Intelligent_Room\SLHelperTestForm\obj\x86\Debug\SLHelperTestForm.csproj.CopyComplete
+D:\info\repo\dzkbx0_thesis_repo\SL_Intelligent_Room\SLHelperTestForm\obj\x86\Debug\SLHelperTestForm.exe
+D:\info\repo\dzkbx0_thesis_repo\SL_Intelligent_Room\SLHelperTestForm\obj\x86\Debug\SLHelperTestForm.pdb
