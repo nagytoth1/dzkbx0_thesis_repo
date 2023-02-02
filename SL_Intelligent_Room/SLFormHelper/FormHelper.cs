@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -179,6 +180,75 @@ namespace SLFormHelper
         {
             SetTurnForEachDevice(ref json_source);
         }
+
+        public static void LoadDeviceSettings(string json_path, byte turnNumber)
+        {
+            turnDurations = new ushort[turnNumber]; //ha 5 db ütem van felvéve, 5 hosszú tömb lesz
+            StreamReader streamReader= new StreamReader(json_path);
+            string line;
+            byte actualTurn = 0;
+            while (!streamReader.EndOfStream)
+            {
+                line = streamReader.ReadLine();
+                if (line == "[") 
+                    continue; //belép az eszközlistába
+                if (line == "],") 
+                    continue; //belép az ütemhosszba, olvassa a következő sort
+                //eszközlista validálása, ezen a ponton már fel van töltve a deviceList
+                dynamic parseJson = JsonConvert.DeserializeObject(line);
+                foreach (Device device in devices)
+                {
+                    //végig kell mennünk, hogy sorról sorra megegyeznek-e a típusok, majd ha igen, akkor a beállításokat elmenteni
+                    if(parseJson.Type == "L" && device.GetType() == typeof(LEDLight))
+                    {
+                        LEDLight light = (LEDLight)device;
+                        string[] splitSettings = parseJson.Settings.Split('|');  //háromelemű tömb legyen!
+                        light.Color = Color.FromArgb(
+                            red: byte.Parse(splitSettings[0]),
+                            green: byte.Parse(splitSettings[1]),
+                            blue: byte.Parse(splitSettings[2]));
+                    }
+                    else if(parseJson.Type == "N" && device.GetType() == typeof(LEDArrow))
+                    {
+                        LEDArrow arrow = (LEDArrow)device;
+                        string[] splitSettings = parseJson.Settings.Split('|');  //négyelemű tömb legyen!
+                        arrow.Color = Color.FromArgb(
+                            red: byte.Parse(splitSettings[0]),
+                            green: byte.Parse(splitSettings[1]),
+                            blue: byte.Parse(splitSettings[2]));
+                        arrow.Direction = (Direction) Enum.Parse(typeof(Direction), splitSettings[3]);
+                    }
+                    else if(parseJson.Type == "H" && device.GetType() == typeof(Speaker))
+                    {
+                        Speaker speaker = (Speaker)device;
+                        string[] splitSettings = parseJson.Settings.Split('|');  //többelemű tömb, legalább 3 hosszú
+                        //a JSON-ben érkezhet több hang is, egyelőre még csak a legelsőt adjuk hozzá
+                        speaker.AddSound(
+                            pitch: (Pitch)Enum.Parse(typeof(Pitch), splitSettings[0]), //TODO: validálni
+                            volume: byte.Parse(splitSettings[1]),
+                            length: ushort.Parse(splitSettings[2]));
+                    }
+                    else
+                    {
+                        throw new Exception(
+                            string.Format("Helytelen forráskód, mert %s kéne, de %s-t olvastam", 
+                            device.GetType().Name, 
+                            parseJson.Type));
+                    }
+                }
+
+                //itt mindig az ütemnek az időtartama lesz
+                if (!ushort.TryParse(parseJson.Time.Value, out ushort time))
+                {
+                    //TODO: logolás fájlba
+
+                    throw new Exception("megadott idő nem szám");
+                }
+                //ha sikerül, akkor belementjük az ütemek tömbjébe
+                turnDurations[actualTurn] = time;
+                actualTurn++;
+            }
+        }
         #endregion
         /// <summary>
         /// A DLL használatának megkezdése.
@@ -215,6 +285,7 @@ namespace SLFormHelper
 
         private static List<Device> devices = new List<Device>();
         public static List<Device> Devices { get { return new List<Device>(devices); } }
+        private static ushort[] turnDurations;
 
         public static string DevicesToJSON()
         {
