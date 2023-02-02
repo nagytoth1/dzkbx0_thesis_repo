@@ -1,8 +1,11 @@
 [
-    [
-        {"type" : "L", "settings" : "255|0|0"},
-        {"type" : "N", "settings" : "255|0|0|1"},
-        {"type" : "H", "settings" : "10|1|100|11|50|200"}
-    ],
-    {"time" : 5000}
+{
+   "devices":[
+      {
+         "type":"L",
+         "settings":"255|0|0"
+      }
+   ],
+   "time":5000
+}
 ]

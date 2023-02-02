@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Device\Pitch.cs" />
+    <Compile Include="Device\SerializedTurnSettings.cs" />
     <Compile Include="Device\Speaker.Sound.cs" />
     <Compile Include="Exceptions\Dev485Exception.cs" />
     <Compile Include="Device\LEDArrow.cs" />
