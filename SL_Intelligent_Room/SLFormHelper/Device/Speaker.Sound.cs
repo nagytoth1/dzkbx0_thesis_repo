@@ -6,9 +6,9 @@ namespace SLFormHelper
     {
         private class Sound
         {
-            private byte index; //id from frequencies array [0,32]
+            private byte index; //id from frequencies array [0,49]
             private byte volume; //volume [0,63]
-            private ushort length; //length in milliseconds [0, 10000] let's say it can't extend to more than 10 seconds
+            private ushort length; //length in milliseconds [0, 10000]
 
             public Sound(byte index, byte volume, ushort length)
             {
@@ -16,7 +16,10 @@ namespace SLFormHelper
                 this.Volume = volume;
                 this.Length = length;
             }
-
+            /// <summary>
+            /// Pitch of sound played by Speaker devices
+            /// Ranges from level 0 to 49.
+            /// </summary>
             public byte Index
             {
                 get => index; 
@@ -27,6 +30,10 @@ namespace SLFormHelper
                     index = value;
                 }
             }
+            /// <summary>
+            /// Volume of sound played by Speaker devices.
+            /// Ranges from level 0 to 63.
+            /// </summary>
             public byte Volume
             {
                 get => volume;
@@ -37,6 +44,10 @@ namespace SLFormHelper
                     volume = value;
                 }
             }
+            /// <summary>
+            /// Time interval during which sound is played.
+            /// Ranges from 0 to 10000 millisecs.
+            /// </summary>
             public ushort Length { 
                 get => length;
                 set

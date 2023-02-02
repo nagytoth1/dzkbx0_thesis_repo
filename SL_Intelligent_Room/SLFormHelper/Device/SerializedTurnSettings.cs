@@ -9,13 +9,27 @@ namespace SLFormHelper
     [Serializable]
     public class SerializedTurnSettings
     {
-        public SerializedDeviceSettings[] Devices { get; set; }
+        public SerializedTurnSettings(SerializedDeviceSettings[] devices, ushort time)
+        {
+            Devices = devices;
+            Time = time;
+        }
+        public SerializedDeviceSettings[] Devices
+        {
+            get { return Devices; }
+            set { if (value == null) throw new ArgumentNullException("Tömb nem lehet null!"); }
+        }
         public ushort Time { get; set; }
     }
     [Serializable]
     public class SerializedDeviceSettings
     {
-        public string Type { get; set; }
+        public SerializedDeviceSettings(char type, string settings)
+        {
+            this.Type = type;
+            this.Settings = settings;
+        }
+        public char Type { get; set; }
         public string Settings { get; set; }
     }
 }

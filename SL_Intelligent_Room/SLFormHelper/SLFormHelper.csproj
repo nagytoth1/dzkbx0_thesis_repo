@@ -76,6 +76,7 @@
     <Compile Include="Device\Speaker.cs" />
     <Compile Include="Exceptions\USBDisconnectedException.cs" />
     <Compile Include="FormHelper.cs" />
+    <Compile Include="FormHelper.JSONHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Exceptions\SLDLLException.cs" />
   </ItemGroup>

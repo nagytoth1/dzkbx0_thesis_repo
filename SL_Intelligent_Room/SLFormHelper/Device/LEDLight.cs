@@ -30,5 +30,25 @@ namespace SLFormHelper
             sb.Append("}");
             return sb.ToString();
         }
+
+        public override void LoadDeviceSettings(string[] splitSettings)
+        {
+            if (splitSettings.Length != 3)
+                throw new ArgumentException("A lámpához nem megfelelő a beállítási lista.");
+            
+            this.color = Color.FromArgb(
+                red: byte.Parse(splitSettings[0]),
+                green: byte.Parse(splitSettings[1]),
+                blue: byte.Parse(splitSettings[2]));
+        }
+
+        public override char GetJSONType()
+        {
+            return 'L';
+        }
+        internal override string GetJSONSettings()
+        {
+            return string.Format($"{color.R}|{color.G}|{color.B}"); //255|0|0
+        }
     }
 }

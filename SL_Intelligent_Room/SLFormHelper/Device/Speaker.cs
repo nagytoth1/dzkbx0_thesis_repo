@@ -20,15 +20,19 @@ namespace SLFormHelper
                 soundToAdd = new Sound((byte)pitch, volume, length);
                 this.soundList.Add(soundToAdd);
             }
-            catch(ArgumentOutOfRangeException) {
-                Console.WriteLine("Nem adom hozzá a hanglistához.");
+            catch(ArgumentOutOfRangeException ex) {
+                Console.WriteLine($"Nem adom hozzá a hanglistához a következő miatt: {ex.Message}.");
             }
+        }
+        public void ClearSounds()
+        {
+            soundList.Clear();
         }
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder('{');
             sb.Append(string.Format("\"type\":\"H\",\"settings\":\""));
-            if(soundList.Count == 0)
+            if (soundList.Count == 0)
                 return sb.Append("\"}").ToString();
             int i;
             for (i = 0; i < soundList.Count - 1; i++)
@@ -39,10 +43,36 @@ namespace SLFormHelper
                 .Append("\"}");
             return sb.ToString();
         }
-
-        public void ClearSounds()
+        public override void LoadDeviceSettings(string[] splitSettings)
         {
-            soundList.Clear();
+            if (splitSettings.Length % 3 != 0)
+                throw new ArgumentException("A hangszóróhoz nem megfelelő a beállítási lista.");
+            for (int i = 0; i < soundList.Count - 2; i += 3)
+            {
+                if (!Enum.TryParse(splitSettings[i], out Pitch parsedPitch))
+                    throw new Exception("A megadott hangmagasság nem létezik.");
+                
+                AddSound(pitch: parsedPitch,
+                        volume: byte.Parse(splitSettings[i + 1]),
+                        length: ushort.Parse(splitSettings[i + 2]));
+            }
+        }
+        public override char GetJSONType()
+        {
+            return 'H';
+        }
+        internal override string GetJSONSettings()
+        {
+            StringBuilder sb = new StringBuilder();
+            if (soundList.Count == 0) 
+                return "";
+            int i;
+            for (i = 0; i < soundList.Count - 1; i++)
+            {
+                sb.Append(soundList[i].ToString()).Append('|'); //index|volume|length
+            }
+            sb.Append(soundList[i].ToString());
+            return sb.ToString();
         }
     }
 }

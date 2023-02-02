@@ -10,7 +10,7 @@ using System.Xml;
 
 namespace SLFormHelper
 {
-    public static class FormHelper //konténerosztály
+    public static partial class FormHelper //konténerosztály
     {
         public const string XMLPATH = ".\\devices.xml";
         public const string DLLPATH = "..\\SLDLL_relay\\relay.dll";
@@ -38,12 +38,12 @@ namespace SLFormHelper
         {
             int result = Felmeres();
 
-            if(result == 255)
+            if (result == 255)
                 throw new Dev485Exception("Az eszközöket tartalmazó dev485 tömb üres!");
             if (result == 1114)
                 throw new SLDLLException("Az SLDLL_Open-függvény a program ezen pontján még nem lett meghívva.");
             return result;
-        }        
+        }
         /// <summary>
         /// Set 'dev485', the array of devices in Delphi-code.
         /// </summary>
@@ -66,7 +66,7 @@ namespace SLFormHelper
                 Console.WriteLine("XMLt hív");
                 XMLToDeviceList();
             }
-                
+
             return result;
         }
 
@@ -88,7 +88,7 @@ namespace SLFormHelper
                 //TODO: logolás fájlba
                 Console.WriteLine($"Az eszközök leírása helytelen JSON-formátumban történt: {jsonFormat}");
             }
-                
+
         }
         /// <summary>
         /// 
@@ -138,7 +138,7 @@ namespace SLFormHelper
             SerializedDevice serialized; Device deviceToAdd;
             for (int i = 0; i < nodeList.Count; i++)
             {
-                if(uint.TryParse(nodeList[i].Attributes[0].Value, out uint azonos))
+                if (uint.TryParse(nodeList[i].Attributes[0].Value, out uint azonos))
                 {
                     serialized = new SerializedDevice(azonos);
                     deviceToAdd = serialized.CreateDevice();
@@ -180,63 +180,6 @@ namespace SLFormHelper
         {
             SetTurnForEachDevice(ref json_source);
         }
-
-        public static void LoadDeviceSettings(string json_path, byte turnNumber)
-        {
-            turnDurations = new ushort[turnNumber]; //ha 5 db ütem van felvéve, 5 hosszú tömb lesz
-            StreamReader reader = new StreamReader(json_path);
-            string fileContent = reader.ReadToEnd();
-            reader.Close();
-            Console.WriteLine(fileContent);
-            List<SerializedTurnSettings> turnSettings = JsonConvert.DeserializeObject<List<SerializedTurnSettings>>(fileContent);
-            string[] splitSettings;
-            Speaker speaker; LEDArrow arrow; LEDLight light;
-            for (int j = 0; j < turnSettings.Count; j++)
-            {
-                for (int i = 0; i < devices.Count; i++)
-                {
-                    //végig kell mennünk, hogy sorról sorra megegyeznek-e a típusok, majd ha igen, akkor a beállításokat elmenteni
-                    if (turnSettings[j].Devices[i].Type == "L" && devices[i].GetType() == typeof(LEDLight))
-                    {
-                        light = (LEDLight)devices[i];
-                        splitSettings = turnSettings[j].Devices[i].Settings.Split('|');  //háromelemű tömb legyen!
-                        light.Color = Color.FromArgb(
-                            red: byte.Parse(splitSettings[0]),
-                            green: byte.Parse(splitSettings[1]),
-                            blue: byte.Parse(splitSettings[2]));
-                    }
-                    else if (turnSettings[j].Devices[i].Type == "N" && devices[i].GetType() == typeof(LEDArrow))
-                    {
-                        arrow = (LEDArrow)devices[i];
-                        splitSettings = turnSettings[j].Devices[i].Settings.Split('|');  //négyelemű tömb legyen!
-                        arrow.Color = Color.FromArgb(
-                            red: byte.Parse(splitSettings[0]),
-                            green: byte.Parse(splitSettings[1]),
-                            blue: byte.Parse(splitSettings[2]));
-                        arrow.Direction = (Direction)Enum.Parse(typeof(Direction), splitSettings[3]);
-                    }
-                    else if (turnSettings[j].Devices[i].Type == "H" && devices[i].GetType() == typeof(Speaker))
-                    {
-                        speaker = (Speaker)devices[i];
-                        splitSettings = turnSettings[j].Devices[i].Settings.Split('|');  //többelemű tömb, legalább 3 hosszú
-                                                                                                  //a JSON-ben érkezhet több hang is, egyelőre még csak a legelsőt adjuk hozzá
-                        speaker.AddSound(
-                            pitch: (Pitch)Enum.Parse(typeof(Pitch), splitSettings[0]), //TODO: validálni
-                            volume: byte.Parse(splitSettings[1]),
-                            length: ushort.Parse(splitSettings[2]));
-                    }
-                    else
-                    {
-                        throw new Exception(
-                            string.Format("Helytelen forráskód, mert %s kéne, de %s-t olvastam",
-                            devices[i].GetType().Name,
-                            turnSettings[j].Devices[i].Type));
-                    }
-                }
-                //ha sikerül, akkor belementjük az ütemek tömbjébe
-                turnDurations[j] = turnSettings[j].Time;
-            }
-        }
         #endregion
         /// <summary>
         /// A DLL használatának megkezdése.
@@ -255,7 +198,7 @@ namespace SLFormHelper
         //amikor visszajön a SetList, adja vissza a tömböt, nézzük meg, mi van benne dev485
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "Felmeres")]
         extern private static int Felmeres();
-        
+
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "Listelem")]
         extern private static byte Listelem([In] ref int drb485);
 
@@ -272,8 +215,9 @@ namespace SLFormHelper
         extern private static byte SetTurnForEachDevice([MarshalAs(UnmanagedType.BStr)][In] ref string json_source);
 
         private static List<Device> devices = new List<Device>();
-        public static List<Device> Devices { get { return new List<Device>(devices); } }
+        public static List<Device> Devices { get { return devices; } } //or new List<Device>(devices);
         private static ushort[] turnDurations;
+        public static ushort[] Durations { get { return turnDurations; } set { turnDurations = value; } }
 
         public static string DevicesToJSON()
         {

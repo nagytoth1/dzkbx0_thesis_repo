@@ -15,5 +15,12 @@ namespace SLFormHelper
         {
             this.azonos = azonos;
         }
+        /// <summary>
+        /// Loads device settings from JSON-formatted string, for example: 255|0|0|1.
+        /// </summary>
+        /// <param name="splitSettings">Settings in an array format. Each type of device requires different type/amount of data.</param>
+        public abstract void LoadDeviceSettings(string[] splitSettings);
+        public abstract char GetJSONType();
+        internal abstract string GetJSONSettings();
     }
 }
