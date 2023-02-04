@@ -30,7 +30,7 @@ namespace SLFormHelper
         }
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder('{');
+            StringBuilder sb = new StringBuilder("{");
             sb.Append(string.Format("\"type\":\"H\",\"settings\":\""));
             if (soundList.Count == 0)
                 return sb.Append("\"}").ToString();

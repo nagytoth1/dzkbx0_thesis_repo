@@ -35,6 +35,8 @@
             this.btnFelmeres = new System.Windows.Forms.Button();
             this.btnKek = new System.Windows.Forms.Button();
             this.btnUres = new System.Windows.Forms.Button();
+            this.kimentBtn = new System.Windows.Forms.Button();
+            this.betoltBtn = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -104,11 +106,33 @@
             this.btnUres.UseVisualStyleBackColor = true;
             this.btnUres.Click += new System.EventHandler(this.btnUres_Click);
             // 
+            // kimentBtn
+            // 
+            this.kimentBtn.Location = new System.Drawing.Point(16, 331);
+            this.kimentBtn.Name = "kimentBtn";
+            this.kimentBtn.Size = new System.Drawing.Size(84, 41);
+            this.kimentBtn.TabIndex = 6;
+            this.kimentBtn.Text = "Kiment";
+            this.kimentBtn.UseVisualStyleBackColor = true;
+            this.kimentBtn.Click += new System.EventHandler(this.kimentBtn_Click);
+            // 
+            // betoltBtn
+            // 
+            this.betoltBtn.Location = new System.Drawing.Point(220, 331);
+            this.betoltBtn.Name = "betoltBtn";
+            this.betoltBtn.Size = new System.Drawing.Size(84, 41);
+            this.betoltBtn.TabIndex = 6;
+            this.betoltBtn.Text = "Betölt";
+            this.betoltBtn.UseVisualStyleBackColor = true;
+            this.betoltBtn.Click += new System.EventHandler(this.betoltBtn_Click);
+            // 
             // HelperForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 449);
+            this.Controls.Add(this.betoltBtn);
+            this.Controls.Add(this.kimentBtn);
             this.Controls.Add(this.btnUres);
             this.Controls.Add(this.btnKek);
             this.Controls.Add(this.btnFelmeres);
@@ -133,6 +157,8 @@
         private System.Windows.Forms.Button btnFelmeres;
         private System.Windows.Forms.Button btnKek;
         private System.Windows.Forms.Button btnUres;
+        private System.Windows.Forms.Button kimentBtn;
+        private System.Windows.Forms.Button betoltBtn;
     }
 }
 

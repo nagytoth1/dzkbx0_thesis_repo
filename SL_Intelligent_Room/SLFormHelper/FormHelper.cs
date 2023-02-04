@@ -48,7 +48,7 @@ namespace SLFormHelper
         /// Set 'dev485', the array of devices in Delphi-code.
         /// </summary>
         /// <returns></returns>
-        public static int CallListelem(ref int drb485, bool useJSON)
+        public static int CallListelem(ref int drb485, bool useJSON = true)
         {
             int result = Listelem(ref drb485);
             if (result == 255)
@@ -56,17 +56,10 @@ namespace SLFormHelper
             if (result == 1114)
                 throw new SLDLLException("Az SLDLL_Open-függvény a program ezen pontján még nem lett meghívva.");
             if (useJSON)
-            {
-                Console.WriteLine("Jsont hív");
-                ConvertDeviceListToJSON(out string jsonFormat);
-                FillDevicesList(ref jsonFormat); //ez fogja feltölteni a C#-os listát
-            }
+                JSONToDeviceList(); //ez fogja feltölteni a C#-os listát*/
             else
-            {
-                Console.WriteLine("XMLt hív");
                 XMLToDeviceList();
-            }
-
+            turnDurations.Add(2000); //alapból beállítjuk egy ütem hosszát
             return result;
         }
 
@@ -76,9 +69,11 @@ namespace SLFormHelper
         /// List can be reached by calling property FormHelper.Devices
         /// </summary>
         /// <exception cref="Dev485Exception">When empty or unitialized array is given.</exception>
-        private static void FillDevicesList(ref string jsonFormat)
+        private static void JSONToDeviceList()
         {
+            ConvertDeviceListToJSON(out string jsonFormat);
             //[{"azonos":16388}, {"azonos": 36543}, ...] JSON-formátumú dev485 betöltése a C# környezete számára
+            Console.WriteLine("dev485 in JSON-format: " + jsonFormat);
             List<SerializedDevice> deserializedDeviceList = JsonConvert.DeserializeObject<List<SerializedDevice>>(jsonFormat);
 
             for (int i = 0; i < deserializedDeviceList.Count; i++)
@@ -114,16 +109,36 @@ namespace SLFormHelper
         /// 1xSpeaker 
         /// and 1xLEDArrow device) 
         /// </summary>
-        public static void CallFillDev485Static()
+        public static void CallFillDev485Static(bool useJSON = true)
         {
-            byte result = FillDev485WithStaticData();
-            if (result == 254)
-                throw new Dev485Exception("Az eszközöket tartalmazó dev485 tömb már fel lett töltve!");
+            //statikus feltöltés
+            FillDev485WithStaticData(); //Delphiben feltölti a dev485-tömböt, drb485-öt beállítja 3-ra
+            turnDurations.Add(2000);
+            if (useJSON)
+                JSONToDeviceList();
+            else
+                XMLToDeviceList();
+            //hangszóró
+            Speaker speaker = (Speaker)devices[0];
+            speaker.AddSound(Pitch.C_OKTAV4, 63, 500);
+            
+            //nyíl
+            LEDArrow arrow = (LEDArrow)devices[1];
+            arrow.Color = Color.Red;
+            arrow.Direction = Direction.LEFT;
+            
+            //lámpa
+            LEDLight light = (LEDLight)devices[2];
+            light.Color = Color.Green;
+
+            Console.WriteLine(speaker);
+            Console.WriteLine(arrow);
+            Console.WriteLine(light);
         }
         public static void XMLToDeviceList()
         {
             XmlNodeList nodeList;
-            string path = XMLPATH;
+            string path = "devices.xml";
             try
             {
                 ConvertDeviceListToXML(ref path);
@@ -138,16 +153,14 @@ namespace SLFormHelper
             SerializedDevice serialized; Device deviceToAdd;
             for (int i = 0; i < nodeList.Count; i++)
             {
-                if (uint.TryParse(nodeList[i].Attributes[0].Value, out uint azonos))
+                if (!uint.TryParse(nodeList[i].Attributes[0].Value, out uint azonos))
                 {
-                    serialized = new SerializedDevice(azonos);
-                    deviceToAdd = serialized.CreateDevice();
-                    devices.Add(deviceToAdd);
-                    Console.WriteLine("Added device: " + deviceToAdd);
-                    continue;
+                    //TODO: logolás fájlba
+                    Console.WriteLine("Az XML-ből kiolvasott azonosító nem szám!");
                 }
-                //TODO: logolás fájlba
-                Console.WriteLine("Az XML-ből kiolvasott azonosító nem szám!");
+                serialized = new SerializedDevice(azonos);
+                deviceToAdd = serialized.CreateDevice();
+                devices.Add(deviceToAdd);
             }
         }
 
@@ -202,9 +215,6 @@ namespace SLFormHelper
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "Listelem")]
         extern private static byte Listelem([In] ref int drb485);
 
-        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "fill_devices_list_with_devices")]
-        extern private static byte FillDev485WithStaticData();
-
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "ConvertDEV485ToXML")]
         extern private static byte ConvertDeviceListToXML([MarshalAs(UnmanagedType.BStr)][In] ref string outputStr);
 
@@ -213,11 +223,14 @@ namespace SLFormHelper
 
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "SetTurnForEachDeviceJSON")]
         extern private static byte SetTurnForEachDevice([MarshalAs(UnmanagedType.BStr)][In] ref string json_source);
+        
+        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "fill_devices_list_with_devices")]
+        extern private static byte FillDev485WithStaticData();
 
         private static List<Device> devices = new List<Device>();
         public static List<Device> Devices { get { return devices; } } //or new List<Device>(devices);
-        private static ushort[] turnDurations;
-        public static ushort[] Durations { get { return turnDurations; } set { turnDurations = value; } }
+        private static List<ushort> turnDurations = new List<ushort>();
+        public static List<ushort> Durations { get { return turnDurations; } set { turnDurations = value; } }
 
         public static string DevicesToJSON()
         {

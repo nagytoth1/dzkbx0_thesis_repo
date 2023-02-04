@@ -39,16 +39,11 @@ begin
     result := DEV485_ALREADY_FILLED;
     exit;
   end;
-  SetLength(dev485, 3);
+  drb485 := 3;
+  SetLength(dev485, drb485);
   dev485[0].azonos := $c004;
-  dev485[0].produc := 'Teszt Elek';
-  dev485[0].manufa := 'Valaki Zrt.';
   dev485[1].azonos := $8004;
-  dev485[1].produc := 'Teszt Elek';
-  dev485[1].manufa := 'Valaki Zrt.';
   dev485[2].azonos := $4004;
-  dev485[2].produc := 'Teszt Elek';
-  dev485[2].manufa := 'Valaki Zrt.';
   result := EXIT_SUCCESS;
 end;
 
@@ -107,15 +102,17 @@ begin
 		result := DEV485_EMPTY;
 		exit;
 	end;
-    
 	xmlDocument := NewXMLDocument();
 	xmlDocument.Encoding := 'utf-8';
 	xmlDocument.Options := [doNodeAutoIndent];
 	rootNode := xmlDocument.AddChild('devices');
-	node := rootNode.AddChild('device');
 	for i := 0 to drb485 - 1 do //that's the way of iterating through dev485 array (or using the drb485 variable)
+	begin
+		node := rootNode.AddChild('device');
 		node.Attributes['azonos'] := dev485[i].azonos; //we don't need the type of the device
+	end;
 	xmlDocument.SaveToFile(outPath);
+	showmessage('saved XML to location: ' + outPath);
 	result := EXIT_SUCCESS;
 end;
 
@@ -139,12 +136,10 @@ begin
   while i < drb485 do
   begin
     buffer := buffer + Format('{"azonos":%d},', [dev485[i].azonos]);
-    writeln(buffer);
     inc(i);
   end;
   buffer[length(buffer)] := ']'; 
   //the comma (,) at the type of the last device is unnecessary and makes the JSON-invalid, so rather we just overwrite it with the 'end of array'-character
-  writeln(buffer);
   writeln('Array dev485 has been converted to JSON-string successfully!');
   outputStr := buffer;
   result := EXIT_SUCCESS;
@@ -342,6 +337,6 @@ exports Open,
         ConvertDEV485ToJSON,
         ConvertDEV485ToXML,
         SetTurnForEachDeviceJSON,
-        fill_devices_list_with_devices; //testing purposes!
+		fill_devices_list_with_devices; //testing purposes!
 begin
 end.

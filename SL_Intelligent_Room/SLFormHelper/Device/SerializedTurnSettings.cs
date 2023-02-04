@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,11 +15,9 @@ namespace SLFormHelper
             Devices = devices;
             Time = time;
         }
-        public SerializedDeviceSettings[] Devices
-        {
-            get { return Devices; }
-            set { if (value == null) throw new ArgumentNullException("Tömb nem lehet null!"); }
-        }
+        [JsonProperty(PropertyName = "devices")]
+        public SerializedDeviceSettings[] Devices { get; set; }
+        [JsonProperty(PropertyName = "time")]
         public ushort Time { get; set; }
     }
     [Serializable]
@@ -29,7 +28,9 @@ namespace SLFormHelper
             this.Type = type;
             this.Settings = settings;
         }
+        [JsonProperty(PropertyName = "type")]
         public char Type { get; set; }
+        [JsonProperty(PropertyName = "settings")]
         public string Settings { get; set; }
     }
 }

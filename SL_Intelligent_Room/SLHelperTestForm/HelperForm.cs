@@ -38,8 +38,9 @@ namespace SLHelperTestForm
                             this.DRB485 = (int)msg.LParam;
                             if (!dev485Set)
                             {
-                                CallListelem(ref drb485, useJSON: true);
+                                label2.Text = CallListelem(ref drb485).ToString();
                                 dev485Set = true;
+                                listBox1.DataSource = Devices;
                             }
                         break;
                     //itt van egy while/for-ciklus, de egyébként nem csinál semmit
@@ -180,6 +181,28 @@ namespace SLHelperTestForm
             string json_source = DevicesToJSON();
             Console.WriteLine(json_source);
             CallSetTurnForEachDevice(ref json_source);
+        }
+
+        private void betoltBtn_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString();
+            ofd.Filter = "JSON-file (*.json)|*.json";
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                UnloadDeviceSettings(ofd.FileName);
+            }
+        }
+
+        private void kimentBtn_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString();
+            sfd.Filter = "JSON-file (*.json)|*.json";
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                UnloadDeviceSettings(sfd.FileName);
+            }
         }
     }
 }
