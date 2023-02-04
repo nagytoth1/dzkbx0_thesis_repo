@@ -1,0 +1,11 @@
+Csak az Output-mappát lehúzni repositoryból
+
+1. git init
+
+2. git remote add -f origin https://github.com/nagytoth1/dzkbx0_thesis_repo.git
+
+3. git config core.sparseCheckout true
+
+4. git sparse-checkout set Output
+
+5. git pull origin main
