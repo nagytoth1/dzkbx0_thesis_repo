@@ -26,6 +26,7 @@ Az eszközökkel megtámogatott egészségfejlesztést szolgáló projekt részt
  - Visual Studio Code - RelayDLL fejlesztése
  - Borland Delphi 7 IDE - korábbi Delphi-projekt futtatása
  - Git, GitKraken - a projekt verziókezelése grafikus felületen keresztül
+ - Trello - feladatkövetés
  
  ## Készült
  - SLDLL, relayDLL - Delphi 7-es verzióval
