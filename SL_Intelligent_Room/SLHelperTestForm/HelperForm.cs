@@ -190,7 +190,11 @@ namespace SLHelperTestForm
             ofd.Filter = "JSON-file (*.json)|*.json";
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                UnloadDeviceSettings(ofd.FileName);
+                LoadDeviceSettings(ofd.FileName);
+                Console.WriteLine("Betöltés miatt {0} lett.", Devices[0]);
+                string json_source = DevicesToJSON();
+                Console.WriteLine(json_source);
+                CallSetTurnForEachDevice(ref json_source);
             }
         }
 
