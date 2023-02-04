@@ -15,7 +15,17 @@ namespace SLHelperTestForm
 
         private void HelperForm_Load(object sender, EventArgs e)
         {
-            label1.Text = CallOpen(this.Handle).ToString();
+            try
+            {
+                label1.Text = CallOpen(this.Handle).ToString();
+            }
+            catch (DllNotFoundException ex)
+            {
+                Logger.WriteLog(ex.Message, SeverityLevel.ERROR);
+            }catch (Dev485Exception ex)
+            {
+                Logger.WriteLog(ex.Message, SeverityLevel.ERROR);
+            }
         }
 
         private int drb485;

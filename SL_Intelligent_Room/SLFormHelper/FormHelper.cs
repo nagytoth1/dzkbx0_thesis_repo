@@ -1,28 +1,23 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Xml;
 
 namespace SLFormHelper
 {
     public static partial class FormHelper //konténerosztály
     {
-        public const string XMLPATH = ".\\devices.xml";
-        public const string DLLPATH = "..\\SLDLL_relay\\relay.dll";
-        #region CallMethods - I want only them public 
+        #region Hívó függvények - meghívják a DLL-ből hívható metódusokat
         /// <summary>
-        /// Calls the function in converterDLL that calls SLDLL_Open to use SLDLL's functionality.
+        /// Delphi-metódust hív (Open), amely elindítja az SLDLL használatát.
         /// </summary>
-        /// <param name="handle">Form's Handle, SLDLL_Open requires it</param>
-        /// <returns></returns>
-        /// <exception cref="SLDLLException">When SLDLL_Open was already called.</exception>
+        /// <param name="handle">Az ablakos alkalmazás Handle-je, ez ahhoz kell, hogy az SLDLL_Open és a többi függvény üzeneteket küldözgethessen az alkalmazásunk számára.</param>
+        /// <exception cref="SLDLLException"></exception>
+        /// <exception cref="USBDisconnectedException"></exception>
+        /// <returns>Numerikus érték, amely a végrehajtás sikerességéről tájékoztat.</returns>
         public static int CallOpen(IntPtr handle)
         {
+            //TODO: DelphiDLL-t hív, ennek milyen visszatérési értékei vannak? - ennek megfelelő Exception-öket dobni
             int result = OpenSLDLL(handle);
             if (result == 1247)
                 throw new SLDLLException("Az SLDLL_Open függvény már meg lett hívva korábban.");
@@ -31,11 +26,12 @@ namespace SLFormHelper
             return result;
         }
         /// <summary>
-        /// Detects devices from the USB-port.
+        /// Delphi-metódust hív (Felmeres), amely az USB-portra csatlakoztatott eszközöket (lámpákat, nyilakat, valamint hangszórókat) felméri
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Numerikus érték, amely a végrehajtás sikerességéről tájékoztat.</returns>
         public static int CallFelmeres()
         {
+            //TODO: DelphiDLL-t hív, ennek milyen visszatérési értékei vannak? - ennek megfelelő Exception-öket dobni
             int result = Felmeres();
 
             if (result == 255)
@@ -45,11 +41,12 @@ namespace SLFormHelper
             return result;
         }
         /// <summary>
-        /// Set 'dev485', the array of devices in Delphi-code.
+        /// Delphi-metódust hív (Listelem), amely a Delphiben tárolt eszközök tömbjét és számát beállítja.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Numerikus érték, amely a végrehajtás sikerességéről tájékoztat.</returns>
         public static int CallListelem(ref int drb485, bool useJSON = true)
         {
+            //TODO: DelphiDLL-t hív, ennek milyen visszatérési értékei vannak? - ennek megfelelő Exception-öket dobni
             int result = Listelem(ref drb485);
             if (result == 255)
                 throw new Dev485Exception("Az eszközöket tartalmazó dev485 tömb üres!");
@@ -62,56 +59,14 @@ namespace SLFormHelper
             turnDurations.Add(2000); //alapból beállítjuk egy ütem hosszát
             return result;
         }
-
         /// <summary>
-        /// Converts array `dev485` (in Delphi's converterDLL) into a standard JSON-formatted string.<para/>
-        /// From the JSON, it creates Device instances depending on the type of device getting detected by converterDLL and adds it to a list in this FormHelper.
-        /// List can be reached by calling property FormHelper.Devices
-        /// </summary>
-        /// <exception cref="Dev485Exception">When empty or unitialized array is given.</exception>
-        private static void JSONToDeviceList()
-        {
-            ConvertDeviceListToJSON(out string jsonFormat);
-            //[{"azonos":16388}, {"azonos": 36543}, ...] JSON-formátumú dev485 betöltése a C# környezete számára
-            Console.WriteLine("dev485 in JSON-format: " + jsonFormat);
-            List<SerializedDevice> deserializedDeviceList = JsonConvert.DeserializeObject<List<SerializedDevice>>(jsonFormat);
-
-            for (int i = 0; i < deserializedDeviceList.Count; i++)
-                devices.Add(deserializedDeviceList[i].CreateDevice());
-            if (!jsonFormat.IsValidJSON())
-            {
-                //TODO: logolás fájlba
-                Console.WriteLine($"Az eszközök leírása helytelen JSON-formátumban történt: {jsonFormat}");
-            }
-
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="source"></param>
-        /// <returns></returns>
-        private static bool IsValidJSON(this string source) //extension method for string
-        {
-            try
-            {
-                JToken.Parse(source);
-                return true;
-            }
-            catch (JsonReaderException)
-            {
-                //TODO: logolás fájlba
-                return false;
-            }
-        }
-        /// <summary>
-        /// Fills dev485 with static data, like so: 
-        /// <para/>1xLEDLight, 
-        /// 1xSpeaker 
-        /// and 1xLEDArrow device) 
+        /// Delphi-metódust hív, amely a dev485-öt 3 eszközzel tölti fel attól függetlenül, hogy milyen eszközök vannak ténylegesen csatlakoztatva.
+        /// <br></br>Csak és kizárólag tesztelésre használjuk.
+        /// <para/>1 db LED-lámpa, 1 db Hangszóró és 1 db LED-nyíl eszköz
         /// </summary>
         public static void CallFillDev485Static(bool useJSON = true)
         {
-            //statikus feltöltés
+            //TODO: DelphiDLL-t hív, ennek milyen visszatérési értékei vannak? - ennek megfelelő Exception-öket dobni
             FillDev485WithStaticData(); //Delphiben feltölti a dev485-tömböt, drb485-öt beállítja 3-ra
             turnDurations.Add(2000);
             if (useJSON)
@@ -135,65 +90,18 @@ namespace SLFormHelper
             Console.WriteLine(arrow);
             Console.WriteLine(light);
         }
-        public static void XMLToDeviceList()
-        {
-            XmlNodeList nodeList;
-            string path = "devices.xml";
-            try
-            {
-                ConvertDeviceListToXML(ref path);
-                nodeList = ReadXMLDocument();
-            }
-            catch (XmlException)
-            {
-                //TODO: logolás fájlba
-                return;
-            }
-
-            SerializedDevice serialized; Device deviceToAdd;
-            for (int i = 0; i < nodeList.Count; i++)
-            {
-                if (!uint.TryParse(nodeList[i].Attributes[0].Value, out uint azonos))
-                {
-                    //TODO: logolás fájlba
-                    Console.WriteLine("Az XML-ből kiolvasott azonosító nem szám!");
-                }
-                serialized = new SerializedDevice(azonos);
-                deviceToAdd = serialized.CreateDevice();
-                devices.Add(deviceToAdd);
-            }
-        }
-
-        private static XmlNodeList ReadXMLDocument()
-        {
-            XmlDocument xmlDocument = new XmlDocument();
-            const string TAG_NAME = "device";
-            try
-            {
-                xmlDocument.Load(XMLPATH);
-            }
-            catch (IOException)
-            {
-                //TODO: logolás fájlba
-                Console.WriteLine("Fájl nem található: {0}", XMLPATH);
-            }
-            catch (Exception e)
-            {
-                //TODO: logolás fájlba
-                Console.WriteLine("Hiba: {0}", e.Message);
-            }
-
-            XmlNodeList nodeList = xmlDocument.GetElementsByTagName(TAG_NAME);
-            if (nodeList.Count == 0)
-                throw new XmlException(string.Format("XML-ben {0} név alatt nem találhatóak eszközök.", TAG_NAME));
-            return nodeList;
-        }
-
+        /// <summary>
+        /// Delphi-függvényt hív, amelyben minden egyes csatlakoztatott (tehát felmért) eszköznek kiküld egy ütemnyi jelet az adott ütemre vonatkozó beállításainak megfelelően. 
+        /// A LED-lámpa és LED-nyíl típusú eszközökre az SLDLL_SetLista-függvény, addig Hangszóró típusú eszközök esetében az SLDLL_Hangkuldes-függvény kerül meghívásra.
+        /// </summary>
+        /// <param name="json_source">DEV485 eszközbeállításainak JSON-formátumú reprezentációja. <br></br> Ezt a Helperosztály "DevicesToJSON"-függvénye el is készíti számunkra a devices-lista elemei alapján.</param>
         public static void CallSetTurnForEachDevice(ref string json_source)
         {
+            //TODO: DelphiDLL-t hív, ennek milyen visszatérési értékei vannak? - ennek megfelelő Exception-öket dobni
             SetTurnForEachDevice(ref json_source);
         }
         #endregion
+        #region RelayDLL által exportált (publikus) függvények C#-os átirata
         /// <summary>
         /// A DLL használatának megkezdése.
         /// </summary>
@@ -207,8 +115,6 @@ namespace SLFormHelper
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "Open")]
         extern private static int OpenSLDLL(IntPtr hwnd);
 
-        //2 eszköz -> tömb, SetList függvény, megfelelő paraméterlistával, elemek felmérés, megadod a tömböt, és feltölti, ha a SetList elindul
-        //amikor visszajön a SetList, adja vissza a tömböt, nézzük meg, mi van benne dev485
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "Felmeres")]
         extern private static int Felmeres();
 
@@ -223,26 +129,16 @@ namespace SLFormHelper
 
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "SetTurnForEachDeviceJSON")]
         extern private static byte SetTurnForEachDevice([MarshalAs(UnmanagedType.BStr)][In] ref string json_source);
-        
+
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "fill_devices_list_with_devices")]
         extern private static byte FillDev485WithStaticData();
-
+        #endregion
+        #region Mezők
+        private const string DLLPATH = "..\\SLDLL_relay\\relay.dll";
         private static List<Device> devices = new List<Device>();
-        public static List<Device> Devices { get { return devices; } } //or new List<Device>(devices);
         private static List<ushort> turnDurations = new List<ushort>();
         public static List<ushort> Durations { get { return turnDurations; } set { turnDurations = value; } }
-
-        public static string DevicesToJSON()
-        {
-            StringBuilder sb = new StringBuilder("[");
-            int i;
-            for (i = 0; i < devices.Count - 1; i++)
-            {
-                sb.Append(devices[i].ToString()).Append(",");
-            }
-            sb.Append(devices[i].ToString()).Append(']');
-
-            return sb.ToString();
-        }
+        public static List<Device> Devices { get { return devices; } }
+        #endregion
     }
 }
