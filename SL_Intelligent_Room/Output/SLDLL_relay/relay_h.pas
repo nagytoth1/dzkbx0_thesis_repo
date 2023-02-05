@@ -32,7 +32,7 @@ var
 // start using DLL
 function Open(wndhnd:DWord): DWord; stdcall; external RELAY_PATH;
 // setting dev485 array -> uzfeld-method's alternative in C# is going to call this
-function Listelem(var eszkozDarabszam: integer): dword; stdcall; external RELAY_PATH; //uzfeld fogja hívni
+function Listelem(var numberOfDevices: byte): dword; stdcall; external RELAY_PATH; //uzfeld fogja hívni
 // start of scanning available devices
 function Felmeres(): DWord; stdcall; external RELAY_PATH;
 //converting dev485 to JSON-format - JSON-serializing

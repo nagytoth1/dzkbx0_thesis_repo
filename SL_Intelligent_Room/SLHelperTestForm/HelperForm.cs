@@ -27,8 +27,15 @@ namespace SLHelperTestForm
                 Logger.WriteLog(ex.Message, SeverityLevel.ERROR);
             }
         }
+        //private int drb485;
+        /// <summary>
+        /// Ez lényegében a Delphi-ből érkező uzfeld-metódus C#-os változata
+        /// Feldolgozza a Win32-es üzeneteket a Form és a rendszer/DLL között.
+        /// </summary>
+        /// <param name="msg">A feldolgozandó Win32-szabványnak megfelelő üzenet.</param>
         protected override void WndProc(ref Message msg)
         {
+            //CallWndProc(ref msg, ref dev485Set);
             CallWndProc(ref msg);
             base.WndProc(ref msg);
         }

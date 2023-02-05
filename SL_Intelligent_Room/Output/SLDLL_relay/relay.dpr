@@ -61,10 +61,10 @@ begin
 end;
 
 //sets the pointer of dev485 - called in uzfeld-method
-function Listelem(var eszkozDarabszam: integer): dword; stdcall;
+function Listelem(var numberOfDevices: byte): dword; stdcall;
 begin
 	result := SLDLL_Listelem(@dev485);
-	drb485 := eszkozDarabszam;
+	drb485 := numberOfDevices;
 	showmessage(Format('Listelem sikeres, eredmenye %d dev485 = %p &dev485[0] = %p &dev485[1] = %p', [Result, dev485, @dev485[0], @dev485[1]]));
 end;
 
