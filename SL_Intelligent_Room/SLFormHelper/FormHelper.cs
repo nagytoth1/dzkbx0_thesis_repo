@@ -115,38 +115,37 @@ namespace SLFormHelper
         {
             if (msg.Msg != 0x0400 || msg.WParam.ToInt32() == 0) 
                 return;
-            int responseCode = msg.WParam.ToInt32();
+            ErrorCodes responseCode = (ErrorCodes)msg.WParam.ToInt32();
             switch (responseCode)
             {
                 //-------Pozitív válaszkódok (tájékoztatások) esetei--------
-                case FELMOK:
+                case ErrorCodes.FELMOK:
                     drb485 = (byte)msg.LParam;
-                    CallListelem(ref drb485, false).ToString();
+                    CallListelem(ref drb485, true).ToString();
                     break;
-                //itt van egy while/for-ciklus, de egyébként nem csinál semmit
-                case AZOOKE: break;
+                case ErrorCodes.AZOOKE: break;
                 //megváltoztattam az eszköz számát, akkor jön ez a válasz  
-                case LEDRGB: break;
+                case ErrorCodes.LEDRGB: break;
                 //ledbea(PELVSTA(Msg.LParam) ^); - relayelni
-                case NYIRGB: break;
+                case ErrorCodes.NYIRGB: break;
                 //nyilbe(PELVSTA(Msg.LParam)^); - relayelni
-                case HANGEL: break;
+                case ErrorCodes.HANGEL: break;
                 //hanbea(PELVSTA(Msg.LParam)^); - relayelni - elég a Msg.LPARAM-ot átadni mindhárom esetben - egész szám értékként kell átadni
-                case STATKV: break;
+                case ErrorCodes.STATKV: break;
                 //itt kapom vissza az értéket
-                case LISVAL: break; //A lista_hívás adja vissza message-ben
+                case ErrorCodes.LISVAL: break; //A lista_hívás adja vissza message-ben
                                     //-------Negatív válaszkódok (hibakódok) esetei--------
-                case USBREM: break;
+                case ErrorCodes.USBREM: break;
                 // Az USB vezérlő eltávolításra került
-                case VALTIO: break;
+                case ErrorCodes.VALTIO: break;
                 // Válaszvárás time-out következett be
-                case FELMHK: break;
+                case ErrorCodes.FELMHK: break;
                 // Felmérés vége hibával
                 //s := Format(ENDHIK, [Msg.LParam]);
-                case FELMHD: break;
+                case ErrorCodes.FELMHD: break;
                 // Nincs egy darab sem hibakód (elvben sem lehet ilyen)
                 //s := DARSEM;
-                case FELMDE: break;
+                case ErrorCodes.FELMDE: break;
                 // A 16 és 64 bites darabszám nem egyforma
                 //s := DARELT;
                 default:
@@ -162,18 +161,21 @@ namespace SLFormHelper
                 drb485 = value;
             } 
         }
-        private const sbyte FELMOK = 1;                       // A felmérés rendben lezajlott
-        private const sbyte AZOOKE = 2;                       // Az azonosító váltás rendben lezajlott
-        private const sbyte LEDRGB = 5;                       // A LED lámpa RGB értéke
-        private const sbyte NYIRGB = 6;                       // A nyíl RGB és irány értéke
-        private const sbyte HANGEL = 7;                       // A hangstring állapota
-        private const sbyte STATKV = 8;                       // A státusz értéke
-        private const sbyte LISVAL = 9;                       // A táblázat végének a válasza 
-        private const sbyte USBREM = -1;                        // Az USB vezérlő eltávolításra került
-        private const sbyte VALTIO = -2;                        // Felmérés közben válaszvárás time-out következett be
-        private const sbyte FELMHK = -3;                        // Felmérés vége hibával
-        private const sbyte FELMHD = -4;                        // Nincs egy darab sem hibakód (elvben sem lehet ilyen)
-        private const sbyte FELMDE = -5;                       // A 16 és 64 bites darabszám nem egyforma (elvben sem lehet ilyen)
+        enum ErrorCodes:sbyte
+        {
+            FELMOK = 1,                       // A felmérés rendben lezajlott
+            AZOOKE = 2,                       // Az azonosító váltás rendben lezajlott
+            LEDRGB = 5,                       // A LED lámpa RGB értéke
+            NYIRGB = 6,                       // A nyíl RGB és irány értéke
+            HANGEL = 7,                       // A hangstring állapota
+            STATKV = 8,                       // A státusz értéke
+            LISVAL = 9,                       // A táblázat végének a válasza 
+            USBREM = -1,                        // Az USB vezérlő eltávolításra került
+            VALTIO = -2,                        // Felmérés közben válaszvárás time-out következett be
+            FELMHK = -3,                        // Felmérés vége hibával
+            FELMHD = -4,                        // Nincs egy darab sem hibakód (elvben sem lehet ilyen)
+            FELMDE = -5                       // A 16 és 64 bites darabszám nem egyforma (elvben sem lehet ilyen)
+        }
         #endregion
         #region RelayDLL által exportált (publikus) függvények C#-os átirata
         /// <summary>
@@ -193,7 +195,7 @@ namespace SLFormHelper
         extern private static int Felmeres();
 
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "Listelem")]
-        extern private static byte Listelem([In] ref byte drb485);
+        extern private static int Listelem([In] ref byte drb485);
 
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "ConvertDEV485ToXML")]
         extern private static byte ConvertDeviceListToXML([MarshalAs(UnmanagedType.BStr)][In] ref string outputStr);
