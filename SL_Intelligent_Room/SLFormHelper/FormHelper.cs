@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace SLFormHelper
 {
@@ -99,6 +100,85 @@ namespace SLFormHelper
         {
             //TODO: DelphiDLL-t hív, ennek milyen visszatérési értékei vannak? - ennek megfelelő Exception-öket dobni
             SetTurnForEachDevice(ref json_source);
+        }
+        /// <summary>
+        /// Ez lényegében a Delphi-ből érkező uzfeld-metódus C#-os változata
+        /// Feldolgozza a Win32-es üzeneteket a Form és a rendszer/DLL között.
+        /// <param name="form">Az üzenetváltás alanya, aki a metódusokat hívja, a DLL-en keresztül az operációs rendszer őt tudja elérni.</param>
+        /// <param name="msg">A feldolgozandó Win32-szabványnak megfelelő üzenet.</param>
+        public static void CallWndProc(ref Message msg)
+        {
+            if (msg.Msg == 0x0400)
+            {
+                int responseCode = msg.WParam.ToInt32();
+                if (responseCode != 0)
+                    switch (responseCode)
+                    {
+                        //-------Pozitív válaszkódok (tájékoztatások) esetei--------
+                        case (int)ErrorCodes.FELMOK:
+                            drb485 = (int)msg.LParam;
+                            //label2.Text = CallListelem(ref drb485, false).ToString();
+                            CallFillDev485Static(false);
+                            break;
+                        //itt van egy while/for-ciklus, de egyébként nem csinál semmit
+                        case (int)ErrorCodes.AZOOKE: break;
+                        //megváltoztattam az eszköz számát, akkor jön ez a válasz  
+                        case (int)ErrorCodes.LEDRGB: break;
+                        //ledbea(PELVSTA(Msg.LParam) ^); - relayelni
+                        case (int)ErrorCodes.NYIRGB: break;
+                        //nyilbe(PELVSTA(Msg.LParam)^); - relayelni
+                        case (int)ErrorCodes.HANGEL: break;
+                        //hanbea(PELVSTA(Msg.LParam)^); - relayelni - elég a Msg.LPARAM-ot átadni mindhárom esetben - egész szám értékként kell átadni
+                        case (int)ErrorCodes.STATKV: break;
+                        //itt kapom vissza az értéket
+                        case (int)ErrorCodes.LISVAL: break; //A lista_hívás adja vissza message-ben
+                                            //-------Negatív válaszkódok (hibakódok) esetei--------
+                        case (int)ErrorCodes.USBREM: break;
+                        // Az USB vezérlő eltávolításra került
+                        case (int)ErrorCodes.VALTIO: break;
+                        // Válaszvárás time-out következett be
+                        case (int)ErrorCodes.FELMHK: break;
+                        // Felmérés vége hibával
+                        //s := Format(ENDHIK, [Msg.LParam]);
+                        case (int)ErrorCodes.FELMHD: break;
+                        // Nincs egy darab sem hibakód (elvben sem lehet ilyen)
+                        //s := DARSEM;
+                        case (int)ErrorCodes.FELMDE: break;
+                        // A 16 és 64 bites darabszám nem egyforma
+                        //s := DARELT;
+                        default:
+                            break;
+                    }
+            }
+        }
+        private enum ErrorCodes : sbyte
+        {
+            FELMOK = 1,                          // A felmérés rendben lezajlott
+            AZOOKE = 2,                          // Az azonosító váltás rendben lezajlott
+            LEDRGB = 5,                          // A LED lámpa RGB értéke
+            NYIRGB = 6,                          // A nyíl RGB és irány értéke
+            HANGEL = 7,                          // A hangstring állapota
+            STATKV = 8,                          // A státusz értéke
+            LISVAL = 9,                          // A táblázat végének a válasza 
+            USBREM = -1,                          // Az USB vezérlő eltávolításra került
+            VALTIO = -2,                          // Felmérés közben válaszvárás time-out következett be
+            FELMHK = -3,                          // Felmérés vége hibával
+            FELMHD = -4,                          // Nincs egy darab sem hibakód (elvben sem lehet ilyen)
+            FELMDE = -5                          // A 16 és 64 bites darabszám nem egyforma (elvben sem lehet ilyen)
+        }
+        private static int drb485;
+        public static int DRB485
+        {
+            get
+            {
+                return drb485;
+            }
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException("Az eszközök darabszáma nem lehet negatív!");
+                drb485 = value;
+            }
         }
         #endregion
         #region RelayDLL által exportált (publikus) függvények C#-os átirata

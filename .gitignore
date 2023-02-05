@@ -14,3 +14,17 @@ SL_Intelligent_Room/.vs/SL_Intelligent_Room/FileContentIndex/
 SL_Intelligent_Room/Output/devices.xml
 
 SL_Intelligent_Room/Output/Debug/devices.xml
+
+SL_Intelligent_Room/.vs/
+SL_Intelligent_Room/Output/Debug/nunit*
+SL_Intelligent_Room/Output/Debug/NUnit3.*
+SL_Intelligent_Room/SLHelperTestForm/obj/x86/Debug/
+SL_Intelligent_Room/SLHelperTestForm/obj/Debug/
+
+SL_Intelligent_Room/Output/Debug/SLFormHelper.pdb
+
+SL_Intelligent_Room/Output/Debug/SLFormHelper.UnitTests.*
+
+*.cache
+
+SL_Intelligent_Room/Output/Debug/testcentric.engine.metadata.dll
