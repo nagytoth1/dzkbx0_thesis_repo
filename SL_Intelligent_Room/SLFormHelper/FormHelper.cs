@@ -117,8 +117,7 @@ namespace SLFormHelper
                         //-------Pozitív válaszkódok (tájékoztatások) esetei--------
                         case (int)ErrorCodes.FELMOK:
                             drb485 = (int)msg.LParam;
-                            //label2.Text = CallListelem(ref drb485, false).ToString();
-                            CallFillDev485Static(false);
+                            CallListelem(ref drb485, false).ToString();
                             break;
                         //itt van egy while/for-ciklus, de egyébként nem csinál semmit
                         case (int)ErrorCodes.AZOOKE: break;
