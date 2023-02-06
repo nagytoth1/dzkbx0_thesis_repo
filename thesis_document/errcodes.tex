@@ -1,17 +1,3 @@
-\begin{tabular}{|l|l|l|l|}
-	\toprule
-	 &                  Hiba címe &                      Hiba jelentése (SLDLL esetén) &                                   Gyakorlati példa \\
-	\midrule
-	0 &   NO\_ERROR / ERROR\_SUCCESS &                     A függvény sikeresen lefutott. & Program indításakor nem érkezik hibaüzenet (nin... \\
-	13 &         ERROR\_INVALID\_DATA & Az azonosító típusjelölő bitpárosa hibás, vagy ... & SLDLL\_SetLampa függvényt hangszóró típusú eszkö... \\
-	24 &           ERROR\_BAD\_LENGTH & Hanghossz nem [1;16] intervallumból kap egész é... & SLDLL\_SetHang függvény rosszul lett felparaméte... \\
-	71 &        ERROR\_REQ\_NOT\_ACCEP &        Jelenleg fut már egy függvény végrehajtása. & SLDLL\_Felmeres-t hívja meg, miközben az SLDLL\_S... \\
-	85 &     ERROR\_ALREADY\_ASSIGNED & Az új azonosító más panelt azonosít, egyedinek ... &                Nem találkoztam még ezzel a hibával \\
-	110 &          ERROR\_OPEN\_FAILED &              megadott fájlt nem sikerült megnyitni &                Nem találkoztam még ezzel a hibával \\
-	126 &        ERROR\_MOD\_NOT\_FOUND & megadott fájl nem a firmware-re vonatkozó friss... &                Nem találkoztam még ezzel a hibával \\
-	1114 &      ERROR\_DLL\_INIT\_FAILED &               Az SLDLL\_Open még nem lett meghívva. & bármely SLDLL-függvényt úgy hívjuk meg, hogy el... \\
-	1247 &  ERROR\_ALREADY\_INITIALIZED &                A függvény meghívása már megtörtént &  SLDLL\_Open függvény egymás után 2x való meghívása \\
-	1626 &  ERROR\_FUNCTION\_NOT\_CALLED &                   nincs csatlakoztatott USB-eszköz & SLDLL\_Open függvény hívásakor nincsenek csatlak... \\
-	egyéb & Windows műveleti hibakódok &                                                NaN &                                                NaN \\
-	\bottomrule
-\end{tabular}
+\begin{figure}[h!]
+	\includegraphics{errcodes}
+\end{figure}
