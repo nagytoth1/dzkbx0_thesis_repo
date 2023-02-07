@@ -1,11 +1,10 @@
-\select@language {magyar} \contentsline {figure}{\numberline {1.}{\ignorespaces Valamely demenciával diagnosztizáltak számának emelkedése\relax }}{1}{figure.caption.3}%
 \select@language {magyar} \addvspace {10\p@ }
 \select@language {magyar} \addvspace {10\p@ }
 \select@language {magyar} \addvspace {10\p@ }
 \select@language {magyar} \addvspace {10\p@ }
-\select@language {magyar} \contentsline {figure}{\numberline {4.1.}{\ignorespaces Win32-hibakódok magyarázata\relax }}{17}{figure.caption.4}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.2.}{\ignorespaces Eszközök azonosítóinak átadása JSON-formátumon keresztül\relax }}{20}{figure.caption.6}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.3.}{\ignorespaces Delphiben írt eljárás, amely paraméterében egy kimenő string paramétert vár, azaz ez megfeleltethető visszatérési értéknek.\relax }}{21}{figure.caption.8}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.4.}{\ignorespaces Az eljárás hibás szignatúrája C\#-ban\relax }}{21}{figure.caption.9}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.5.}{\ignorespaces A függvény helyes Delphi-deklarációja\relax }}{21}{figure.caption.11}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.6.}{\ignorespaces A függvény helyes szignatúrája C\#-ban\relax }}{22}{figure.caption.12}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.1.}{\ignorespaces Win32-hibakódok magyarázata\relax }}{17}{figure.caption.3}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.2.}{\ignorespaces Eszközök azonosítóinak átadása JSON-formátumon keresztül\relax }}{20}{figure.caption.5}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.3.}{\ignorespaces Delphiben írt eljárás, amely paraméterében egy kimenő string paramétert vár, azaz ez megfeleltethető visszatérési értéknek.\relax }}{21}{figure.caption.7}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.4.}{\ignorespaces Az eljárás hibás szignatúrája C\#-ban\relax }}{21}{figure.caption.8}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.5.}{\ignorespaces A függvény helyes Delphi-deklarációja\relax }}{21}{figure.caption.10}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.6.}{\ignorespaces A függvény helyes szignatúrája C\#-ban\relax }}{22}{figure.caption.11}%

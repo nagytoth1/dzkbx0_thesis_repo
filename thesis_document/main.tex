@@ -39,13 +39,9 @@
     A demencia, azaz a kognitív képességek leépülésének tünetei közé tartoznak a különböző beszédzavarok, az ítélőképesség, a memorizálás és az elvonatkoztatás képességeinek romlása.
     
 	%TODO: valami aktuálisabbat találni erre
-	\begin{figure}[h!]
-		\centering
-		\includegraphics[scale=0.7]{images/demencia.png}
-		\caption{Valamely demenciával diagnosztizáltak számának emelkedése}
-		\subcaption{Forrás: saját szerkesztés}
-		\label{fig:demencia}
-	\end{figure}
+	\cite{dementia1}
+	\cite{dementia2}
+	\cite{dementia3}
 
 	Az értelmi hanyatlást különféle egészségkárosító szokások -- például az alkoholfogyasztás -- szervi károsodás, akár ezek együttese is okozhatja, a legjelentősebb kockázati tényező ilyen téren azonban az ember életkora. 
 	%TODO: FORRÁSOK!
@@ -353,7 +349,7 @@
 	Stringek esetében alapértelmezetten \verb*|WideChar| típusú memóriacímet adunk át a Delphi DLL-nek.
 	\begin{figure}[h!]
 		\centering
-		\includegraphics[scale=0.65]{string_delphi}
+		\includegraphics[scale=0.75]{string_delphi}
 		\caption{A függvény helyes Delphi-deklarációja}
 		\label{string_delphi}
 	\end{figure}
@@ -361,7 +357,7 @@
 	Továbbá a Delphi DLL függvénye \verb*|PAnsiChar|-t ad vissza, de a marshal alapértelmezés szerint \verb*|PWideChar|-t vár, mivel a C\# oldalon nem alkalmaztuk a \\\verb*|[return:MarshalAs(UnmanagedType.BStr)]| attribútumot a DLL-funkció deklarációjában.
 	\begin{figure}[h!]
 		\centering
-		\includegraphics[scale=0.6]{string_csharp}
+		\includegraphics[scale=0.55]{string_csharp}
 		\caption{A függvény helyes szignatúrája C\#-ban}
 		\label{string_csharp}
 	\end{figure}
