@@ -4,7 +4,7 @@
 \usepackage[magyar]{babel}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage{mathtools,amssymb,amsthm,pdfpages, subcaption, comment, enumitem, booktabs, graphicx}
+\usepackage{mathtools,amssymb,amsthm,pdfpages, subcaption, comment, enumitem, booktabs, graphicx, lipsum}
 \footnotestyle{rule=fourth}
 \captionsetup[subfigure]{labelformat=empty} %subcaptionre ne tegyen számozást
 \graphicspath{{./images/}} %képeket innen importálom be
@@ -25,7 +25,10 @@
 	\date{2022}
 	\maketitle
 	\tableofcontents
-	
+	\begin{abstract}
+		%TODO: összefoglalás, hogy miről szól a szakdolgozat pár mondatban
+		Szakdolgozatom arról szól, hogy...\lipsum[2]
+	\end{abstract}
 	\chapter*{Bevezetés}
 	\addcontentsline{toc}{chapter}{Bevezetés}
 	Kognitív képességeink fejlesztésére különösen oda kell figyelnünk életünk során. Ezen megállapításomat alátámasztja egy COVID-világjárvány utáni időszak, amely időszakban sorra jelennek meg olyan jelentések %TODO referencia erre
@@ -39,7 +42,7 @@
 	\begin{figure}[h!]
 		\centering
 		\includegraphics[scale=0.7]{images/demencia.png}
-		\caption[caption]{Valamely demenciával diagnosztizáltak számának emelkedése}
+		\caption{Valamely demenciával diagnosztizáltak számának emelkedése}
 		\subcaption{Forrás: saját szerkesztés}
 		\label{fig:demencia}
 	\end{figure}
@@ -182,12 +185,41 @@
 	\section{Kommunikáció adatszerkezeteken keresztül}
 	A \emph{Marshalling} egy olyan folyamat, amely összetett típusok átalakítására szolgál, hogy egy nyelv adatszerkezetét a másikkal megértessük. Magyar fordításával nem találkoztam ennek a kifejezésnek, de leginkább talán az 'átalakítás' szóval tudjuk leírni, ami adatszerkezetek esetében annyit tesz, hogy más nyelv által is értelmezhetővé tesszük, kevésbé hagyatkozunk az adott nyelv különlegességeire.
 	\par
-	A Marshalling sajnos nem minden esetben szolgáltat tökéletes megoldást, szakdolgozati projektünkön keresztül például látni fogjuk, hogy a kód további portolhatósága, újrahasznosíthatósága végett megéri szabványos formátumokon keresztül kommunikálni, mint azt tesszük API-k\footnote{TODO: API leírása...} vagy konfigurációs fájlok esetében \footnote{Például az \textit{app.config} fájl a C\#-ban XML-formátumban látható.}, ilyenek például az általam használt JSON- vagy XML-formátumok,  hogy más felületekre való költöztetés esetén kompatibilitási probléma többé már ne merülhessen fel.
-	A Marshalling primitív típusok esetén abszolút működőképes, összetett adatszerkezetekre viszont inkább a szabványos szöveges formátumokat érdemes alkalmazni tapasztalatom szerint. Ha ezt elfogadjuk, akkor érdemes megismerkedni a szerializáció és deszerializáció 
+	A kód további portolhatósága, újrahasznosíthatósága végett megéri szabványos formátumokon keresztül kommunikálni, mint azt tesszük API-k\footnote{Az Application Programming Interface utasítások, szabványok és metódusok halmaza, amely leírja a kommunikációt más, külső szoftverek részére. Az API-k lehetőséget biztosítanak két vagy több szoftver közötti adatok cseréjére, valamint adatokon végzett műveletek végrehajtására úgy, hogy annak mikéntjéről az API írója gondoskodik. Másként fogalmazva: az API a szerver azon része, amely felelős a kérések feldolgozásáért és kiszolgálásáért.} vagy konfigurációs fájlok esetében \footnote{Például az \textit{app.config} fájl a C\#-ban XML-formátumban látható.}, ilyenek például az általam használt JSON- vagy XML-formátumok,  hogy más felületekre való költöztetés esetén kompatibilitási probléma többé már ne merülhessen fel.
+	A Marshalling primitív típusok esetén abszolút működőképes, összetett adatszerkezetekre viszont inkább a szabványos szöveges formátumokat érdemes alkalmazni tapasztalatom szerint. Ha ezt elfogadjuk, akkor érdemes megismerkedni a szerializáció és deszerializáció %TODO: befejezni
 	\section{Mik a stubok?}
 	A stubok hívó (aki csak az implementált metódus fejlécét\footnote{A fejlécet szignatúrának is nevezzük: ez a metódus visszatérési típusát (a \emph{void} is visszatérési típusnak számít), nevét és paraméterlistáját együttesen teszi ki}) és a hívott (ahol a két kód szerződésében lévő publikus/,,meghirdetett''/exportált metódusok -- és még akár továbbiak is -- implementálva vannak) fél között elhelyezkedő mini egységek.
-	\section{Memóriakezelés az InterOp marshal segítségével}
+	%TODO: befejezni...
+	\section{managed és unmanaged kód közötti különbség}
+	Először is fontos tisztázni, hogy a C\# szemszögéből nézve a \textit{Unmanaged Code} (nem felügyelt kód) elnevezést a .NET-keretrendszer mindenféle külső komponens megbélyegzésére használja, amelyet nem a .NET futtatókörnyezete felügyel és vezérel. Ettől még ezek lehetnek jó kódok, csak szimplán a Common Language Runtimenak nincs közvetlen hatása ezek működésére: a memóriacímeket közvetlenül lehet kezelni, felülírni, így bizonyos esetekben olyan memóriaterületre is hivatkozhat egy változó, amelyet az operációs rendszer nem a program részére foglalt le, ezt \verb*|segfault|nak nevezzük\footnote{Másnéven \textit{access violation} hibának is nevezik, a Delphi inkább ezzel a kifejezéssel él a hiba kijelzésekor.}
+	\cite{managed} 
+	A Common Language Runtime használatával fejlesztett kódot kezelt vagy felügyelt (managed) kódnak nevezzük. Más szóval, ez az a kód, amely a .NET futtatókörnyezete által végrehajtásra kerül. 
+	A menedzselt kód futási környezete számos szolgáltatást nyújt a programozó számára: ilyen a kivételkezelés, típusok ellenőrzése, a memória lefoglalása és felszabadítása, így a Garbage Collection\footnote{A Garbage Collection, azaz szemétgyűjtés egy automatikusan végbemenő optimalizálási folyamat, amely során futásidő közben felszabadulnak olyan memóriaterületek, amelyek a kód korábbi részén lefoglalásra kerültek, azonban a program későbbi szakaszban már egyáltalán nem történik hivatkozás rájuk.}, és így tovább. A fent említett szolgáltatások a fejlesztőket szolgálják, hogy biztonságosabb és optimálisabb kódot készíthessenek.
+
+	A felügyelet nélküli kód ennek pontosan az ellentéte: pointereket kezelhetünk a kódban, ezeket tetszésünk szerint lefoglalhatjuk, felszabadíthatjuk, megváltoztathatjuk a pointer értékét (azaz más területre mutathatunk), viszont ilyen típusú kódok növelhetik alkalmazásaink teljesítményét, mivel az extra ellenőrzések ki vannak kapcsolva a kód lefutásának idejére (például egy tömb túlindexelését vizsgáló algoritmus).
+	A nem biztonságos blokkokat tartalmazó kódot az \verb*|AllowUnsafeBlocks| fordítói opcióval kell lefordítani.
+	
+	Amikor eszközöket vezérlő kódrészleteket szeretnénk C\#-on keresztül hívni, legyen ez C++ vagy éppen esetünkben Delphi nyelven készítve, egyszerűen megkerülhetetlen a felügyelet nélküli kódok futtatása, mivel a C\#-nak ezekre ráhatásai nincsenek, nyelvi korlátokba ütköznénk, ha lámpákat és nyilakat kéne vezérelnünk C\#-forráskóddal. A .NET úgy áll ezekhez a kódokhoz, hogy ,,megengedett, de nem ajánlott'' kategóriába sorolja őket, nekünk annyit kell tennünk az ügy érdekében, hogy minél kevesebbszer hagyatkozzunk az unmanaged kódrészletekre.
+	\section{Az ellenőrzött kódok előnyei és hátrányai}
+	\begin{itemize}
+		\item A futtatott kód biztonságosabb, erről ellenőrző algoritmusok gondoskodnak (például ilyen az \textit{array boundaries check}, ami a tömbök túlindexelését vizsgálja).
+		\item A szemétgyűjtés automatikusan lezajlik, ezért nem is kell memóriaszivárgástól tartanunk.
+		\item A dinamikus, azaz futásidejű típusellenőrzés biztosítva van.
+	\end{itemize}
+	
+	Átokként és áldásként is felróható, hogy nem enged direkt ráhatást memóriacímekre: hogy a lefoglalások és felszabadítások mikor, a szekvenciának mely pontjain történnek meg, arról nem tudunk konkrét információkat, mivel a GC ezt elrejti előlünk, a program bizonyos pontjain csak sürgetni tudjuk a Garbage Collectort, hogy végezzen optimalizálásokat. 
+	
+	Ami ténylegesen hátrányként említhető, hogy nem enged hozzáférést alacsonyabb szintű részletekhez, így különböző mikrokontrollerek, hardverelemek vezérlésének szemszögéből kiindulva a programozás ezen módja nem tekinthető opciónak.
+	\section{Memóriakezelés az InterOp marshaller segítségével}
+	Az Interop marshaller a .NET keretrendszer egyik komponense, amely a managed adattípusok unmanaged típusokká történő konverziójáért felelős. A memóriakezelést illetően az Interop marshaller biztosítja, hogy a memória helyesen kerül lefoglalásra, és felszabadításra a konverzió folyamatában, különösen, ha nem felügyelt kóddal dolgozik.
+	Amikor felügyelt objektumokat ad át nem felügyelt kódnak, az Interop az objektumot mély másolással\footnote{A mély másolás (angoul deep copy) azt jelenti, hogy objektumonként a referencia szerint tárolt mezők is klónozódnak, úgyhogy két objektum között egyáltalán nem lehet közös referencia. Ennek ellentéte a shallow copy, azaz a sekély klónozás, amelyben a tárolt objektumok memóriacíme egy az egyben átmásolásra kerül, de ekkor egy objektum ilyen típusú mezőjének változása a klónban ugyanazt a változást eredményezi.} hozza létre, hogy a nem felügyelt kód a managed objektum befolyásolása nélkül módosíthassa az objektumot. 
+	
+	Amikor viszont nem felügyelt objektumokat adunk át a felügyelt kód részére, az Interop marshal egy sekély másolatot hoz létre, így a felügyelt kód hozzáférhet a memóriához. Ez azt jelenti, hogy írhatja és olvashatja egyaránt ezen változók értékeit.
+	
+	Fontos megjegyezni, hogy a memóriakezelést az Interop Marshaller automatikusan elvégzi, így a fejlesztőknek nem kell aggódniuk memóriaszivárgás miatt. Bizonyos esetekben azonban szükség lehet a használt memória explicit módon történő felszabadítása.
+	\cite{memhandling}
 	\label{memhandling}
+	\chapter{Elosztott rendszerek}
 	\chapter{Szakdolgozati projektünkről}
 	A szakdolgozat mellé készített projektemet Sipos Levente hallgatótársammal fejlesztjük. Munkánk arról szól, hogy Keresztes Péter tanár úr által Delphiben implementált metódusokat hívunk meg C\#-os környezetben. A C\# és Delphi nyelvek összehangolása az én feladatom, az elkészült termék terveim szerint úgynevezett Helper-metódusok implementációit tartalmazó, lefordított\footnote{Lévén a C\# fordított nyelvnek számít, ezért az alkalmazások futtatásához/használatához az elkészült forráskódokat első lépésben futtatható állományra (gépi kódra) kell fordítani egy fordítóprogram segítségével. Ezt a folyamatot szakszóval \textit{compilingnak} vagy \textit{buildelésnek} is nevezzük.} DLL projekt lesz C\# nyelven, amelyeket Levente az ő grafikus alkalmazásában tud meghívni. A projekt jelen állása szerint szükség volt továbbá egy úgynevezett relayDLL-re, amelyet én állítottam össze.
 	\section{Miről is szól a projektünk?}
@@ -220,9 +252,7 @@
 	Az elkészült kódok teljesítménye alapján is érdemes összehasonlítani a két nyelvet. Ehhez először is külön kell választanunk a fordításhoz és a futtatáshoz szükséges időt, lévén ezek fordított (nem interpretált) nyelvek, ezért ezek nem szimultán módon\footnote{nem egyidőben, nem egyszerre} történnek. A Delphi fordítóprogramja azonnal gépi kódot\footnote{A gépi kódban már az utasításokat is számok jelzik, ezen nyelv utasításkészlete már a számítógépben működő processzor típusától is erősen függ. Gépi kód az esetek nagy részében fordítóprogram eredménye, a hardverközeli vezérlőprogramok elkészítéséhez is inkább a magasabb szinten álló Assembly nyelvet használják.} készít, míg a C\# esetében első lépésben egy köztes nyelvű\footnote{A(z) (Common) Intermediate Language a .NET-keretrendszerben a magasabb absztrakciós szintű C\# és a legalacsonyabb szintű gépi kód között helyezkedik el, ami még processzortól és operációs rendszertől független. A .NET Runtime futtatókörnyezete képes futtatni.} kód készül, amelyet a .NET virtuális gép képes futtatni. Fordítási időben a Delphi-kód nyertesnek számít, futásidőben azonban közel ekvivalens a két nyelv révén gyártott kód.
 	
 	Ha ennél is tovább megyünk, akkor a C\#-nak nagy előnye származik abból a Delphivel való összevetésben, hogy aszinkron\footnote{ Az aszinkron programozás lehetővé teszi, hogy az alkalmazás egy időigényes folyamat futtatását háttérbe helyezze, így a programot futtató szál, lévén nem várakozik a válaszra, addig ugyanúgy képes a felhasználói interakciókat kiszolgálni. \cite{async}} kódolási lehetőséget is biztosít, amely felgyorsítja a végrehajtást, jobban ki tudja használni a rendelkezésre álló CPU teljesítményét. A LINQ\footnote{A \textbf{Language Integrated Query} (magyarul: nyelvbe ágyazott lekérdezés) egy gyűjtőfogalom a C\# nyelvbe épített szintaktikai elemekre, amely elemek lehetővé teszik, hogy akár lambda kifejezésként, akár SQL-szintaxishoz hasonló módon meg tudjunk fogalmazni lekérdezéseket bizonyos - iterálható, vagyis bejárható, az IEnumerable-interfészt megvalósító - szerkezetekre. Ilyen szerkezetnek minősül például a \textit{List} is.} használata \verb|yield| kulcsszóval az iterációkban biztosítja, hogy csak akkor van végrehajtva a kód, amikor ténylegesen szükség van rá (lusta kiértékelés). A delegate-ek használata szintén növelheti a C\#-kódok teljesítményét, bár a Delphi is rendelkezik ehhez hasonló funkciókkal.
-	\begin{comment}
-	TODO: esetleg ide jöhetne egy C\# és Delphi futásidő-összehasonlítási ábra (benchmark)
-	\end{comment}
+	%TODO: esetleg ide jöhetne egy C\# és Delphi futásidő-összehasonlítási ábra (benchmark)
 	\cite{perf_comp}
 	
 	A fejlesztés folyamán elkészített \textbf{modulokat} a különböző programozási nyelvek eltérő megnevezéseket használnak.\footnote{Az említett példákon kívül a Java-nyelvben \textit{package}-ként, míg a Pythonban \textit{module}-ként hivatkoznak az osztályokat összegyűjtő egységre.} A vizsgált két nyelv tekintetében is ez áll fenn: a C\# \verb|namespace|, míg a Delphi \verb|unit| kifejezéssel illeti, a lényegük ugyanaz lesz: 
@@ -250,16 +280,16 @@
 	\begin{figure}[ht!]
 		\hspace*{-1in}
 		\includegraphics[scale=0.7]{images/errcodes.png}
-		\caption[caption]{Win32-hibakódok magyarázata\\\hspace{\textwidth}Forrás: saját szerkesztés}
+		\caption{Win32-hibakódok magyarázata}
 		\label{fig:errcodes}
 	\end{figure}
 	\cite{errcodes}
 	Ezen hibakódokat C\#-ban a következő megfelelő, egyénileg definiált kivételekkel, és sokkal kifejezőbb üzenetekkel váltom fel:
 	\begin{itemize}
-		\item 
-		\item 
-		\item 
-		\item 
+		\item \verb*|Dev485Exception|: Eszközök tömbjére vonatkozó hibaüzenetek
+		\item \verb*|SLDLLException|: A DLL működésével kapcsolatos hibaüzenetek
+		\item \verb*|USBDisconnectedException|: Az USB-porton nem észlelhető eszköz hibaüzenete.
+		%TODO: újabbakat hozzáadni!
 	\end{itemize}
 	\subsection{A WinForm bemutatása}
 	A \textit{WinForm}, teljes nevén a \textit{Windows Forms} a .NET GUI-fejlesztést\footnote{A GUI a Graphical User Interface (grafikus felhasználói interfész) kifejezés rövidítése, asztali alkalmazásokat értünk alatta, amely átlagfelhasználók számára kényelmesebb megközelítés a konzolos alkalmazásokkal szemben} támogató keretrendszere, amelynek segítségével egy asztali alkalmazást egyszerűbb módon el tudunk készíteni. 
@@ -293,26 +323,25 @@
 	\begin{figure}[h!]
 		\centering
 		\includegraphics[scale=0.75]{json_szerializalas_azonositok}
-		\caption{Azonosítók átadása JSON-formátumon keresztül}
+		\caption{Eszközök azonosítóinak átadása JSON-formátumon keresztül}
 		\label{json_azonositok}
 	\end{figure}
-	\subsection{Konvertálás JSON-formátumra}
-	Delphi-oldalon megírtuk a JSON-re konvertáló függvényt, hogyan fogjuk ezt C\#-ból elérni?
-	\subsubsection{Megoldás:} A korábbi SLDLL-hez fűzzük őket, vagy tegyük egy új DLL-állományba őket, és ezeket is meg kell hirdetnünk a C\#-os futtatókörnyezet számára is. A választott megoldásom az új DLL-re esett, egy úgynevezett relayDLL-t írtam Delphiben, amelyen keresztül az SLDLL-függvényeket meg tudjuk hívni.
+	\subsection{JSON-formátumra konvertáló függvények hívása .NET keretrendszerből}
+	\subsubsection{Megoldás:} A korábbi SLDLL-hez fűzzük őket, vagy tegyük egy új DLL-állományba őket, és ezeket is meg kell hirdetnünk a C\#-os futtatókörnyezet számára is. A választott megoldásom az új DLL-re esett, egy úgynevezett \verb*|relayDLL| nevezetű állomány forráskódját megírtam Delphiben, amelyen keresztül az SLDLL-függvényeket meg tudjuk hívni.
 	
-	Ennek legfőbb indoka az volt, ami eldöntötte, hogy érdemes a hívó (.NETben készült FormHelperDLL) és hívott (SLDLL) felek között egy köztes réteget elkészíteni, hogy Delphiben különböző globális változók kapnak értéket, amelyeket nem tudunk máshol definiálni, csakis Delphiben, tehát a hívás környezetét így tudjuk megteremteni, hogy az értékadások ténylegesen működjenek, ne fussunk \verb*|NullReferenceException|-hibákra.\\
-	A relayDLL használatával ellenőrzöttebb módon tudom meghívni az SLDLL-ben meghirdetett függvényeket, ebből nem is kell mindent meghirdetni, csak annyit, amennyit ténylegesen a vezérléshez használnunk szükséges. Ezenkívül több, általam definiált hibakódot is vissza tudok adni, amelyek kiváltó okáról C\#-ban megfelelő kivételek segítségével tájékoztatni tudjuk a felhasználókat.
-	az \verb*|SLDLL_Open| függvény egy handle-t vár
+	Ennek legfőbb indoka az volt, ami eldöntötte, hogy érdemes a hívó (.NETben készült \verb*|FormHelperDLL|) és hívott (\verb*|SLDLL|) felek között egy köztes réteget elkészíteni, hogy Delphiben különböző globális változók kapnak értéket, amelyeket nem tudunk máshol definiálni, csakis Delphiben, tehát a hívás környezetét így tudjuk megteremteni, hogy az értékadások ténylegesen működjenek, ne fussunk \verb*|NullReferenceException|-hibákra.\\
+	A \verb*|relayDLL| használatával ellenőrzöttebb módon tudom meghívni az \verb*|SLDLL|-ben meghirdetett függvényeket, ebből nem is kell mindent meghirdetni, csak annyit, amennyit ténylegesen a vezérléshez használnunk szükséges. Ezenkívül több, általam definiált hibakódot is vissza tudok adni, amelyek kiváltó okáról C\#-ban megfelelő kivételek segítségével tájékoztatni tudjuk a felhasználókat.
+	\subsection{Az SLDLL\_Open-függvény paraméterezése}
 	megoldás: C\#-ban a Formnak (a hívó oldalnak) létezik egy Handle nevezetű mutatója, amit átadhatunk a Delphi-s/Assembly-s implementációnak.
 	\subsection{Stringek átadása Delphi DLL-ből C\# részére}
 	Korábban a szakdolgozatunkat előkészítendő egy példaprojekt keretein belül egyrészt a Delphi nyelvi sajátosságait (szintaxist, a különböző típusokat, vezérlési szerkezeteket) igyekeztem elsajátítani, valamint kísérleteztem a különböző típusok C\#-ra való konvertálásának módjaival. Ez természetesen kiterjedt a karakterláncokkal való kommunikációra is, mivel ha szöveget képesek vagyunk átadni, akkor lényegében azzal bármilyen más típus formátumát is le tudjuk írni, így rekordokét is.
 	A következő Delphi-eljárás kínálkozott működő megoldásként:
 	\begin{figure}[h!]
-		\includegraphics[scale=0.65]{hibas_string_delphi}
+		\centering
+		\includegraphics[scale=0.9]{hibas_string_delphi}
 		\caption{Delphiben írt eljárás, amely paraméterében egy kimenő string paramétert vár, azaz ez megfeleltethető visszatérési értéknek.}
 		\label{hibas_string_delphi}
 	\end{figure}
-
 	A C\#-ban ily módon végeztem el az eljárás deklarációját, ebben a példaprogramban ez le is futott, azonban a szakdolgozati projektünkhöz ez a megoldás nem volt megfelelő.
 	\begin{figure}[h!]
 		\includegraphics[scale=0.7]{hibas_string_csharp}
@@ -329,7 +358,7 @@
 		\label{string_delphi}
 	\end{figure}
 
-	Továbbá a Delphi DLL függvénye \verb*|PAnsiChar|-t ad vissza, de a marshal alapértelmezés szerint \verb*|PWideChar|-t vár, mivel a C\# oldalon nem alkalmaztuk a \\\verb*|[return:MarshalAs(UnmanagedType.LPStr)]| attribútumot a DLL-funkció deklarációjában.
+	Továbbá a Delphi DLL függvénye \verb*|PAnsiChar|-t ad vissza, de a marshal alapértelmezés szerint \verb*|PWideChar|-t vár, mivel a C\# oldalon nem alkalmaztuk a \\\verb*|[return:MarshalAs(UnmanagedType.BStr)]| attribútumot a DLL-funkció deklarációjában.
 	\begin{figure}[h!]
 		\centering
 		\includegraphics[scale=0.6]{string_csharp}
@@ -337,9 +366,33 @@
 		\label{string_csharp}
 	\end{figure}
 	
-	Ennél is fontosabb, hogy amikor a DLL visszaad egy memóriára mutató mutatót, amelyet a marshal ezután feldolgoz, a memóriát a \verb*|CoTaskMemAlloc()| vagy azzal egyenértékű funkcióval KELL kiosztani, mivel a \verb*|marshal| alapértelmezés szerint a \verb*|CoTaskMemFree()|-függvénnyel szabadít fel memóriát (lásd korábban: \ref{memhandling}).
+	Ennél is fontosabb, hogy amikor a DLL visszaad egy memóriára mutató mutatót, amelyet a marshal ezután feldolgoz, a memóriát a \verb*|CoTaskMemAlloc()| vagy azzal egyenértékű funkcióval kell kiosztani, mivel a \verb*|marshal| alapértelmezés szerint a \verb*|CoTaskMemFree()|-függvénnyel szabadít fel memóriát (lásd korábban: \ref{memhandling}).
 	
 	Egy dinamikusan kiosztott memóriára mutatót ad vissza, azonban ez a memória nem a \verb*|CoTaskMemAlloc()| segítségével kerül kiosztásra. Valójában a memóriát a Delphi fordítója kezeli, és a függvény kilépésekor automatikusan felszabadul. Tehát valójában egy érvénytelen mutatót adunk vissza a C\#-nak.\cite{sof_strhandling}
+	%todo: problémák kifejtése
+	\section{A relayDLL-ben eldobott kivételek CSharp-ban nem kezelhetőek}
+	\subsection{Megoldás} hibakódokkal kommunikáljuk a C\# számára az esetleges hiba típusát,
+	ezen visszatérési értékek esetén C\#-oldalon tudok dobni saját Exception-t (ugyanúgy, mint az SLDLL-lel való kommunikáció folyamán).
+	\section{uzfeld metódus CSharp-os megfelelője}
+	\subsection{Megoldás}
+	Elméletem szerint létezik ennek egy szabványos megfelelője, C\#-ban ez WndProc-metódus, ami szintén Message-t vár referenciaként átadva, ezzel fog futásidőben kommunikálni a DelphiDLL.
+	Innentől kezdve:
+	\begin{enumerate}
+		\item \verb*|SLDLL_Open| kivált egy Message-t,
+		\item amin keresztül az oprendszer meghívja a Form WndProc metódusát,
+		\item ami meghívja az \verb*|SLDLL_ListElem|-függvényt (amennyiben a felmérés sikeres), mielőtt az \verb*|SLDLL_Felmeres|-re kerülne a sor.
+	\end{enumerate}
+	\section{DEV485 elérése}
+	Ha DLL-en belüli globális dev485-re hívom meg a Listelemet (paraméter nélkül), akkor kívül, a formból nem érem el a dev485 elemeit. Ha viszont DLL-en kívülről hívom meg a Listelemet dev485 pointerét átadva (C\#-ban hogyan adok át PDEVLIS-t? - tetszőleges intptr-t nem lehet átadni?), akkor a formból elérem, ekkor viszont a DLL-függvényekkel nem tudok hatást gyakorolni rá (XML-be, JSON-be menteni, stb.)
+	\subsection{Megoldás} egy fügvénybe tettem az \verb*|SLDLL_Felmeres| és a Convert-metódusokat, így azok mindenképp elérik a beállított dev485-tömböt és drb485 értéket.
+	\section{A hangszóró egy egész hanglistát kezel - JSON}
+	probléma:  -> JSON-ben hogyan lehetne megoldani?
+	\subsection{Megoldás}
+	egy hanglistát több index|volume|length 3-as ír le, a |-karakter mentén széttördelt szövegen 3-as lépésközzel iterálhatunk végig
+	\section{A hangszóró egy egész hanglistát kezel - kód}
+	kódban hogyan lehetne megoldani?
+	\subsection{Megoldás}
+	Speaker-osztályban a 3 mezőt (index, volume és length) egy külön objektumba szervezzük ki (Sound), és a Speaker kizárólag Sound-ok listáját fogja tartalmazni, a listát JSON-ben index|volume|length 3-asok összefűzésével szerializálja, a listához kizárólag listakezelő függvényekkel lehet hozzáférni (törlés, módosítás, hozzáadás), majd az \verb*|SLDLL_Hangkuldes| számára kiküldött H-tömböt (hanglistát) Delphiben egy ciklussal a JSON-ben érkező adatok szerint a megfelelő sorrendben feltöltjük.
 	\chapter*{Összegzés és kitekintés}
 	Két ismert programozási nyelv között megteremthető kommunikáció kiaknázásával elértem, hogy egy olyan szoftver készülhessen el, amelynek segítségével szakemberek képessé válhatnak emberek mentális egészségének fejlesztésére. 
 	
@@ -350,7 +403,6 @@
 	\bibliographystyle{plain}
 	\bibliography{references}
 	\listoffigures
-	\listoftables
 	% Aláírt, szkennelt nyilatkozat beillesztése a szakdolgozat végére
 	%\includepdf{nyilatkozat.pdf}
 \end{document}
