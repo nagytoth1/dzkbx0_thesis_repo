@@ -385,6 +385,18 @@
 	\section{DEV485 elérése}
 	Ha DLL-en belüli globális dev485-re hívom meg a Listelemet (paraméter nélkül), akkor kívül, a formból nem érem el a dev485 elemeit. Ha viszont DLL-en kívülről hívom meg a Listelemet dev485 pointerét átadva (C\#-ban hogyan adok át PDEVLIS-t? - tetszőleges intptr-t nem lehet átadni?), akkor a formból elérem, ekkor viszont a DLL-függvényekkel nem tudok hatást gyakorolni rá (XML-be, JSON-be menteni, stb.)
 	\subsection{Megoldás} egy fügvénybe tettem az \verb*|SLDLL_Felmeres| és a Convert-metódusokat, így azok mindenképp elérik a beállított dev485-tömböt és drb485 értéket.
+	\section{Eszközök azonosítóinak, típusainak átadása}
+	\subsection{Megoldás}
+	A Delphi-ben tárolt tömb (dev485) eszközeinek legfontosabb mezőjét (ami az eszközt azonosítója, tehát az azonosítót XML-fájlba kimentjük vagy JSON-formátumú szöveggé alakítjuk. Az azonosító önmagában meghatározza az eszköz típusát, úgyhogy elég azt átadni.
+	Eszközök típusának beazonosításának módja:
+	\begin{itemize}
+		\item SLLELO: \$4000 -> lámpa azonosítók \$4000 .. \$4fff (decimálisan: 16 384 .. 20 479) tartományon kaphatnak értéket
+		\item SLNELO: \$8000 -> nyíl azonosítók \$8000 .. \$8fff (decimálisan: 32 768 .. 38 683) tartományon kaphatnak értéket
+		\item SLHELO: \$c000 -> hangszóró azonosítók \$c000 .. \$cfff (decimálisan: 49 152 .. 53 257) tartományon kaphatnak értéket
+	\end{itemize}
+	A típus szempontjából lényegtelen, hogy az utolsó 3 bitnégyesnek milyen értéke van, a legfelső bitnégyes (a legfelső hex) azonosítja a típust.
+	Hexadecimálisan ha a szám négyjegyű és c-vel kezdődik, akkor az azonosító hangszórót fog jelölni.
+	Ez az eljárás a gRPC megoldására hasonlít (egy közös proto nyelv), a C\# és a Delphi között az XML tud közös nyelvként (hídként) funkcionálni.
 	\section{A hangszóró egy egész hanglistát kezel - JSON}
 	probléma:  -> JSON-ben hogyan lehetne megoldani?
 	\subsection{Megoldás}
