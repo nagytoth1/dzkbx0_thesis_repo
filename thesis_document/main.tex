@@ -187,8 +187,17 @@
 	\par
 	A kód további portolhatósága, újrahasznosíthatósága végett megéri szabványos formátumokon keresztül kommunikálni, mint azt tesszük API-k\footnote{Az Application Programming Interface utasítások, szabványok és metódusok halmaza, amely leírja a kommunikációt más, külső szoftverek részére. Az API-k lehetőséget biztosítanak két vagy több szoftver közötti adatok cseréjére, valamint adatokon végzett műveletek végrehajtására úgy, hogy annak mikéntjéről az API írója gondoskodik. Másként fogalmazva: az API a szerver azon része, amely felelős a kérések feldolgozásáért és kiszolgálásáért.} vagy konfigurációs fájlok esetében \footnote{Például az \textit{app.config} fájl a C\#-ban XML-formátumban látható.}, ilyenek például az általam használt JSON- vagy XML-formátumok,  hogy más felületekre való költöztetés esetén kompatibilitási probléma többé már ne merülhessen fel.
 	A Marshalling primitív típusok esetén abszolút működőképes, összetett adatszerkezetekre viszont inkább a szabványos szöveges formátumokat érdemes alkalmazni tapasztalatom szerint. Ha ezt elfogadjuk, akkor érdemes megismerkedni a szerializáció és deszerializáció %TODO: befejezni
+	\cite{marshalling_serialization}
 	\section{Mik a stubok?}
 	A stubok hívó (aki csak az implementált metódus fejlécét\footnote{A fejlécet szignatúrának is nevezzük: ez a metódus visszatérési típusát (a \emph{void} is visszatérési típusnak számít), nevét és paraméterlistáját együttesen teszi ki}) és a hívott (ahol a két kód szerződésében lévő publikus/,,meghirdetett''/exportált metódusok -- és még akár továbbiak is -- implementálva vannak) fél között elhelyezkedő mini egységek.
+	%todo: ezeket szétosztani
+	\cite{net_stubs}
+	\cite{wiki_marshalling}
+	\cite{sof_serialization}
+	\cite{pinvoke}
+	\cite{sof_xmlcreate}
+	\cite{marshalling_strings}
+	\cite{interop_native}
 	%TODO: befejezni...
 	\section{managed és unmanaged kód közötti különbség}
 	Először is fontos tisztázni, hogy a C\# szemszögéből nézve a \textit{Unmanaged Code} (nem felügyelt kód) elnevezést a .NET-keretrendszer mindenféle külső komponens megbélyegzésére használja, amelyet nem a .NET futtatókörnyezete felügyel és vezérel. Ettől még ezek lehetnek jó kódok, csak szimplán a Common Language Runtimenak nincs közvetlen hatása ezek működésére: a memóriacímeket közvetlenül lehet kezelni, felülírni, így bizonyos esetekben olyan memóriaterületre is hivatkozhat egy változó, amelyet az operációs rendszer nem a program részére foglalt le, ezt \verb*|segfault|nak nevezzük\footnote{Másnéven \textit{access violation} hibának is nevezik, a Delphi inkább ezzel a kifejezéssel él a hiba kijelzésekor.}
@@ -220,12 +229,17 @@
 	\cite{memhandling}
 	\label{memhandling}
 	\chapter{Elosztott rendszerek}
-	Az elosztott rendszerek lényege, hogy van egy alkalmazás, amivel különböző kliensprogramok kommunikálhatnak, ez a szerveralkalmazás, amely -- általában -- egy másik számítógépen fut, amely számítógép ráadásul egy másik hálózat tagja, tehát a két gép közötti adatátvitel az internet segítségével valósítható meg.
-	Kliens-szerver architektúrát különböző módokon építhetünk fel, amelyek a témám szempontjából csak annyiból fontosak, hogy például szolgáljanak programozási nyelvek közötti kapcsolatteremtés alkalmazási lehetőségeire.
-	\section{Gondolataim a streamalapú kommunikációról}
-	Ebben a megközelítésben a kliens és szerver kódjának nyelve megegyezik, a téma szempontjából már ez is egy tanulsággal szolgál: kell egy közös nyelv, egy szerződés a két fél között, amelytől egyik fél sem térhet el\footnote{Amennyiben valamelyik fél eltér a meghatározott szabványtól, a kommunikáció nem fog létrejönni, a kliens és a szerver nem fogja érteni egymást.}: a streamalapú kommunikáció ezt az alábbi módon valósítja meg: szövegesen eljuttatja a szerver számára a végrehajtani kívánt metódus nevét és paramétereit. 
+	Az elosztott rendszerek lényege, hogy van egy alkalmazás, amivel különböző kliensprogramok (ügyfelek) kommunikálhatnak, ez a szerveralkalmazás (másnéven host vagy kiszolgáló), amely legtöbb esetben egy másik számítógépen fut, amely számítógép ráadásul egy másik hálózat tagja, tehát a két gép közötti adatátvitel internetkapcsolat segítségével valósítható meg. 
 	
-	Például egy kliensalkalmazásban elküldhetjük az alábbi üzenetet a streamen keresztül: \textit{"ADD|2|3"}, ezt a szerver a várakozás állapotában megkapja, rá is illeszti az üzenet első tagját ($"ADD"$) az általa ismert parancsokra, és amennyiben ismeri az $"ADD"$ parancsot, meghívja rá saját $Add(int\ a,\ int\ b)$-függvényét, majd egy hasonló stream üzenetet küld vissza a kliens számára: \textit{"OK|5"}. 
+	Az kliens és a szerver kommunikációja kétirányú: az ügyfelek többnyire kéréseket küldenek a kiszolgáló valamely erőforrásának (adatbázis) eléréséhez, a szerver is küld a kliensprogram részére üzeneteket, tájékoztatást hibaüzenetről, a végrehajtott művelet sikerességéről, annak eredményéről, és így tovább. 
+	
+	A szerveralkalmazás is fogadhat bizonyos adatokat a kliensektől, ezek lehetnek bejelentkezési adatok vagy éppen a felhasználó által használt kliensprogram verziószáma, elavultabb verziók esetén akár figyelmeztetheti is a felhasználót, hogy telepítse a program egy frissebb változatát. \cite{client_server}
+	
+	Kliens-szerver-kommunikáción alapuló alkalmazásokat különböző módokon építhetünk fel, amelyek a témám szempontjából csak annyiból fontosak, hogy például szolgáljanak programozási nyelvek közötti kapcsolatteremtés alkalmazási lehetőségeire.
+	\section{Gondolataim a streamalapú kommunikációról}
+	Ebben a megközelítésben a kliens és szerver kódjának nyelve megegyezik, a téma szempontjából már ez is egy tanulsággal szolgál: kell egy közös nyelv, egy szerződés a két fél között, amelytől egyik fél sem térhet el\footnote{Amennyiben valamelyik fél eltér a meghatározott szabványtól, a kommunikáció nem fog létrejönni, a kliens és a szerver nem fogja érteni egymást.}: a streamalapú kommunikáció ezt az alábbi módon valósítja meg: szövegesen eljuttatja a szerver számára a végrehajtani kívánt metódus nevét és paramétereit.
+	
+	Például egy kliensalkalmazásban elküldhetjük az alábbi üzenetet a streamen keresztül: \textit{"ADD|2|3"}, ezt a szerver a várakozás állapotában megkapja, rá is illeszti az üzenet első tagját ($"ADD"$) az általa ismert parancsokra, és amennyiben ismeri az $"ADD"$ parancsot, meghívja rá saját $Add(int\ a,\ int\ b)$-függvényét, majd egy hasonló stream üzenetet küld vissza a kliens számára: \textit{"OK|5"}. \cite{elearning_stream}
 	
 	Láthatjuk, hogy hasonlóság a küldött üzenetek között, van a két fél között egy megállapodás, egy szabvány, ami leírja a kommunikáció formáját. Elméletem szerint ez már önmagában nevezhető egy közös nyelvnek a kommunikációban résztvevő két komponens között. 
 	
@@ -239,7 +253,8 @@
 	\section{Google RPC és a Proto-nyelv}
 	\label{grpc}
 	\chapter{Szakdolgozati projektünkről}
-	A szakdolgozat mellé készített projektemet Sipos Levente hallgatótársammal fejlesztjük. Munkánk arról szól, hogy Keresztes Péter tanár úr által Delphiben implementált metódusokat hívunk meg C\#-os környezetben. A C\# és Delphi nyelvek összehangolása az én feladatom, az elkészült termék terveim szerint úgynevezett Helper-metódusok implementációit tartalmazó, lefordított\footnote{Lévén a C\# fordított nyelvnek számít, ezért az alkalmazások futtatásához/használatához az elkészült forráskódokat első lépésben futtatható állományra (gépi kódra) kell fordítani egy fordítóprogram segítségével. Ezt a folyamatot szakszóval \textit{compilingnak} vagy \textit{buildelésnek} is nevezzük.} DLL projekt lesz C\# nyelven, amelyeket Levente az ő grafikus alkalmazásában tud meghívni. A projekt jelen állása szerint szükség volt továbbá egy úgynevezett relayDLL-re, amelyet én állítottam össze.
+	Eme dokumentum mellé készített szakdolgozati szoftverprojektemet Sipos Levente hallgatótársam részére, munkájának megkönnyítésére készítem. 
+	Munkánk arról szól, hogy Keresztes Péter tanár úr által Delphiben implementált metódusokat hívunk meg .NETes környezetből. A C\# és Delphi programozási nyelvek összehangolása az én feladatom, az elkészült termék terveim szerint úgynevezett Helper-metódusok implementációit tartalmazó, lefordított\footnote{Lévén a C\# fordított nyelvnek számít, ezért az alkalmazások futtatásához/használatához az elkészült forráskódokat első lépésben futtatható állományra (gépi kódra) kell fordítani egy fordítóprogram segítségével. Ezt a folyamatot szakszóval \textit{compilingnak} vagy \textit{buildelésnek} is nevezzük.} DLL-projekt lesz, amelyeket Levente az ő Windows Forms keretrendszerrel készített grafikus alkalmazásában tud meghívni. A projekt jelen állása szerint szükség volt továbbá egy úgynevezett relayDLL-re, amelyet én állítottam össze.
 	\section{Miről is szól a projektünk?}
 	
 	Egy mentális egészségfejlesztésre használatos alkalmazást fejlesztésére vállalkoztunk 2022 szeptemberében, amely elméleti alapjait Somodi László futballedző munkásságának köszönhetjük, ezek technikai részleteiről titoktartási szerződésünk
@@ -296,7 +311,8 @@
 	\cite{pascal_csharp}
 	
 	\section{Alaphelyzet}
-	Amikor a munkát megkezdtem, rendelkezésemre állt Dr. Király Roland tanár úr által fejlesztett Delphis asztali alkalmazás, amely -- mint kiderült -- a mai napig teljesen használható. Ezen alkalmazás forráskódjában követtem végig az hardvereket működtető függvények hívási sorrendjét (szekvenciáját), ezek mikéntjét és eredményeit. Ezen alkalmazás C\#-nyelvű megfelelőjének elkészítését és továbbgondolását kaptuk feladatként.
+	Amikor a munkát megkezdtem, rendelkezésemre állt Dr. Király Roland tanár úr által fejlesztett Delphis asztali alkalmazás, amely -- mint kiderült -- a mai napig teljes mértékben használható. Ezen alkalmazás forráskódjában követtem végig az hardvereket működtető függvények hívási sorrendjét (szekvenciáját), ezek módját és eredményeit, az esetlegesen előforduló hibaüzeneteket. 
+	Ezen alkalmazás C\#-nyelvű megfelelőjének elkészítését és továbbgondolását kaptuk feladatként Leventével.
 	\section{DLL-függvények bemutatása}
 	A következőkben a Keresztes Péter tanár úr által Delphiben implementált metódusokat, ezek kezelésének lehetőségeit fogom részletezni.
 	Általánosságban elmondható, hogy minden függvény egész típusú értékkel tér vissza, amely érték tájékoztat a lefutás eredményességéről: amennyiben a hívott metódus sikeresen (hiba, kivétel nélkül) lefutott, 0-val tér vissza, ahogy ezt egyébként az operációs rendszerek processzeinél is megszokhattuk. Ettől eltérő értékek az egyes hibatípusokat hivatottak meghatározni a Win32-szabvány\footnote{A Win32-es hibakódok szabványa szerint minden hibakódnak a $0x0000$ (decimálisan: 0) és $0xFFFFFF$ (decimálisan: $16\,777\,215$) közötti tartományban kell lennie.} keretein belül. Ezen hibakódok projektünkre vonatkozó részét az alábbi táblázatban \ref{fig:errcodes} összegyűjtöttem. \cite{errcodes}
@@ -439,12 +455,24 @@
 	\subsection{Megoldás}
 	A Speaker-osztályban az eszköz viselkedését leíró 3 mezőt (index, volume és length) egy külön objektumba szervezzük ki (Sound), és a Speaker -- azonosítóján kívül -- kizárólag Sound-típusú objektumok listáját tartalmazza, a listát JSON-ben \textit{"index|volume|length"} rendezett hármasok összefűzésével szerializálja, a listához kizárólag listakezelő függvényekkel lehet hozzáférni (törlés, módosítás, hozzáadás), majd az \verb*|SLDLL_Hangkuldes| számára kiküldött H-tömböt (hanglistát) Delphiben egy ciklussal a JSON-nel átadott adatok szerint a megfelelő sorrendben feltöltjük, az előző probléma megoldásában ennek mikéntjét fejtettem ki.
 	%TODO: ennek megoldása C#-ban
+	\section{Két DLL működésének tesztelése}
+	https://stackoverflow.com/questions/594253/how-to-debug-a-dll-file-in-delphi
+	\cite{sof_debug_dll}
+	%TODO: kifejteni
+	\section{Teljesítmények összehasonlítása Delphi és C\#-hívások esetében}
+	\cite{sof_elapsed_time}
+	
 	\chapter*{Összegzés és kitekintés}
 	Két ismert programozási nyelv között megteremthető kommunikáció kiaknázásával elértem, hogy egy olyan szoftver készülhessen el, amelynek segítségével szakemberek képessé válhatnak emberek mentális egészségének fejlesztésére. 
 	
 	Örömömre szolgált, hogy Somodi László minket bízott meg elméleteit kivitelező szoftveres háttérrel. Szakdolgozatunk nem kizárólag arról szól, hogy szakmai tudásunkat gyarapítsuk és mutassuk bizonyítványként egyetemi oktatóink felé, hanem ezzel a projekttel sok ember számára tudunk további segítséget nyújtani magunk legjobb tudása szerint.
-	\chapter*{Köszönetnyilvánítás}
 	
+	Kifejezetten tetszik, hogy munkánkat több tudományág szakértője segítette, így kutatásunk interdiszciplinárisként is jellemezhető, azaz több szakterület, jelesül a mozgáskoordináció, beágyazott rendszerek vezérlése, együttes munkájának az eredményének részesei lehettünk.
+	
+	A szoftverfejlesztés elméleti és gyakorlati alapjait egyrészt az Egyetem oktatóitól, szakmai és technikai részleteit Dr. Király Roland Tanár Úrral folytatott konzultációinkon szerzett információk biztosították. 
+	
+	Inspirációnkat, motivációnkat Somodi Lászlóval való beszélgetéseink, valamint ,,Mozgáskoordináció- és gyorsaságfejlesztő gyakorlatok óvodától a felnőtt korig'' címet viselő könyvében leírt gondolatok szolgáltatták.
+	\chapter*{Köszönetnyilvánítás}
 	\addcontentsline{toc}{chapter}{Összegzés}
 	\bibliographystyle{plain}
 	\bibliography{references}
