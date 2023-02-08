@@ -5,7 +5,7 @@
 \select@language {magyar} \addvspace {10\p@ }
 \select@language {magyar} \contentsline {figure}{\numberline {4.1.}{\ignorespaces Hibakódok és magyarázataik}}{19}{figure.caption.4}%
 \select@language {magyar} \contentsline {figure}{\numberline {4.2.}{\ignorespaces Eszközök azonosítóinak átadása JSON-formátumon keresztül\relax }}{21}{figure.caption.6}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.3.}{\ignorespaces Delphiben írt eljárás, amely paraméterében egy kimenő string paramétert vár.\relax }}{23}{figure.caption.8}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.4.}{\ignorespaces Az eljárás hibás szignatúrája C\#-ban\relax }}{23}{figure.caption.9}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.5.}{\ignorespaces A függvény helyes Delphi-deklarációja\relax }}{23}{figure.caption.11}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.6.}{\ignorespaces A függvény helyes szignatúrája C\#-ban\relax }}{23}{figure.caption.12}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.3.}{\ignorespaces Delphiben írt eljárás, amely paraméterében egy kimenő string paramétert vár.\relax }}{23}{figure.caption.10}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.4.}{\ignorespaces Az eljárás hibás szignatúrája C\#-ban\relax }}{23}{figure.caption.11}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.5.}{\ignorespaces A függvény helyes Delphi-deklarációja\relax }}{23}{figure.caption.13}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.6.}{\ignorespaces A függvény helyes szignatúrája C\#-ban\relax }}{24}{figure.caption.14}%

@@ -223,9 +223,18 @@
 	Az elosztott rendszerek lényege, hogy van egy alkalmazás, amivel különböző kliensprogramok kommunikálhatnak, ez a szerveralkalmazás, amely -- általában -- egy másik számítógépen fut, amely számítógép ráadásul egy másik hálózat tagja, tehát a két gép közötti adatátvitel az internet segítségével valósítható meg.
 	Kliens-szerver architektúrát különböző módokon építhetünk fel, amelyek a témám szempontjából csak annyiból fontosak, hogy például szolgáljanak programozási nyelvek közötti kapcsolatteremtés alkalmazási lehetőségeire.
 	\section{Gondolataim a streamalapú kommunikációról}
-	Az elosztott alkalmazások ezen változatainál igazából a két forráskód nyelve megegyezik, és a téma szempontjából egy tanulsággal szolgál: kell egy közös nyelv, egy szerződés a két fél között, amelytől egyik fél sem térhet el: a streamalapú kommunikáció ezt az alábbi módon valósítja meg: szövegesen eljuttatja a szerver számára a végrehajtani kívánt metódus nevét és paramétereit. 
-	Például egy kliensalkalmazásban elküldhetjük az alábbi üzenetet a streamen keresztül: \textit{"ADD|2|3"}, ezt a szerver a várakozás állapotában megkapja, rá is illeszti az üzenet első tagját ("ADD") az általa ismert parancsokra, és amennyiben ismeri az "ADD" parancsot, meghívja rá a saját Add(int a, int b)-függvényét, majd egy hasonló stream üzenetet küld vissza a kliens számára \textit{"OK|5"}. Látjuk, hogy van hasonlóság a küldött üzenetek között, van a két fél között egy megállapodás, egy szabvány, ami leírja a kommunikációt. Ez már önmagában nevezhető egy közös nyelvnek a kommunikációban résztvevő két komponens között. A szerver ismeri az $\mathbb{A} = \{"ADD", "SUB", "MUL", "DIV", "EXIT"\}$ parancsokat, tehát $\mathbb{A}$-halmaz elemeit, ezen halmaz elemeit bátran nevezhetjük a közös nyelvet leíró kulcsszavaknak, amelyekkel a távoli számítógépen metódusokat hívhatunk meg), és a kliensnek erről feltétlenül tudnia kell, hogy ismerje ezen parancsok meghívási módját (kvázi az üzenetküldésre használt nyelv szintaxisát!), valamint ezeket meghívva milyen eredményt várhat.
-	Ha továbbgondoljuk, a nyelv szemantikája is megadható: tegyük fel, hogy az előbb felsorolt parancsok használatához szükség van bejelentkezésre. Bejelentkezik \textit{"LOGIN|username|password"} üzenettel a szerverre, amely eldönti, hogy a bejelentkezési adatok passzolnak-e az általa eltárolt felhasználói rekordok bármelyikével, amennyiben igen, bejelentkezteti a felhasználót a szerverre. Ekkor már a többi parancs is megnyílik a számára, a \textit{"LOGIN"}-parancs letiltásra kerül. Ha a bejelentkezett felhasználó \textit{"LOGIN|username"}-parancsot ismételten kiadná, kapna a szervertől egy \textit{"ERROR|ALREADY\_LOGGED\_IN"} üzenetet. Szintaktikailag ugyan helyes parancsot adott ki a felhasználó -- azaz az általa futtatott kliensprogram --, de már a parancs meghívása ebben a kontextusban (itt a kontextus alatt kvázi a session\footnote{TODO: session...}, a kliens-szerver kapcsolat fennállásának idejét vehetjük) már egyszer megtörtént, így a megkapott hibaüzenetben tulajdonképpen egy \textit{szemantikai hibáról} kap tájékoztatást a felhasználó.
+	Ebben a megközelítésben a kliens és szerver kódjának nyelve megegyezik, a téma szempontjából már ez is egy tanulsággal szolgál: kell egy közös nyelv, egy szerződés a két fél között, amelytől egyik fél sem térhet el\footnote{Amennyiben valamelyik fél eltér a meghatározott szabványtól, a kommunikáció nem fog létrejönni, a kliens és a szerver nem fogja érteni egymást.}: a streamalapú kommunikáció ezt az alábbi módon valósítja meg: szövegesen eljuttatja a szerver számára a végrehajtani kívánt metódus nevét és paramétereit. 
+	
+	Például egy kliensalkalmazásban elküldhetjük az alábbi üzenetet a streamen keresztül: \textit{"ADD|2|3"}, ezt a szerver a várakozás állapotában megkapja, rá is illeszti az üzenet első tagját ($"ADD"$) az általa ismert parancsokra, és amennyiben ismeri az $"ADD"$ parancsot, meghívja rá saját $Add(int\ a,\ int\ b)$-függvényét, majd egy hasonló stream üzenetet küld vissza a kliens számára: \textit{"OK|5"}. 
+	
+	Láthatjuk, hogy hasonlóság a küldött üzenetek között, van a két fél között egy megállapodás, egy szabvány, ami leírja a kommunikáció formáját. Elméletem szerint ez már önmagában nevezhető egy közös nyelvnek a kommunikációban résztvevő két komponens között. 
+	
+	A szerver ismeri az $\mathbb{A} = \{"ADD", "SUB", "MUL", "DIV", "EXIT"\}$ parancsokat, tehát $\mathbb{A}$-halmaz elemeit, ezen halmaz elemeit bátran nevezhetjük a közös nyelvet leíró kulcsszavaknak, amelyekkel a távoli számítógépen metódusokat hívhatunk meg), és a kliensnek erről feltétlenül tudnia kell, hogy ismerje ezen parancsok meghívási módját (kvázi az üzenetküldésre használt nyelv szintaxisát!), valamint ezeket meghívva milyen eredményt várhat.
+	
+	Ha továbbgondoljuk, a nyelv szemantikája is megadható: tegyük fel, hogy az előbb felsorolt parancsok használatához szükség van bejelentkezésre. Bejelentkezik $"LOGIN|username|password"$ üzenettel a szerverre, amely eldönti, hogy a bejelentkezési adatok passzolnak-e az általa eltárolt felhasználói rekordok bármelyikével, amennyiben igen, bejelentkezteti a felhasználót a szerverre. Ekkor már a többi parancs is megnyílik a számára, a $"LOGIN"$-parancs letiltásra kerül. Ha a bejelentkezést követően a felhasználó a $"LOGIN|username|password"$-parancsot ismételten kiadná, kapna a szervertől egy $"ERROR|ALREADY\_LOGGED\_IN"$ üzenetet. 
+	%todo: szintaktika - szemantika footnoteok
+	Szintaktikailag\footnote{Szintaktika} ugyan helyes parancsot adott ki a felhasználó -- azaz az általa futtatott kliensprogram --, de már a parancs meghívása ebben a kontextusban (ebben a párhuzamban kontextusnak számíthatjuk a sessiont)\footnote{Egy többfelhasználós rendszerben munkamenetnek (session) nevezzük azt az időszakot, ami eltelik a felhasználó be- és kijelentkeztetése között, ekkor az szabadon végezheti a dolgát, nem kell minden egyes funkció használatához bejelentkeznie.} már egyszer megtörtént, így a megkapott hibaüzenetben tulajdonképpen egy \textit{szemantikai hibáról}\footnote{Szemantika} kap tájékoztatást a felhasználó.
+	
 	\section{RESTful alkalmazások}
 	\section{Google RPC és a Proto-nyelv}
 	\label{grpc}
@@ -356,12 +365,18 @@
 	Ennek legfőbb indoka az volt, ami eldöntötte, hogy érdemes a hívó (.NETben készült \verb*|FormHelperDLL|) és hívott (\verb*|SLDLL|) felek között egy köztes réteget elkészíteni, hogy Delphiben különböző globális változók kapnak értéket, amelyeket nem tudunk máshol definiálni, csakis Delphiben, tehát a hívás környezetét így tudjuk megteremteni, hogy az értékadások ténylegesen működjenek, ne fussunk \verb*|NullReferenceException|-hibákra.\\
 	A \verb*|relayDLL| használatával ellenőrzöttebb módon tudom meghívni az \verb*|SLDLL|-ben meghirdetett függvényeket, ebből nem is kell mindent meghirdetni, csak annyit, amennyit ténylegesen a vezérléshez használnunk szükséges. Ezenkívül több, általam definiált hibakódot is vissza tudok adni, amelyek kiváltó okáról C\#-ban megfelelő kivételek segítségével tájékoztatni tudjuk a felhasználókat.
 	\subsection{Az SLDLL\_Open-függvény paraméterezése}
-	megoldás: C\#-ban a Formnak (a hívó oldalnak) létezik egy Handle nevezetű mutatója, amit átadhatunk a Delphi-s/Assembly-s implementációnak.
+	\subsubsection{A probléma leírása:} Az \verb*|SLDLL_Open|-függvény várja az ablakos alkalmazás handle-mezőjét, amely az üzenetküldést engedélyezi az SLDLL-függvények részéről.
+	\subsubsection{Megoldás: } C\#-ban a Formnak (a függvényeket meghívó félnek) létezik egy Handle nevezetű pointere, amit átadhatunk az SLDLL-nek.
 	\subsection{Stringek átadása Delphi DLL-ből C\# részére}
-	Korábban a szakdolgozatunkat előkészítendő egy példaprojekt keretein belül egyrészt a Delphi nyelvi sajátosságait (szintaxist, a különböző típusokat, vezérlési szerkezeteket) igyekeztem elsajátítani, valamint kísérleteztem a különböző típusok C\#-ra való konvertálásának módjaival. Ez természetesen kiterjedt a karakterláncokkal való kommunikációra is, mivel ha szöveget képesek vagyunk átadni, akkor lényegében azzal bármilyen más típus formátumát is le tudjuk írni, így rekordokét is.
-	Az alábbi példában vizsgáltam a referencia szerinti paraméterátadás működőképességét is, ez abban nyilvánult meg, hogy mind Delphi, mind C\# oldalon meghirdettem egy kimenő (out) paramétert, ami azt jelzi a fordító számára, hogy ez a változó majd az eljárás folyamán fog beállításra kerülni, és értékét -- mivel memóriacímet adtunk át -- a függvényt hívó környezetből is el tudjuk érni.
-	Ez akkor hasznos különösen, amikor egynél több dologgal kéne visszatérnünk Például a függvény a lefutás sikerességet jelző kóddal tér vissza, de például beállít egy string változót, amely értékét szintén szeretnénk a hívás kontextusában látni.
-	A következő Delphi-eljárás kínálkozott működő megoldásként:
+	Korábban szakdolgozati témánkat előkészítendő egy példaprojekt keretein belül kísérleteztem bizonyos Delphiből érkező típusok C\#-nak való átadásával. Ez természetesen kiterjedt a karakterláncokkal való kommunikációra is, mivel ha szöveget képesek vagyunk átadni, akkor lényegében segítségükkel bármilyen más típus formátuma is -- így a rekordoké is -- leírható és feldolgozható.
+
+	Az alábbi példában vizsgáltam a referencia szerinti paraméterátadás működőképességét is, ez abban nyilvánult meg, hogy mind Delphi, mind C\# oldalon meghirdettem egy kimenő (out) paramétert, ami azt jelzi a fordító számára, hogy ez a változó az eljárás futtatásakor fog beállítódni, ennek értékét -- mivel memóriacímet adtunk át -- a függvényt hívó környezetből is el tudjuk érni. Ez különösen akkor hasznos, amikor egy függvényhívással több változó értékét is viszont szeretnénk látni.
+	
+	Alternatív megoldásként mindenképp érdemes megemlítenünk, hogy a visszatérési értékeket egyetlen, valami egységes karakterrel (például pontosvesszővel) elválasztva stringbe is fűzhetjük, vagy éppen egy rekordba csomagolhatjuk, ezekben az esetekben elérhetjük, hogy a ténylegesen egy -- összetett -- értékkel térhessen vissza.
+	
+	Kényelmesebb azonban a paraméterekben megadott referenciákba tölteni a visszatérési értékeket, amely referenciákat a hívás helyéről könnyen el tudunk érni a függvényhívás után (mivel eleve onnan kerültek átadásra)\footnote{A kimenő paraméterezés ebből a megközelítésből szintaktikai cukorkának (syntactic sugar) számíthat, mivel használata megkönnyíti a fejlesztők munkáját, nem feltétlenül szükséges.}.
+	
+	Példának okáért elkészült függvényünk a lefutás sikerességet jelző kóddal tér vissza, emellett beállít egy string változót is, amely értékét szintén szeretnénk a hívás kontextusában elérni. A következő Delphi-eljárás kínálkozott működő megoldásként:
 	\begin{figure}[h!]
 		\centering
 		\includegraphics[scale=0.9]{hibas_string_delphi}
@@ -375,15 +390,13 @@
 		\label{hibas_string_csharp}
 	\end{figure}
 	\subsubsection{Megoldás}
-	Stringek formájában alapértelmezetten a C\# marshalling komponense Delphiből \verb*|PWideChar| típusú változókat vár. Amennyiben Delphiben a metódus WideStringet kér paraméterben, akkor azt a C\#-oldali marshallerrel a \verb*|[MarshalAs(UnmanagedType.BStr)]| attribútum segítségével tudjuk közölni.
 	\begin{figure}[h!]
 		\centering
 		\includegraphics[scale=0.65]{string_delphi}
 		\caption{A függvény helyes Delphi-deklarációja}
 		\label{string_delphi}
 	\end{figure}
-	 A marshaller alapértelmezés szerint \verb*|PWideChar|-t várna, mivel a C\# oldalon nem alkalmaztunk \verb*|[MarshalAs(UnmanagedType.BStr)]| attribútumot a külső eljárás deklarációjában.
-	 Megoldás lehet, hogy Delphiben minden átadni, visszaadni kívánt stringet \verb*|PWideChar|-típusúra módosítsuk, adjuk át referencia szerint, így a C\# oldalán az alapértelmezésnek megfelelünk.
+	Stringek formájában alapértelmezetten a C\# marshalling komponense Delphiből \verb*|PWideChar| típusú változókat vár. Amennyiben Delphiben a metódus WideStringet kér paraméterben, akkor azt a C\#-oldali marshallerrel a \verb*|[MarshalAs(UnmanagedType.BStr)]| attribútum segítségével tudjuk közölni.
 	\begin{figure}[h!]
 		\centering
 		\includegraphics[scale=0.6]{string_csharp}
@@ -391,45 +404,41 @@
 		\label{string_csharp}
 	\end{figure}
 	
-	Ennél is fontosabb, hogy amikor a DLL visszaad egy memóriára mutató mutatót, amelyet a marshal ezután feldolgoz, a memóriát a \verb*|CoTaskMemAlloc()| vagy azzal egyenértékű funkcióval kell kiosztani, mivel a \verb*|marshal| alapértelmezés szerint a \verb*|CoTaskMemFree()|-függvénnyel szabadít fel memóriát (lásd korábban: \ref{memhandling}).
-	
-	Egy dinamikusan kiosztott memóriára mutatót ad vissza, azonban ez a memória nem a \verb*|CoTaskMemAlloc()| segítségével kerül kiosztásra. Valójában a memóriát a Delphi fordítója kezeli, és a függvény kilépésekor automatikusan felszabadul. Tehát valójában egy érvénytelen mutatót adunk vissza a C\#-nak.\cite{sof_strhandling}
+	\cite{sof_strhandling}
 	%todo: problémák kifejtése
-	\section{A relayDLL-ben eldobott kivételek CSharp-ban nem kezelhetőek}
-	\subsection{Megoldás} hibakódokkal kommunikáljuk a C\# számára az esetleges hiba típusát,
-	ezen visszatérési értékek esetén C\#-oldalon tudok dobni saját Exception-t (ugyanúgy, mint az SLDLL-lel való kommunikáció folyamán).
+	\section{A relayDLL-ben eldobott kivételek nem kezelhetőek}
+	\subsection{Megoldás} Hibakódokkal jelezzük a C\# felé, ha esetleg hibára futott valamelyik függvény, ebből a hibakódból a C\# tudni fogja, hogy milyen típusú kivételt dobjon az asztali alkalmazás számára, amelyek már lehetnek egyénileg elkészített Exception-objektumok.
 	\section{uzfeld metódus CSharp-os megfelelője}
 	\subsection{Megoldás}
-	Elméletem szerint létezik ennek egy szabványos megfelelője, C\#-ban ez WndProc-metódus, ami szintén Message-t vár referenciaként átadva, ezzel fog futásidőben kommunikálni a DelphiDLL.
+	Elméletem szerint létezik ennek egy szabványos megfelelője, C\#-ban ez \verb*|WndProc|-metódus, ami szintén Message-típusú változót vár referencia szerint átadva, ezzel tud az SLDLL futásidőben kommunikálni.
 	Innentől kezdve:
 	\begin{enumerate}
-		\item \verb*|SLDLL_Open| kivált egy Message-t,
-		\item amin keresztül az oprendszer meghívja a Form WndProc metódusát,
-		\item ami meghívja az \verb*|SLDLL_ListElem|-függvényt (amennyiben a felmérés sikeres), mielőtt az \verb*|SLDLL_Felmeres|-re kerülne a sor.
+		\item \verb*|SLDLL_Open| kivált egy üzenetet (Win32 Message).
+		\item Ezen az üzeneten keresztül az operációs rendszer meghívja a Form \verb*|WndProc| metódusát\footnote{ezt azért teheti meg, mivel az \textit{SLDLL\_Open} hívásakor átadott Form Handle-n keresztül ismeri, hogy merre továbbítsa a rendszerüzeneteket.}.
+		\item Amennyiben a felmérés sikeresen lezajlott, a \verb*|WndProc| meghívja a dev485 és drb485 változókat beállító \verb*|SLDLL_ListElem|-függvényt, mielőtt az \verb*|SLDLL_Felmeres|-re kerülne a sor. A megfelelő hívási szekvencia így automatikusan biztosított.
 	\end{enumerate}
-	\section{DEV485 elérése}
-	Ha DLL-en belüli globális dev485-re hívom meg a Listelemet (paraméter nélkül), akkor kívül, a formból nem érem el a dev485 elemeit. Ha viszont DLL-en kívülről hívom meg a Listelemet dev485 pointerét átadva (C\#-ban hogyan adok át PDEVLIS-t? - tetszőleges intptr-t nem lehet átadni?), akkor a formból elérem, ekkor viszont a DLL-függvényekkel nem tudok hatást gyakorolni rá (XML-be, JSON-be menteni, stb.)
-	\subsection{Megoldás} egy fügvénybe tettem az \verb*|SLDLL_Felmeres| és a Convert-metódusokat, így azok mindenképp elérik a beállított dev485-tömböt és drb485 értéket.
 	\section{Eszközök azonosítóinak, típusainak átadása}
 	\subsection{Megoldás}
-	A Delphi-ben tárolt tömb (dev485) eszközeinek legfontosabb mezőjét (ami az eszközt azonosítója, tehát az azonosítót XML-fájlba kimentjük vagy JSON-formátumú szöveggé alakítjuk. Az azonosító önmagában meghatározza az eszköz típusát, úgyhogy elég azt átadni.
-	Eszközök típusának beazonosításának módja:
+	A Delphiben tárolt tömb (dev485) eszközeinek legfontosabb mezőjét (ami az eszközt azonosítója, tehát az azonosítót XML-fájlba kimentjük vagy JSON-formátumú szöveggé alakítjuk. Az azonosító önmagában meghatározza az eszköz típusát, úgyhogy elég azt átadni.
+	Az eszközök típusát a következő módon tudjuk meghatározni kizárólag beállított azonosítóikon keresztül:
 	\begin{itemize}
-		\item SLLELO: \$4000 -> lámpa azonosítók \$4000 .. \$4fff (decimálisan: 16 384 .. 20 479) tartományon kaphatnak értéket
-		\item SLNELO: \$8000 -> nyíl azonosítók \$8000 .. \$8fff (decimálisan: 32 768 .. 38 683) tartományon kaphatnak értéket
-		\item SLHELO: \$c000 -> hangszóró azonosítók \$c000 .. \$cfff (decimálisan: 49 152 .. 53 257) tartományon kaphatnak értéket
+		\item \verb*|SLLELO|: \$4000 -> lámpa azonosítók \$4000 .. \$4fff (decimálisan: 16 384 .. 20 479) tartományon kaphatnak értéket
+		\item \verb*|SLNELO|: \$8000 -> nyíl azonosítók \$8000 .. \$8fff (decimálisan: 32 768 .. 38 683) tartományon kaphatnak értéket
+		\item \verb*|SLHELO|: \$c000 -> hangszóró azonosítók \$c000 .. \$cfff (decimálisan: 49 152 .. 53 257) tartományon kaphatnak értéket
 	\end{itemize}
-	A típus szempontjából lényegtelen, hogy az utolsó 3 bitnégyesnek milyen értéke van, a legfelső bitnégyes (a legfelső hex) azonosítja a típust.
-	Hexadecimálisan ha a szám négyjegyű és c-vel kezdődik, akkor az azonosító hangszórót fog jelölni.
-	Ez az eljárás a gRPC megoldására hasonlít \ref{grpc} (egy közös proto nyelv), a C\# és a Delphi között az XML tud közös nyelvként (hídként) funkcionálni.
+	A típus szempontjából lényegtelen, hogy az utolsó 3 bitnégyesnek milyen értéke van, tulajdonképpen a legfelső bitnégyes (a legfelső hex) azonosítja a típust.
+	Szigorúan hexadecimálisan nézve: ha egy szám négyjegyű és C-számjeggyel kezdődik, akkor az azonosító hangszórót fog jelölni.
+
+	Ez az eljárás a gRPC megoldására hasonlít \ref{grpc} (egy közös proto nyelv), a C\# és a Delphi között akár az XML, akár a JSON közös nyelvként (hídként) funkcionál.
+
 	\section{A hangszóró egy egész hanglistát kezel - JSON}
-	probléma:  -> JSON-ben hogyan lehetne megoldani?
 	\subsection{Megoldás}
-	egy hanglistát több index|volume|length 3-as ír le, a |-karakter mentén széttördelt szövegen 3-as lépésközzel iterálhatunk végig
+	egy hanglistát több index|volume|length 3-as ír le, a pipe, azaz '|'-karakter mentén széttördelt szövegen 3-as lépésközzel iterálhatunk végig.
+	%TODO: ennek megoldása Delphiben
 	\section{A hangszóró egy egész hanglistát kezel - kód}
-	kódban hogyan lehetne megoldani?
 	\subsection{Megoldás}
-	Speaker-osztályban a 3 mezőt (index, volume és length) egy külön objektumba szervezzük ki (Sound), és a Speaker kizárólag Sound-ok listáját fogja tartalmazni, a listát JSON-ben index|volume|length 3-asok összefűzésével szerializálja, a listához kizárólag listakezelő függvényekkel lehet hozzáférni (törlés, módosítás, hozzáadás), majd az \verb*|SLDLL_Hangkuldes| számára kiküldött H-tömböt (hanglistát) Delphiben egy ciklussal a JSON-ben érkező adatok szerint a megfelelő sorrendben feltöltjük.
+	A Speaker-osztályban az eszköz viselkedését leíró 3 mezőt (index, volume és length) egy külön objektumba szervezzük ki (Sound), és a Speaker -- azonosítóján kívül -- kizárólag Sound-típusú objektumok listáját tartalmazza, a listát JSON-ben \textit{"index|volume|length"} rendezett hármasok összefűzésével szerializálja, a listához kizárólag listakezelő függvényekkel lehet hozzáférni (törlés, módosítás, hozzáadás), majd az \verb*|SLDLL_Hangkuldes| számára kiküldött H-tömböt (hanglistát) Delphiben egy ciklussal a JSON-nel átadott adatok szerint a megfelelő sorrendben feltöltjük, az előző probléma megoldásában ennek mikéntjét fejtettem ki.
+	%TODO: ennek megoldása C#-ban
 	\chapter*{Összegzés és kitekintés}
 	Két ismert programozási nyelv között megteremthető kommunikáció kiaknázásával elértem, hogy egy olyan szoftver készülhessen el, amelynek segítségével szakemberek képessé válhatnak emberek mentális egészségének fejlesztésére. 
 	
