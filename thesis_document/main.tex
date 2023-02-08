@@ -39,9 +39,13 @@
     A demencia, azaz a kognitív képességek leépülésének tünetei közé tartoznak a különböző beszédzavarok, az ítélőképesség, a memorizálás és az elvonatkoztatás képességeinek romlása.
     
 	%TODO: valami aktuálisabbat találni erre
-	\cite{dementia1}
-	\cite{dementia2}
-	\cite{dementia3}
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.7]{images/demencia.png}
+		\caption{Valamely demenciával diagnosztizáltak számának emelkedése}
+		\subcaption{Forrás: saját szerkesztés}
+		\label{fig:demencia}
+	\end{figure}
 
 	Az értelmi hanyatlást különféle egészségkárosító szokások -- például az alkoholfogyasztás -- szervi károsodás, akár ezek együttese is okozhatja, a legjelentősebb kockázati tényező ilyen téren azonban az ember életkora. 
 	%TODO: FORRÁSOK!
@@ -216,6 +220,15 @@
 	\cite{memhandling}
 	\label{memhandling}
 	\chapter{Elosztott rendszerek}
+	Az elosztott rendszerek lényege, hogy van egy alkalmazás, amivel különböző kliensprogramok kommunikálhatnak, ez a szerveralkalmazás, amely -- általában -- egy másik számítógépen fut, amely számítógép ráadásul egy másik hálózat tagja, tehát a két gép közötti adatátvitel az internet segítségével valósítható meg.
+	Kliens-szerver architektúrát különböző módokon építhetünk fel, amelyek a témám szempontjából csak annyiból fontosak, hogy például szolgáljanak programozási nyelvek közötti kapcsolatteremtés alkalmazási lehetőségeire.
+	\section{Gondolataim a streamalapú kommunikációról}
+	Az elosztott alkalmazások ezen változatainál igazából a két forráskód nyelve megegyezik, és a téma szempontjából egy tanulsággal szolgál: kell egy közös nyelv, egy szerződés a két fél között, amelytől egyik fél sem térhet el: a streamalapú kommunikáció ezt az alábbi módon valósítja meg: szövegesen eljuttatja a szerver számára a végrehajtani kívánt metódus nevét és paramétereit. 
+	Például egy kliensalkalmazásban elküldhetjük az alábbi üzenetet a streamen keresztül: \textit{"ADD|2|3"}, ezt a szerver a várakozás állapotában megkapja, rá is illeszti az üzenet első tagját ("ADD") az általa ismert parancsokra, és amennyiben ismeri az "ADD" parancsot, meghívja rá a saját Add(int a, int b)-függvényét, majd egy hasonló stream üzenetet küld vissza a kliens számára \textit{"OK|5"}. Látjuk, hogy van hasonlóság a küldött üzenetek között, van a két fél között egy megállapodás, egy szabvány, ami leírja a kommunikációt. Ez már önmagában nevezhető egy közös nyelvnek a kommunikációban résztvevő két komponens között. A szerver ismeri az $\mathbb{A} = \{"ADD", "SUB", "MUL", "DIV", "EXIT"\}$ parancsokat, tehát $\mathbb{A}$-halmaz elemeit, ezen halmaz elemeit bátran nevezhetjük a közös nyelvet leíró kulcsszavaknak, amelyekkel a távoli számítógépen metódusokat hívhatunk meg), és a kliensnek erről feltétlenül tudnia kell, hogy ismerje ezen parancsok meghívási módját (kvázi az üzenetküldésre használt nyelv szintaxisát!), valamint ezeket meghívva milyen eredményt várhat.
+	Ha továbbgondoljuk, a nyelv szemantikája is megadható: tegyük fel, hogy az előbb felsorolt parancsok használatához szükség van bejelentkezésre. Bejelentkezik \textit{"LOGIN|username|password"} üzenettel a szerverre, amely eldönti, hogy a bejelentkezési adatok passzolnak-e az általa eltárolt felhasználói rekordok bármelyikével, amennyiben igen, bejelentkezteti a felhasználót a szerverre. Ekkor már a többi parancs is megnyílik a számára, a \textit{"LOGIN"}-parancs letiltásra kerül. Ha a bejelentkezett felhasználó \textit{"LOGIN|username"}-parancsot ismételten kiadná, kapna a szervertől egy \textit{"ERROR|ALREADY\_LOGGED\_IN"} üzenetet. Szintaktikailag ugyan helyes parancsot adott ki a felhasználó -- azaz az általa futtatott kliensprogram --, de már a parancs meghívása ebben a kontextusban (itt a kontextus alatt kvázi a session\footnote{TODO: session...}, a kliens-szerver kapcsolat fennállásának idejét vehetjük) már egyszer megtörtént, így a megkapott hibaüzenetben tulajdonképpen egy \textit{szemantikai hibáról} kap tájékoztatást a felhasználó.
+	\section{RESTful alkalmazások}
+	\section{Google RPC és a Proto-nyelv}
+	\label{grpc}
 	\chapter{Szakdolgozati projektünkről}
 	A szakdolgozat mellé készített projektemet Sipos Levente hallgatótársammal fejlesztjük. Munkánk arról szól, hogy Keresztes Péter tanár úr által Delphiben implementált metódusokat hívunk meg C\#-os környezetben. A C\# és Delphi nyelvek összehangolása az én feladatom, az elkészült termék terveim szerint úgynevezett Helper-metódusok implementációit tartalmazó, lefordított\footnote{Lévén a C\# fordított nyelvnek számít, ezért az alkalmazások futtatásához/használatához az elkészült forráskódokat első lépésben futtatható állományra (gépi kódra) kell fordítani egy fordítóprogram segítségével. Ezt a folyamatot szakszóval \textit{compilingnak} vagy \textit{buildelésnek} is nevezzük.} DLL projekt lesz C\# nyelven, amelyeket Levente az ő grafikus alkalmazásában tud meghívni. A projekt jelen állása szerint szükség volt továbbá egy úgynevezett relayDLL-re, amelyet én állítottam össze.
 	\section{Miről is szól a projektünk?}
@@ -260,11 +273,24 @@
 	
 	Ami közös még a két nyelvben, hogy a fejlesztés moduljaiból Win32 szabványnak megfelelő DLL-ek készülhetnek a segítségükkel, ezek szintén lefordított, gépi kódú állományok, amelyek más szoftver forráskódjában felhasználhatóak, lényegében így válnak futtatható állománnyá.
 	
+	\section{Mik azok, amelyeket a C\# tud, de a Delphi nem?}
+	\begin{itemize}
+		\item automatikus memóriakezelés - Garbage Collector
+		\item lambdafüggvények és LINQ\footnote{LINQ}
+		\item szerializációt csak explicit, kódolt módon tudunk végezni
+	\end{itemize}
+	\section{Mik azok, amelyeket a Delphi tud, de a C\# nem?}
+	\begin{itemize}
+		\item Assembly nyelv
+		\item case insensitive
+	\end{itemize}
+	\cite{pascal_csharp}
+	
 	\section{Alaphelyzet}
 	Amikor a munkát megkezdtem, rendelkezésemre állt Dr. Király Roland tanár úr által fejlesztett Delphis asztali alkalmazás, amely -- mint kiderült -- a mai napig teljesen használható. Ezen alkalmazás forráskódjában követtem végig az hardvereket működtető függvények hívási sorrendjét (szekvenciáját), ezek mikéntjét és eredményeit. Ezen alkalmazás C\#-nyelvű megfelelőjének elkészítését és továbbgondolását kaptuk feladatként.
 	\section{DLL-függvények bemutatása}
 	A következőkben a Keresztes Péter tanár úr által Delphiben implementált metódusokat, ezek kezelésének lehetőségeit fogom részletezni.
-	Általánosságban elmondható, hogy minden függvény egész típusú értékkel tér vissza, amely érték tájékoztat a lefutás eredményességéről: amennyiben a hívott metódus sikeresen (hiba, kivétel nélkül) lefutott, 0-val tér vissza, ahogy ezt egyébként az operációs rendszerek processzeinél is megszokhattuk. Ettől eltérő értékek az egyes hibatípusokat hivatottak meghatározni a Win32-szabvány\footnote{A Win32-es hibakódok szabványa szerint minden hibakódnak a $0x0000$ (decimálisan: 0) és $0xFFFFFF$ (decimálisan: $16\,777\,215$) közötti tartományban kell lennie.} keretein belül. Ezen hibakódok projektünkre vonatkozó részét az alábbi táblázatban \ref{fig:errcodes} összegyűjtöttem.
+	Általánosságban elmondható, hogy minden függvény egész típusú értékkel tér vissza, amely érték tájékoztat a lefutás eredményességéről: amennyiben a hívott metódus sikeresen (hiba, kivétel nélkül) lefutott, 0-val tér vissza, ahogy ezt egyébként az operációs rendszerek processzeinél is megszokhattuk. Ettől eltérő értékek az egyes hibatípusokat hivatottak meghatározni a Win32-szabvány\footnote{A Win32-es hibakódok szabványa szerint minden hibakódnak a $0x0000$ (decimálisan: 0) és $0xFFFFFF$ (decimálisan: $16\,777\,215$) közötti tartományban kell lennie.} keretein belül. Ezen hibakódok projektünkre vonatkozó részét az alábbi táblázatban \ref{fig:errcodes} összegyűjtöttem. \cite{errcodes}
 	
 	A program azzal nyit, hogy felméri az USB-porton csatlakoztatott, egymással RJ11-csatlakozókkal sorba kötött eszközöket, őket a típusának megfelelő azonosítóval látja el. Az azonosító meghatározza, hogy egy eszköz milyen típusú. 
 	
@@ -272,21 +298,23 @@
 	A program indulásakor elsőként lefutó \verb*|SLDLL_Open| függvényt hívva elkezdhetjük az SLDLL további metódusainak használatát.
 	\subsection{Eszközök felmérése}
 	\verb*|SLDLL_Felmeres|
+	
 	\subsection{Hibakódok}
-	\begin{figure}[ht!]
-		\hspace*{-1in}
-		\includegraphics[scale=0.7]{images/errcodes.png}
-		\caption{Win32-hibakódok magyarázata}
-		\label{fig:errcodes}
-	\end{figure}
-	\cite{errcodes}
-	Ezen hibakódokat C\#-ban a következő megfelelő, egyénileg definiált kivételekkel, és sokkal kifejezőbb üzenetekkel váltom fel:
+	Az alábbi táblázatban látható hibakódokat C\#-ban a következő megfelelő, egyénileg definiált kivételekkel, és sokkal kifejezőbb üzenetekkel váltom fel:
 	\begin{itemize}
 		\item \verb*|Dev485Exception|: Eszközök tömbjére vonatkozó hibaüzenetek
 		\item \verb*|SLDLLException|: A DLL működésével kapcsolatos hibaüzenetek
 		\item \verb*|USBDisconnectedException|: Az USB-porton nem észlelhető eszköz hibaüzenete.
 		%TODO: újabbakat hozzáadni!
 	\end{itemize}
+	\begin{figure}[h!]
+		\centering
+		\hspace*{-0.5in}
+		\includegraphics[scale=0.65]{images/errcodes.png}
+		\caption[Hibakódok és magyarázataik]{Win32-hibakódok magyarázata}
+		\subcaption{Saját szerkesztés}
+		\label{fig:errcodes}
+	\end{figure}
 	\subsection{A WinForm bemutatása}
 	A \textit{WinForm}, teljes nevén a \textit{Windows Forms} a .NET GUI-fejlesztést\footnote{A GUI a Graphical User Interface (grafikus felhasználói interfész) kifejezés rövidítése, asztali alkalmazásokat értünk alatta, amely átlagfelhasználók számára kényelmesebb megközelítés a konzolos alkalmazásokkal szemben} támogató keretrendszere, amelynek segítségével egy asztali alkalmazást egyszerűbb módon el tudunk készíteni. 
 	
@@ -331,11 +359,13 @@
 	megoldás: C\#-ban a Formnak (a hívó oldalnak) létezik egy Handle nevezetű mutatója, amit átadhatunk a Delphi-s/Assembly-s implementációnak.
 	\subsection{Stringek átadása Delphi DLL-ből C\# részére}
 	Korábban a szakdolgozatunkat előkészítendő egy példaprojekt keretein belül egyrészt a Delphi nyelvi sajátosságait (szintaxist, a különböző típusokat, vezérlési szerkezeteket) igyekeztem elsajátítani, valamint kísérleteztem a különböző típusok C\#-ra való konvertálásának módjaival. Ez természetesen kiterjedt a karakterláncokkal való kommunikációra is, mivel ha szöveget képesek vagyunk átadni, akkor lényegében azzal bármilyen más típus formátumát is le tudjuk írni, így rekordokét is.
+	Az alábbi példában vizsgáltam a referencia szerinti paraméterátadás működőképességét is, ez abban nyilvánult meg, hogy mind Delphi, mind C\# oldalon meghirdettem egy kimenő (out) paramétert, ami azt jelzi a fordító számára, hogy ez a változó majd az eljárás folyamán fog beállításra kerülni, és értékét -- mivel memóriacímet adtunk át -- a függvényt hívó környezetből is el tudjuk érni.
+	Ez akkor hasznos különösen, amikor egynél több dologgal kéne visszatérnünk Például a függvény a lefutás sikerességet jelző kóddal tér vissza, de például beállít egy string változót, amely értékét szintén szeretnénk a hívás kontextusában látni.
 	A következő Delphi-eljárás kínálkozott működő megoldásként:
 	\begin{figure}[h!]
 		\centering
 		\includegraphics[scale=0.9]{hibas_string_delphi}
-		\caption{Delphiben írt eljárás, amely paraméterében egy kimenő string paramétert vár, azaz ez megfeleltethető visszatérési értéknek.}
+		\caption{Delphiben írt eljárás, amely paraméterében egy kimenő string paramétert vár.}
 		\label{hibas_string_delphi}
 	\end{figure}
 	A C\#-ban ily módon végeztem el az eljárás deklarációját, ebben a példaprogramban ez le is futott, azonban a szakdolgozati projektünkhöz ez a megoldás nem volt megfelelő.
@@ -345,19 +375,18 @@
 		\label{hibas_string_csharp}
 	\end{figure}
 	\subsubsection{Megoldás}
-
-	Stringek esetében alapértelmezetten \verb*|WideChar| típusú memóriacímet adunk át a Delphi DLL-nek.
+	Stringek formájában alapértelmezetten a C\# marshalling komponense Delphiből \verb*|PWideChar| típusú változókat vár. Amennyiben Delphiben a metódus WideStringet kér paraméterben, akkor azt a C\#-oldali marshallerrel a \verb*|[MarshalAs(UnmanagedType.BStr)]| attribútum segítségével tudjuk közölni.
 	\begin{figure}[h!]
 		\centering
-		\includegraphics[scale=0.75]{string_delphi}
+		\includegraphics[scale=0.65]{string_delphi}
 		\caption{A függvény helyes Delphi-deklarációja}
 		\label{string_delphi}
 	\end{figure}
-
-	Továbbá a Delphi DLL függvénye \verb*|PAnsiChar|-t ad vissza, de a marshal alapértelmezés szerint \verb*|PWideChar|-t vár, mivel a C\# oldalon nem alkalmaztuk a \\\verb*|[return:MarshalAs(UnmanagedType.BStr)]| attribútumot a DLL-funkció deklarációjában.
+	 A marshaller alapértelmezés szerint \verb*|PWideChar|-t várna, mivel a C\# oldalon nem alkalmaztunk \verb*|[MarshalAs(UnmanagedType.BStr)]| attribútumot a külső eljárás deklarációjában.
+	 Megoldás lehet, hogy Delphiben minden átadni, visszaadni kívánt stringet \verb*|PWideChar|-típusúra módosítsuk, adjuk át referencia szerint, így a C\# oldalán az alapértelmezésnek megfelelünk.
 	\begin{figure}[h!]
 		\centering
-		\includegraphics[scale=0.55]{string_csharp}
+		\includegraphics[scale=0.6]{string_csharp}
 		\caption{A függvény helyes szignatúrája C\#-ban}
 		\label{string_csharp}
 	\end{figure}
@@ -392,7 +421,7 @@
 	\end{itemize}
 	A típus szempontjából lényegtelen, hogy az utolsó 3 bitnégyesnek milyen értéke van, a legfelső bitnégyes (a legfelső hex) azonosítja a típust.
 	Hexadecimálisan ha a szám négyjegyű és c-vel kezdődik, akkor az azonosító hangszórót fog jelölni.
-	Ez az eljárás a gRPC megoldására hasonlít (egy közös proto nyelv), a C\# és a Delphi között az XML tud közös nyelvként (hídként) funkcionálni.
+	Ez az eljárás a gRPC megoldására hasonlít \ref{grpc} (egy közös proto nyelv), a C\# és a Delphi között az XML tud közös nyelvként (hídként) funkcionálni.
 	\section{A hangszóró egy egész hanglistát kezel - JSON}
 	probléma:  -> JSON-ben hogyan lehetne megoldani?
 	\subsection{Megoldás}
