@@ -275,7 +275,13 @@
 	%todo: javítani, kifejteni
 
 	RPC-vel hívható metódusokat definiálhatunk paraméterrel és visszatérési típussal. Ezek mind szerver, mind kliens oldalon meg fognak jelenni gRPC által generált szabványos formában. 
-	%todo: kép egy .proto fájlról - beadandómból!
+	
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.55]{protobuf}
+		\caption{Beadandó projektben készített .proto állomány (részlet)}
+		\label{fig:protobuf}
+	\end{figure}
 	További előnye, hogy az adatokat a lehető legtömörebb bináris formátumban küldi át a hálózaton, a JSON-formátum ezzel szemben egy az egyben szövegesen kerül átadásra.
 	\cite{grpc_rest}
 	\begin{figure}[h!]
