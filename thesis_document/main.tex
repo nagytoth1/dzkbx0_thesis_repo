@@ -6,8 +6,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage{mathtools,amssymb,amsthm,pdfpages, subcaption, comment, enumitem, booktabs, graphicx, lipsum}
 \footnotestyle{rule=fourth}
-\captionsetup[subfigure]{labelformat=empty} %subcaptionre ne tegyen számozást
-\graphicspath{{./images/}} %képeket innen importálom be
+\captionsetup[subfigure]{labelformat=empty} % subcaptionre ne tegyen számozást
+\graphicspath{{./images/}} % képeket innen importálom be
 \DeclareGraphicsExtensions{.png,.PNG,.jpg,.JPG,.pdf,.PDF} %ezeken a kiterjesztéseken keresse a képeket
 
 \newtheorem{tetel}{Tétel}[chapter]
@@ -31,7 +31,8 @@
 	\end{abstract}
 	\chapter*{Bevezetés}
 	\addcontentsline{toc}{chapter}{Bevezetés}
-	Kognitív képességeink fejlesztésére különösen oda kell figyelnünk életünk során. Ezen megállapításomat alátámasztja egy COVID-világjárvány utáni időszak, amely időszakban sorra jelennek meg olyan jelentések %TODO referencia erre
+	Kognitív képességeink fejlesztésére különösen oda kell figyelnünk életünk során. Ezen megállapításomat alátámasztja egy COVID-világjárvány utáni időszak, amely időszakban sorra jelennek meg olyan jelentések 
+	%TODO referencia erre
     \cite{brain1}, amelyek azt támasztják alá, hogy a lezárások ideje alatt nőtt a különböző mentális betegségek kialakulásának kockázata. A \textit{demencia} gyűjtőfogalomként alkalmas ezen betegségek együttes megnevezésére.\footnote{A demencia említésekor nem egyetlen betegségre, hanem több hasonló jellegű problémát  csoportosító fogalomra, egy tünetegyüttesre gondolunk. Száznál is több típusát ismerik a demenciának, amelyek közül az Alzheimer-kór a leggyakoribb.}
     
     A különböző digitális eszközök használata számtalan alkalommal hosszas órákon keresztül képes lekötni a figyelmünket, ezért bizonyos külső ingerekre egyre lassabban, kisebb amplitúdóval, azaz nagyobb közömbösséggel tudunk reagálni. 
@@ -43,7 +44,6 @@
 		\centering
 		\includegraphics[scale=0.7]{images/demencia.png}
 		\caption{Valamely demenciával diagnosztizáltak számának emelkedése}
-		\subcaption{Forrás: saját szerkesztés}
 		\label{fig:demencia}
 	\end{figure}
 
@@ -75,60 +75,60 @@
 	Fő különbségek formális és természetes nyelvek között:
 	\begin{itemize}
 		\item A formális nyelveket egy dedikált célra hozzuk létre, ezeket általában nem használjuk interperszonális (emberek közötti) kommunikációra. Ezzel szemben egy természetes nyelv (például az angol) egy emberi közösség aktuális és a múltban használt jelkészletét rendszerezi.\\
-		A C++ programozási nyelv például azért jöhetett létre Bjarne Stroustrup dán szoftverfejlesztő jóvoltából, mert a C - procedurális nyelv lévén - nem tette lehetővé többek között a tisztább objektum-orientált programozást, a memóriacímek helyett a biztonságosabb referenciák használatát. \cite{cpplang1}
+		A C++ programozási nyelv például azért jöhetett létre \textit{Bjarne Stroustrup} dán szoftverfejlesztő jóvoltából, mert a C - procedurális paradigmájú nyelv lévén - nem tette lehetővé többek között a tisztább objektum-orientált programozást, a memóriacímek helyett a biztonságosabb referenciák használatát. \cite{cpplang1}
 		\item A formális nyelvek kulcsszavakból állnak. A természetes nyelvek több építőelemből tevődnek össze: fonémák (hangok, betűk), morfémák (szótövek, toldalékok), szavak, mondatok, bekezdések, szövegek.
 		\item A természetes nyelvek fejlődhetnek spontán, emberi generációról generációra valamint tudatos módon (például nyelvújítás) egyaránt. A formális nyelvek alakulását egy tervezési fázis előzi meg, ekkor a nyelv szabályrendszerét lefektetik, tehát csak és kizárólag tudatos, mesterséges beavatkozással lehet megreformálni őket.
 		\item Az ember által is beszélt természetes nyelvek esetén a használt szavak hangsúlyozásának, hanglejtésének, valamint a beszéd hangerejének is jelentésmódosító ereje lehet, a formális nyelvek esetében hangsúlyról egyáltalán nem beszélhetünk.
 	\end{itemize} \cite{langvid1} \cite{langvid2}
 	Ezekből következően minden programozási nyelv formális nyelvnek számít.
 	\section{Jelenleg népszerű programozási nyelvek}
-	2022-ben a legnépszerűbb programozási nyelveknek számítanak (a teljesség igénye nélkül):
+	2022-ben a legnépszerűbb programozási nyelveknek számítanak (a teljesség igénye nélkül):\cite{proglanguages1}\cite{proglanguages2}
 	\begin{enumerate}
-		\item JavaScript
+		\item \textbf{JavaScript}
 		\begin{itemize}
 			\item 1995, \textit{Brendan Eich} fejlesztette a webböngészési funkcionalitások kibővítése végett.
 			\item web-, játék-, valamint mobilfejlesztésre egyaránt használják
 			\item webszerverként is tud funkcionálni (Node.js)
 		\end{itemize}
-		\item Python
+		\item \textbf{Python}
 		\begin{itemize}
 			\item 1991, \textit{Guido Van Rossum} tervezte annak érdekében, hogy olvashatóbb és nagyobb kifejezőerővel rendelkező kódok készülhessenek, a szintaktikai szabályok helyett a kód működésére tudjanak a programozók koncentrálni
 			\item backend-fejlesztés
 			\item automatizálás
 			\item web scraping\footnote{Információgyűjtés eszköze, amely lehetővé teszi, hogy automatizált módon (kód segítségével) bizonyos weboldalakról tetszőleges adatokat (például posztokat, közelgő eseményeket) letölteni.}
-			\item Data Science\footnote{Az informatika, a matematikai statisztika és az üzleti elemzés metszetében álló tudományág, amely adatok összegyűjtésével, ezek elemzésével foglalkozik annak érdekében, hogy a vállalatok jobb üzleti döntéseket tudjanak meghozni ezek segítségével. \hyperref{https://qr.ae/pvlYmQ}{}{}{Forrás}}
+			\item Data Science\footnote{Az informatika, a matematikai statisztika és az üzleti elemzés metszetében álló tudományág, amely adatok összegyűjtésével, ezek elemzésével foglalkozik annak érdekében, hogy a vállalatok jobb üzleti döntéseket tudjanak meghozni ezek segítségével. \hyperref{https://tinyurl.com/k8b23nr3}{}{}{Forrás: Quora}}
 		\end{itemize}
-		\item HTML
+		\item \textbf{HTML}
 		\begin{itemize}
 			\item webdokumentumok kezelése: JSON, XML, SVG
 			\item weboldalak statikus (állandó) részeinek fejlesztése
 		\end{itemize}
-		\item CSS 
+		\item \textbf{CSS} 
 		\begin{itemize}
 			\item weboldalak formatervét, kinézetét, stílusát alakítja ki
 			\item HTML mellett hívják segítségül
 		\end{itemize}
-		\item Java
+		\item \textbf{Java}
 		\begin{itemize}
 			\item 1995, Sun Microsystems fejlesztése, alapötlet: olyan eszközök vezérlése, amelyek elférnek egy kézben
 			\item E-kereskedelem
 			\item Financial Technology: pénzintézetekkel, tőzsdékkel, számlázással kapcsolatos szoftvereket jellemzően ezen a nyelven fejlesztik
 			\item a megírt kódok futtathatóak különösebb átalakítás nélkül az elterjedtebb operációs rendszereken (a kód hordozható, platformfüggetlen)\footnote{Ez azért lehetséges, mivel .exe fájl helyett egy átmeneti .class állomány (bytecode) készül, amit egy virtuális gép (Java Virtual Machine) tolmácsolja (interpretálja) gépi kódként a számítógépünknek \hyperref{https://www.upgrad.com/blog/why-is-java-platform-independent-language/}{}{}{Forrás}}
 		\end{itemize}
-		\item SQL
+		\item \textbf{SQL}
 		\begin{itemize}
 			\item 1972, \textit{Donald D. Chamberlin} és \textit{Raymond F. Boyce} az IBM alkalmazásában, adattáblák egyszerűbb kezelésének érdekében hozták létre
 			\item adatbázisok kezelése, karbantartása
 			\item Data Science
 		\end{itemize}
-		\item Go
+		\item \textbf{Go}
 		\begin{itemize}
 			\item 2009, a Google fejlesztői alakították ki, hogy megoldják a hatalmas szoftverrendszerekkel kapcsolatos problémákat
 			\item rendszerek, hálózatok programozása
 			\item hang- és videószerkesztés
 			\item Big Data\footnote{Az informatika egyik tudományága, amely tömérdek mennyiségű, hagyományos számítógéppel nehezen kezelhető adatok tárolásával és feldolgozásával, ezek elemzésével foglalkozik.\hyperref{{https://www.youtube.com/watch?v=bAyrObl7TYE}}{}{}{Forrás}}
 		\end{itemize}
-		\item C
+		\item \textbf{C}
 		\begin{itemize}
 			\item 1970-es években Ken Thompson és Dennis Ritchie jóvoltából, Assembly-nél magasabb szintű (természetes nyelvezethez közelebb álló) nyelv kialakítása volt a célja
 			\item hardverelemek illesztőprogramjai, vezérlőkódjai
@@ -137,69 +137,70 @@
 			\item alacsonyabb szintű a fentebb felsoroltaknál, ezért könnyebb optimalizálni memória és futásidő szempontjából
 			\cite{clang1}
 		\end{itemize}
-	\end{enumerate}\cite{proglanguages1}\cite{proglanguages2}
-	
-	\chapter{Marshalling}
+	\end{enumerate}
+	Összességében elmondható, hogy a programozási nyelvek eszközökként szolgálnak a fejlesztők kezében. Véleményem szerint minél több eszközt ismerünk, annál jobban meg tudjuk határozni, hogy az előttünk álló problémához az eszköztárunkból melyik lenne a legalkalmasabb, amellyel kényelmesen és hatékonyan tudunk dolgozni.
 	\section{Milyen adatszerkezeteink vannak?}
 	A programozási nyelvek szintaktikában ugyan eltérnek egymástól, amikor viszont adatok tárolásáról van szó, egy dologban egyetértenek: típusokra szükség van. Mit jelent az, hogy egy változót például \verb*|bool| típusúként definiálunk? Az adat típusa meghatározza, hogy
 	\begin{itemize}
 		\item mekkora memóriaterületet\footnote{mivel a byte számít a legkisebb megcímezhető memóriaegységnek, ezért ennek mértékegysége alapértelmezetten bájtban értendő} kell számára lefoglalni
 		\item a számítások folyamán hogyan kell őt értelmezni\\(például ha másik változónak értékül adjuk, hány bitet kell másolni)
-		\item továbbá milyen műveletek végezhetőek vele\\(például egész típusú változókon értelmezhetjük a szorzás műveletét, szövegeknél ezt már nem tehetjük meg).
-	\end{itemize} \cite{adatszerkezetek_88}
+		\item továbbá milyen műveletek végezhetőek vele\\(például egész típusú változókon értelmezhetjük a szorzás műveletét, szövegeknél ezt már nem tehetjük meg).\cite{adatszerkezetek_88}
+	\end{itemize}
 	\section{Használt adatszerkezetek}
 	Ahogy említettem, a programozási nyelvek döntő része típusos, ezenfelül kisebb-nagyobb különbséggel hasonló adatszerkezeteket értelmez.
 	\begin{enumerate}[label=\alph*)]
-		\item \emph{elemi adattípusok}: Olyan típusok, amiket nem tudunk további részekre bontani, csak egyben értelmezhetjük őket. Ilyen például a \verb*|double| lebegőpontos típus, amely 8 bájton képes lebegőpontos számot ábrázolni. Igaz, hogy csak az első bájtra van mutatónk, de nincs értelme további bájtokra darabolni, és megnézni az értékeket, mivel egyben értelmezendő, a műveleteket 4 byte-on fogjuk tudni vele végezni. Primitív adattípusoknak is nevezzük őket.\\
+		\item \emph{elemi adattípusok}: Elemi/primitív típusokat nem tudunk további részekre bontani, csak egyben értelmezhetjük őket. Ilyen például a \verb*|double| lebegőpontos típus, amely 8 bájton képes lebegőpontos számot ábrázolni. Igaz, hogy csak az első bájtra van mutatónk, de nincs értelme további bájtokra darabolni, és megnézni az értékeket, mivel egyben értelmezendő, a műveleteket 4 byte-on fogjuk tudni vele végezni. Primitív adattípusoknak is nevezzük őket.\\
 		Vegyük például a C\# programozási nyelvet, milyen elemi típusai vannak?
-			\begin{enumerate}
-				\item egész:
-				\begin{tabular}{ccc}
-					Előjeles típus & Előjel nélküli típus & Méret (bájt) \\
-					sbyte & byte & 1 \\
-					short & ushort & 2 \\
-					int & uint & 4 \\
-					long & ulong & 8 \\
-				\end{tabular}
-				\item lebegőpontos:
-				\begin{tabular}{cc}
-					Típus neve & Típus mérete (Bájt) \\
-					float & 4 \\
-					double & 8
-				\end{tabular}
-				\item logikai: 
-				\begin{tabular}{cc}
-					bool & 1 Bájt
-				\end{tabular}
-				\item karakteres: 
-				\begin{tabular}{cc}
-					char & karakterkódolástól függ\footnote{ASCII kódolás esetén egyetlen karakter 7, míg UTF-8 kódolás esetében 8 biten tárolódik. Mivel a legkisebb megcímezhető egység az 1 bájt, ezért ezek 1 bájt területet foglalnak karakterenként, ASCII-kód esetében a 8. bit értékét nem veszik figyelembe. 
+		\begin{enumerate}
+			\item egész:
+			\begin{tabular}{ccc}
+				Előjeles típus & Előjel nélküli típus & Méret (bájt) \\
+				sbyte & byte & 1 \\
+				short & ushort & 2 \\
+				int & uint & 4 \\
+				long & ulong & 8 \\
+			\end{tabular}
+			\item lebegőpontos:
+			\begin{tabular}{cc}
+				Típus neve & Típus mérete (Bájt) \\
+				float & 4 \\
+				double & 8
+			\end{tabular}
+			\item logikai: 
+			\begin{tabular}{cc}
+				bool & 1 Bájt
+			\end{tabular}
+			\item karakteres: 
+			\begin{tabular}{cc}
+				char & karakterkódolástól függ\footnote{ASCII kódolás esetén egyetlen karakter 7, míg UTF-8 kódolás esetében 8 biten tárolódik. Mivel a legkisebb megcímezhető egység az 1 bájt, ezért ezek 1 bájt területet foglalnak karakterenként, ASCII-kód esetében a 8. bit értékét nem veszik figyelembe. 
 					Ezzel szemben az újabb UTF-16- és UTF-32-szabványok esetében az előbbiben 2 bájt, utóbbiban 4 bájt memóriaterület szimbolizál egyetlen karaktert.}
-				\end{tabular}
-			\end{enumerate}
-	\item \emph{összetett adattípusok}: Az összetett adattípusok elemi típusokra szedhetők szét, vagyis primitív és/vagy további összetett típusú változókból épülnek fel. Ami a adattagok vagy mezőnek nevezzük. Az összetett adattípusú változók tárolásához szükséges memóriaterület kiszámítható az adattagjainak összegével.\\
-	C\#-ban a \verb*|struct| és a \verb*|class| kulcsszavakkal tudunk összetett típusokat definiálni.
+			\end{tabular}
+		\end{enumerate}
+		\item \emph{összetett adattípusok}: Az összetett adattípusok elemi típusokra szedhetők szét, vagyis primitív és/vagy további összetett típusú változókból épülnek fel. Ami a adattagok vagy mezőnek nevezzük. Az összetett adattípusú változók tárolásához szükséges memóriaterület kiszámítható az adattagjainak összegével.\\
+		C\#-ban a \verb*|struct| és a \verb*|class| kulcsszavakkal tudunk összetett típusokat definiálni.
 	\end{enumerate}
 	\section{Mi a helyzet az algoritmusokkal?}
 	Adatokat tudunk tárolni, és ezt tesszük azért, mert tervünk van velük, azaz valamit szeretnénk velük kezdeni. Az adatszerkezeteken végzett véges számú elemi lépéssorozatot algoritmusnak nevezzük. Az adatszerkezetek algoritmusok nélkül lényegében olyanok, mint a matematikai műveletek operátorok (összeadás, kivonás, stb.) nélkül, végül -- ha már említettem a természetes nyelveket-- mint a főnevek igék nélkül.
+
+	
+	\chapter{Marshalling}
 	\section{Kommunikáció adatszerkezeteken keresztül}
-	A \emph{Marshalling} egy olyan folyamat, amely összetett típusok átalakítására szolgál, hogy egy nyelv adatszerkezetét a másikkal megértessük. Magyar fordításával nem találkoztam ennek a kifejezésnek, de leginkább talán az 'átalakítás' szóval tudjuk leírni, ami adatszerkezetek esetében annyit tesz, hogy más nyelv által is értelmezhetővé tesszük, kevésbé hagyatkozunk az adott nyelv különlegességeire.
+	A \emph{Marshalling} egy olyan folyamat, amely összetett típusok átalakítására szolgál, hogy egy nyelv adatszerkezetét a másikkal megértessük. Magyar fordításával nem találkoztam ennek a kifejezésnek, de leginkább talán az 'átalakítás' szóval tudjuk leírni, ami adatszerkezetek esetében annyit tesz, hogy más nyelv által is értelmezhetővé tesszük, kevésbé hagyatkozunk az adott nyelv különlegességeire.\cite{wiki_marshalling}
 	\par
 	A kód további portolhatósága, újrahasznosíthatósága végett megéri szabványos formátumokon keresztül kommunikálni, mint azt tesszük API-k\footnote{Az Application Programming Interface utasítások, szabványok és metódusok halmaza, amely leírja a kommunikációt más, külső szoftverek részére. Az API-k lehetőséget biztosítanak két vagy több szoftver közötti adatok cseréjére, valamint adatokon végzett műveletek végrehajtására úgy, hogy annak mikéntjéről az API írója gondoskodik. Másként fogalmazva: az API a szerver azon része, amely felelős a kérések feldolgozásáért és kiszolgálásáért.} vagy konfigurációs fájlok esetében \footnote{Például az \textit{app.config} fájl a C\#-ban XML-formátumban látható.}, ilyenek például az általam használt JSON- vagy XML-formátumok,  hogy más felületekre való költöztetés esetén kompatibilitási probléma többé már ne merülhessen fel.
-	A Marshalling primitív típusok esetén abszolút működőképes, összetett adatszerkezetekre viszont inkább a szabványos szöveges formátumokat érdemes alkalmazni tapasztalatom szerint. Ha ezt elfogadjuk, akkor érdemes megismerkedni a szerializáció és deszerializáció %TODO: befejezni
-	\cite{marshalling_serialization}
-	\section{Mik a stubok?}
-	A stubok hívó (aki csak az implementált metódus fejlécét\footnote{A fejlécet szignatúrának is nevezzük: ez a metódus visszatérési típusát (a \emph{void} is visszatérési típusnak számít), nevét és paraméterlistáját együttesen teszi ki}) és a hívott (ahol a két kód szerződésében lévő publikus/,,meghirdetett''/exportált metódusok -- és még akár továbbiak is -- implementálva vannak) fél között elhelyezkedő mini egységek.
+	A Marshalling primitív típusok esetén abszolút működőképes, összetett adatszerkezetekre viszont inkább a szabványos szöveges formátumokat érdemes alkalmazni tapasztalatom szerint. Ha ezt elfogadjuk, akkor érdemes megismerkedni a szerializáció és deszerializáció folyamatával. %TODO: befejezni
+	\section{Szerializáció}
+		\cite{sof_serialization}
+	\section{Marshalling és szerializáció}
+		\cite{marshalling_serialization}
 	%todo: ezeket szétosztani
-	\cite{net_stubs}
-	\cite{wiki_marshalling}
-	\cite{sof_serialization}
-	\cite{pinvoke}
-	\cite{sof_xmlcreate}
-	\cite{marshalling_strings}
-	\cite{interop_native}
+	\section{Adatok konvertálása}
+	\subsection{Egész és valós számok, logikai változók}
+	\subsection{Szövegek}
+		\cite{marshalling_strings}
+	\subsection{Rekordok}
 	%TODO: befejezni...
-	\section{managed és unmanaged kód közötti különbség}
+	\section{Managed és unmanaged kód közötti különbség}
 	Először is fontos tisztázni, hogy a C\# szemszögéből nézve a \textit{Unmanaged Code} (nem felügyelt kód) elnevezést a .NET-keretrendszer mindenféle külső komponens megbélyegzésére használja, amelyet nem a .NET futtatókörnyezete felügyel és vezérel. Ettől még ezek lehetnek jó kódok, csak szimplán a Common Language Runtimenak nincs közvetlen hatása ezek működésére: a memóriacímeket közvetlenül lehet kezelni, felülírni, így bizonyos esetekben olyan memóriaterületre is hivatkozhat egy változó, amelyet az operációs rendszer nem a program részére foglalt le, ezt \verb*|segfault|nak nevezzük\footnote{Másnéven \textit{access violation} hibának is nevezik, a Delphi inkább ezzel a kifejezéssel él a hiba kijelzésekor.}
 	\cite{managed} 
 	A Common Language Runtime használatával fejlesztett kódot kezelt vagy felügyelt (managed) kódnak nevezzük. Más szóval, ez az a kód, amely a .NET futtatókörnyezete által végrehajtásra kerül. 
@@ -219,6 +220,10 @@
 	Átokként és áldásként is felróható, hogy nem enged direkt ráhatást memóriacímekre: hogy a lefoglalások és felszabadítások mikor, a szekvenciának mely pontjain történnek meg, arról nem tudunk konkrét információkat, mivel a GC ezt elrejti előlünk, a program bizonyos pontjain csak sürgetni tudjuk a Garbage Collectort, hogy végezzen optimalizálásokat. 
 	
 	Ami ténylegesen hátrányként említhető, hogy nem enged hozzáférést alacsonyabb szintű részletekhez, így különböző mikrokontrollerek, hardverelemek vezérlésének szemszögéből kiindulva a programozás ezen módja nem tekinthető opciónak.
+	\section{PInvoke}
+		%todo: kifejteni
+		\cite{pinvoke}
+		\cite{interop_native}
 	\section{Memóriakezelés az InterOp marshaller segítségével}
 	Az Interop marshaller a .NET keretrendszer egyik komponense, amely a managed adattípusok unmanaged típusokká történő konverziójáért felelős. A memóriakezelést illetően az Interop marshaller biztosítja, hogy a memória helyesen kerül lefoglalásra, és felszabadításra a konverzió folyamatában, különösen, ha nem felügyelt kóddal dolgozik.
 	Amikor felügyelt objektumokat ad át nem felügyelt kódnak, az Interop az objektumot mély másolással\footnote{A mély másolás (angoul deep copy) azt jelenti, hogy objektumonként a referencia szerint tárolt mezők is klónozódnak, úgyhogy két objektum között egyáltalán nem lehet közös referencia. Ennek ellentéte a shallow copy, azaz a sekély klónozás, amelyben a tárolt objektumok memóriacíme egy az egyben átmásolásra kerül, de ekkor egy objektum ilyen típusú mezőjének változása a klónban ugyanazt a változást eredményezi.} hozza létre, hogy a nem felügyelt kód a managed objektum befolyásolása nélkül módosíthassa az objektumot. 
@@ -250,15 +255,44 @@
 	Szintaktikailag\footnote{Szintaktika} ugyan helyes parancsot adott ki a felhasználó -- azaz az általa futtatott kliensprogram --, de már a parancs meghívása ebben a kontextusban (ebben a párhuzamban kontextusnak számíthatjuk a sessiont)\footnote{Egy többfelhasználós rendszerben munkamenetnek (session) nevezzük azt az időszakot, ami eltelik a felhasználó be- és kijelentkeztetése között, ekkor az szabadon végezheti a dolgát, nem kell minden egyes funkció használatához bejelentkeznie.} már egyszer megtörtént, így a megkapott hibaüzenetben tulajdonképpen egy \textit{szemantikai hibáról}\footnote{Szemantika} kap tájékoztatást a felhasználó.
 	
 	\section{RESTful alkalmazások}
+	
 	\section{Google RPC és a Proto-nyelv}
 	\label{grpc}
+	A Google RPC, röviden gRPC a Google jóvoltából készült nyílt forráskódú RPC-keretrendszer. Remote Procedure Call-nak\footnote{magyarul: Távoli eljáráshívás} nevezzük, amikor $A$ processz meghívja $B$ processz valamely meghirdetett szolgáltatását, így $B$ a kért műveletet implementációja szerint elvégzi, majd $A$ részére válaszüzenetben visszajuttatja az általa kért művelet eredményét. Így $A$-nak nem kell törődnie a végrehajtott algoritmus részleteivel, ennek implementációja és futtatása $B$ processzre delegálódik. Ez lehetőséget teremt arra, hogy bizonyos kódrészleteket egy másik számítógépre, egy szerverre helyezzünk át, ettől lesz a hívás 'távoli'.
+	A gRPC-t számos programozási nyelv támogatja, a teljesség igénye nélkül ezek a Java, C\#, C, C++, Kotlin, Python és PHP-nyelvek. Még Delphiben is létezik egy külső komponens, amit a projekthez hozzáadva használhatjuk a gRPC nyújtotta szolgáltatásokat. \cite{grpc_delphi}
+	
+	%TODO: RPC - távirányítós példát kifejteni
+
+	A keretrendszer működtetője az úgynevezett \textit{Protocol Buffers}, amely nyelv- platformfüggetlen adatcserét biztosít. A gRPC-ben ennek a segítségével teremthetünk kapcsolatot különböző vagy azonos programozási nyelven készített alkalmazásaink között, egy szerveralkalmazáshoz különféle platformokra írt kliensprogram is kapcsolódhat, mivel a kérések és válaszok nyelvezete közös, szabványos. 
+	
+	Ami weboldalaknál a HTML és a JSON-formátum, az a gRPC esetén a Proto-nyelv, ami átjárást biztosít akár más nyelven írt programok részére is. Amely nyelv képes implementálni a gRPC-t, és a Proto-nyelvből le tudja gyártani maga forráskódját, és a forráskódjából generálható a Proto-formátum, az alkalmas ezen a nyelven keresztül összekapcsolódni más, ugyanezt a keretrendszert alkalmazó szerverprogrammal is. A Proto-nyelv választott témám szempontjából kruciális, mivel kifejezetten erre a célra lett kitalálva, hogy programozási nyelvek felett álljon, ezért úgy gondolom, érdemes tovább vizsgálnunk a nyelvben rejlő lehetőségeket.
+
+	Miért kell ehhez egy külön nyelv? Nem lehetne maradni a jól bevált JSON-nél? A Proto nyelv további előnyökkel jár, amelyeket sem a JSON, sem az XML, sem bármilyen  más szerializált formátum nem tud biztosítani: az adatszerkezeteket szigorúan típusosan írja le. Egy úgynevezett proto fájlban történik az 
+
+	Ezenkívül nemcsak adatok, hanem szolgáltatások leírására egyaránt alkalmas a Proto-nyelv, ezért is érdemes az RPC ezen változatát használni, mivel nagyobb rugalmasságot biztosít, mint egy átlagos szerializált formátum. Lényegében elég ezt a proto fájlt elkészítenünk, ennek környezetét, a kliens- és szerveroldali stubok forráskódjának vázát az adott nyelv szabályrendszere szerint képes lesz legyártani ebből. Ez a legtöbb RPC-keretrendszernél nem áll fenn.
+
+	Mint azt említettem, Proto-nyelvben a változókat csak típussal együtt vehetünk fel\footnote{Ezen tulajdonság miatt a Proto szigorúan típusos nyelvnek számít.}, osztályokat \verb*|message| kulcsszóval látja el, a mezőket számokkal látjuk el. 
+	%todo: javítani, kifejteni
+
+	RPC-vel hívható metódusokat definiálhatunk paraméterrel és visszatérési típussal. Ezek mind szerver, mind kliens oldalon meg fognak jelenni gRPC által generált szabványos formában. 
+	%todo: kép egy .proto fájlról - beadandómból!
+	További előnye, hogy az adatokat a lehető legtömörebb bináris formátumban küldi át a hálózaton, a JSON-formátum ezzel szemben egy az egyben szövegesen kerül átadásra.
+	\cite{grpc_rest}
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.35]{grpc_json}
+		\caption{JSON és Protocol Buffers teljesítményének összehasonlítása}
+		\label{fig:grpc_json}
+	\end{figure}
+	%TODO: magyarázat az ábrához
+	\cite{grpc_performance}
 	\chapter{Szakdolgozati projektünkről}
 	Eme dokumentum mellé készített szakdolgozati szoftverprojektemet Sipos Levente hallgatótársam részére, munkájának megkönnyítésére készítem. 
 	Munkánk arról szól, hogy Keresztes Péter tanár úr által Delphiben implementált metódusokat hívunk meg .NETes környezetből. A C\# és Delphi programozási nyelvek összehangolása az én feladatom, az elkészült termék terveim szerint úgynevezett Helper-metódusok implementációit tartalmazó, lefordított\footnote{Lévén a C\# fordított nyelvnek számít, ezért az alkalmazások futtatásához/használatához az elkészült forráskódokat első lépésben futtatható állományra (gépi kódra) kell fordítani egy fordítóprogram segítségével. Ezt a folyamatot szakszóval \textit{compilingnak} vagy \textit{buildelésnek} is nevezzük.} DLL-projekt lesz, amelyeket Levente az ő Windows Forms keretrendszerrel készített grafikus alkalmazásában tud meghívni. A projekt jelen állása szerint szükség volt továbbá egy úgynevezett relayDLL-re, amelyet én állítottam össze.
 	\section{Miről is szól a projektünk?}
 	
-	Egy mentális egészségfejlesztésre használatos alkalmazást fejlesztésére vállalkoztunk 2022 szeptemberében, amely elméleti alapjait Somodi László futballedző munkásságának köszönhetjük, ezek technikai részleteiről titoktartási szerződésünk
-	%TODO: Ezt akár betehetnénk ide vagy hivatkozhatnánk rá
+	Egy mentális egészségfejlesztésre használatos alkalmazást fejlesztésére vállalkoztunk 2022 szeptemberében, amely elméleti alapjait Somodi László futballedző munkásságának köszönhetjük, ezek gondolati vonulatairól titoktartási szerződésünk
+	%TODO: Ezt akár betehetnénk ide vagy hivatkozhatnánk rá valamilyen formában
 	lévén csak nagyon érintőlegesen fogok beszámolni a későbbiekben. 
 	
 	A készített alkalmazásunk gyakorlatilag különböző fény- és hangjelzések kibocsátására alkalmas eszközök (lámpák, nyilak és hangszórók) vezérléséből áll, egy úgynevezett \emph{intelligens szobában} az eredeti tervek szerint 8 eszköz (a készített program azonban tetszőleges, $n$ darabszámú eszköz vezérlésére lett felkészítve) együttes vezérlését kell kezelnünk megadott időközönként, amely időközöket egyszerűen ütemnek fogjuk nevezni.
@@ -274,7 +308,6 @@
 	Somodi László edzővel való együttműködésünk Dr. Király Roland tanár úr jóvoltából jöhetett létre, akinek az alkalmazással kapcsolatos múltbéli tapasztalatait és  ötleteit folyamatos egyeztetések, konzultációk útján tudtuk segítségül hívni.
 	\section{Delphi és C\# programozási nyelvek összehasonlítása}
 	Először is érdemes leszögeznünk, hogy a továbbiakban Delphi alatt nem a fejlesztői környezetet, amely az Object Pascal nyelvvel dolgozott együtt, hanem inkább a programozási nyelvet értjük, jelenleg az Object Pascal megnevezés úgynevezett ,,umbrella term'' formájában él tovább.\footnote{Az umbrella term (magyarul gyűjtőfogalom) olyan kifejezés, amely több fogalmat rendel önmaga alá, így már fogalmak egy csoportját, kategóriáját jelenti összefoglalóan.} \cite{sof_delphi}
-	
 	A Delphi nyelv (megjelenési éve: 1986, a Borland nevű cég jóvoltából) idősebb nyelvnek számít a C\#-hoz (megjelenési éve: 2001, a Microsoft 
 	jóvoltából) viszonyítva, ebből fakadóan egy stabilabb, kiforrottabb, időtállóbb eszköznek számít a programozók kezében. 
 	
@@ -293,9 +326,9 @@
 		\item Mivel nagy projekteknél előfordulhat, hogy két, funkciójában eltérő osztálynak ugyanazt a nevet kellene adnunk, nem tehetnénk meg, mivel a fordítóprogram, így a futó program sem tudná eldönteni, hogy a két változat közül éppen melyiket kívánjuk használni. Ezt a problémát orvosolják például, hogy külön modulokban tudjunk azonos elnevezésű osztályokat kezelni.
 		\item Fontos továbbá, hogy mivel nem az nagyobb átláthatóság végett nem egy fájlban dolgozunk, és esetleg több kollégával fejlesztünk 
 		\item Egy lefejlesztett DLL tekintetében is szükség van egyetlen összefoglaló névre, amit a futtatható állomány
-	\end{enumerate}
+	\end{enumerate} \cite{delphi_basics}
 	
-	Ami közös még a két nyelvben, hogy a fejlesztés moduljaiból Win32 szabványnak megfelelő DLL-ek készülhetnek a segítségükkel, ezek szintén lefordított, gépi kódú állományok, amelyek más szoftver forráskódjában felhasználhatóak, lényegében így válnak futtatható állománnyá.
+	Ami közös még a két nyelvben, hogy a fejlesztés moduljaiból Win32-szabványnak megfelelő DLL-ek készülhetnek a segítségükkel, ezek szintén lefordított, gépi kódú állományok, amelyek más szoftver forráskódjában felhasználhatóak, lényegében így válnak futtatható állománnyá.
 	
 	\section{Mik azok, amelyeket a C\# tud, de a Delphi nem?}
 	\begin{itemize}
@@ -435,17 +468,18 @@
 	\end{enumerate}
 	\section{Eszközök azonosítóinak, típusainak átadása}
 	\subsection{Megoldás}
-	A Delphiben tárolt tömb (dev485) eszközeinek legfontosabb mezőjét (ami az eszközt azonosítója, tehát az azonosítót XML-fájlba kimentjük vagy JSON-formátumú szöveggé alakítjuk. Az azonosító önmagában meghatározza az eszköz típusát, úgyhogy elég azt átadni.
+	A Delphiben tárolt tömb (dev485) eszközeinek legfontosabb mezőjét (ami az eszközt azonosítója, tehát az azonosítót XML-fájlba kimentjük vagy JSON-formátumú szöveggé alakítjuk. Az azonosító önmagában meghatározza az eszköz típusát, úgyhogy elég azt átadni. \cite{sof_xmlcreate}
 	Az eszközök típusát a következő módon tudjuk meghatározni kizárólag beállított azonosítóikon keresztül:
 	\begin{itemize}
-		\item \verb*|SLLELO|: \$4000 -> lámpa azonosítók \$4000 .. \$4fff (decimálisan: 16 384 .. 20 479) tartományon kaphatnak értéket
-		\item \verb*|SLNELO|: \$8000 -> nyíl azonosítók \$8000 .. \$8fff (decimálisan: 32 768 .. 38 683) tartományon kaphatnak értéket
-		\item \verb*|SLHELO|: \$c000 -> hangszóró azonosítók \$c000 .. \$cfff (decimálisan: 49 152 .. 53 257) tartományon kaphatnak értéket
+		\item \verb*|SLLELO|: \$4000 -> lámpa azonosítók \$4000 .. \$4fff (decimálisan: 16 384 .. 20 479) tartományon kaphatnak értéket.
+		\item \verb*|SLNELO|: \$8000 -> nyíl azonosítók \$8000 .. \$8fff (decimálisan: 32 768 .. 38 683) tartományon kaphatnak értéket.
+		\item \verb*|SLHELO|: \$c000 -> hangszóró azonosítók \$c000 .. \$cfff (decimálisan: 49 152 .. 53 257) tartományon kaphatnak értéket.
 	\end{itemize}
-	A típus szempontjából lényegtelen, hogy az utolsó 3 bitnégyesnek milyen értéke van, tulajdonképpen a legfelső bitnégyes (a legfelső hex) azonosítja a típust.
+
+	Az eszköz típusának meghatározásában nem játszik szerepet az utolsó 3 bitnégyes, tulajdonképpen a legfelső hex\footnote{4 bit azonosít egy hexadecimális számjegyet -- 0-tól F-ig terjedően --, így a bitnégyest hexnek is szokás nevezni.} azonosítja a típust.
 	Szigorúan hexadecimálisan nézve: ha egy szám négyjegyű és C-számjeggyel kezdődik, akkor az azonosító hangszórót fog jelölni.
 
-	Ez az eljárás a gRPC megoldására hasonlít \ref{grpc} (egy közös proto nyelv), a C\# és a Delphi között akár az XML, akár a JSON közös nyelvként (hídként) funkcionál.
+	Ez az eljárás a gRPC megoldására hasonlít, amelyet a  \ref{grpc} alfejezetben ki is fejtettem, a C\# és a Delphi között akár az XML, akár a JSON közös nyelvként (hídként) funkcionál.
 
 	\section{A hangszóró egy egész hanglistát kezel - JSON}
 	\subsection{Megoldás}
@@ -456,7 +490,6 @@
 	A Speaker-osztályban az eszköz viselkedését leíró 3 mezőt (index, volume és length) egy külön objektumba szervezzük ki (Sound), és a Speaker -- azonosítóján kívül -- kizárólag Sound-típusú objektumok listáját tartalmazza, a listát JSON-ben \textit{"index|volume|length"} rendezett hármasok összefűzésével szerializálja, a listához kizárólag listakezelő függvényekkel lehet hozzáférni (törlés, módosítás, hozzáadás), majd az \verb*|SLDLL_Hangkuldes| számára kiküldött H-tömböt (hanglistát) Delphiben egy ciklussal a JSON-nel átadott adatok szerint a megfelelő sorrendben feltöltjük, az előző probléma megoldásában ennek mikéntjét fejtettem ki.
 	%TODO: ennek megoldása C#-ban
 	\section{Két DLL működésének tesztelése}
-	https://stackoverflow.com/questions/594253/how-to-debug-a-dll-file-in-delphi
 	\cite{sof_debug_dll}
 	%TODO: kifejteni
 	\section{Teljesítmények összehasonlítása Delphi és C\#-hívások esetében}
@@ -469,9 +502,11 @@
 	
 	Kifejezetten tetszik, hogy munkánkat több tudományág szakértője segítette, így kutatásunk interdiszciplinárisként is jellemezhető, azaz több szakterület, jelesül a mozgáskoordináció, beágyazott rendszerek vezérlése, együttes munkájának az eredményének részesei lehettünk.
 	
-	A szoftverfejlesztés elméleti és gyakorlati alapjait egyrészt az Egyetem oktatóitól, szakmai és technikai részleteit Dr. Király Roland Tanár Úrral folytatott konzultációinkon szerzett információk biztosították. 
+	A szoftverfejlesztés elméleti és gyakorlati alapjait egyrészt az Egyetem oktatóitól, szakmai és technikai vonulatait Dr. Király Roland Tanár Úrral folytatott konzultációinkon szerzett információk biztosították. 
 	
-	Inspirációnkat, motivációnkat Somodi Lászlóval való beszélgetéseink, valamint ,,Mozgáskoordináció- és gyorsaságfejlesztő gyakorlatok óvodától a felnőtt korig'' címet viselő könyvében leírt gondolatok szolgáltatták.
+	Inspirációnkat, motivációnkat Somodi Lászlóval való beszélgetéseinkből, valamint \textit{,,Mozgáskoordináció- és gyorsaságfejlesztő gyakorlatok óvodától a felnőtt korig''} címet viselő könyvében leírt gondolatokból merítettük.
+	
+	Mint minden szoftverre és emberi termékre jellemző, a megoldásaink természetesen nem mondhatóak tökéletesnek, programunk épp annyira időnként karbantartásra és további fejlesztésekre szorulhat. Érdekes volt felfedezni a gRPC és a Proto-nyelv kapcsán a \ref{grpc} fejezetben, hogy ötször-hatszor jobb teljesítmény érhető el az adatok bináris módon történő szerializációjával a szöveges formátumokhoz képest -- jelen állás szerint mégis az utóbbi megoldás számít elterjedtebbnek --, én azt gondolom, hogy mindenképp érdemes lenne munkánkat esetleg egy másik szakdolgozat keretein belül a gRPC irányába elmozdítani.
 	\chapter*{Köszönetnyilvánítás}
 	\addcontentsline{toc}{chapter}{Összegzés}
 	\bibliographystyle{plain}
