@@ -267,31 +267,50 @@
 	
 	Ami weboldalaknál a HTML és a JSON-formátum, az a gRPC esetén a Proto-nyelv, ami átjárást biztosít akár más nyelven írt programok részére is. Amely nyelv képes implementálni a gRPC-t, és a Proto-nyelvből le tudja gyártani maga forráskódját, és a forráskódjából generálható a Proto-formátum, az alkalmas ezen a nyelven keresztül összekapcsolódni más, ugyanezt a keretrendszert alkalmazó szerverprogrammal is. A Proto-nyelv választott témám szempontjából kruciális, mivel kifejezetten erre a célra lett kitalálva, hogy programozási nyelvek felett álljon, ezért úgy gondolom, érdemes tovább vizsgálnunk a nyelvben rejlő lehetőségeket.
 
-	Miért kell ehhez egy külön nyelv? Nem lehetne maradni a jól bevált JSON-nél? A Proto nyelv további előnyökkel jár, amelyeket sem a JSON, sem az XML, sem bármilyen  más szerializált formátum nem tud biztosítani: az adatszerkezeteket szigorúan típusosan írja le. Egy úgynevezett proto fájlban történik az 
+	Miért kell ehhez egy külön nyelv? Nem lehetne maradni a jól bevált JSON-nél? A Proto nyelv további előnyökkel jár, amelyeket sem a JSON, sem az XML, sem bármilyen  más szerializált formátum nem tud biztosítani: az adatszerkezeteket szigorúan típusosan írja le.
 
-	Ezenkívül nemcsak adatok, hanem szolgáltatások leírására egyaránt alkalmas a Proto-nyelv, ezért is érdemes az RPC ezen változatát használni, mivel nagyobb rugalmasságot biztosít, mint egy átlagos szerializált formátum. Lényegében elég ezt a proto fájlt elkészítenünk, ennek környezetét, a kliens- és szerveroldali stubok forráskódjának vázát az adott nyelv szabályrendszere szerint képes lesz legyártani ebből. Ez a legtöbb RPC-keretrendszernél nem áll fenn.
-
-	Mint azt említettem, Proto-nyelvben a változókat csak típussal együtt vehetünk fel\footnote{Ezen tulajdonság miatt a Proto szigorúan típusos nyelvnek számít.}, osztályokat \verb*|message| kulcsszóval látja el, a mezőket számokkal látjuk el. 
-	%todo: javítani, kifejteni
-
-	RPC-vel hívható metódusokat definiálhatunk paraméterrel és visszatérési típussal. Ezek mind szerver, mind kliens oldalon meg fognak jelenni gRPC által generált szabványos formában. 
-	
-	\begin{figure}[h!]
+	Ezenkívül nemcsak adatok, hanem szolgáltatások leírására egyaránt alkalmas a Proto-nyelv, ezért is érdemes az RPC ezen változatát használni, mivel nagyobb rugalmasságot biztosít, mint egy átlagos szerializált formátum.
+	\begin{figure}[h]
 		\centering
-		\includegraphics[scale=0.55]{protobuf}
+		\includegraphics[scale=0.4]{protobuf}
 		\caption{Beadandó projektben készített .proto állomány (részlet)}
 		\label{fig:protobuf}
 	\end{figure}
-	További előnye, hogy az adatokat a lehető legtömörebb bináris formátumban küldi át a hálózaton, a JSON-formátum ezzel szemben egy az egyben szövegesen kerül átadásra.
-	\cite{grpc_rest}
+
+	Lényegében elég a fentebb látható .proto kiterjesztésű fájlt elkészítenünk, ennek környezetét, a kliens- és szerveroldali stubok forráskódjának vázát az adott nyelv szabályrendszere szerint képes lesz legyártani ebből. Ennek lehetősége a legtöbb RPC-keretrendszernél nem áll fenn.
+
+	Mint azt említettem, Proto-nyelvben a változókat csak típussal együtt vehetünk fel\footnote{Ezen tulajdonsága miatt a Proto szigorúan típusos nyelvnek számít.}, osztályokat \verb*|message|, a meghívható metódusokat a kifejezőbb \verb*|rpc| kulcsszóval látja el. Mint láthatjuk, a mezők nevéhez 1-től kezdődően számokat rendelünk, ez a szerializációhoz szükséges. Binárisan ez úgy fog kinézni, hogy a mező azonosítóját annak típusával kombinálják, ezzel lényegében egy mező leírásához pusztán 1 bájtnyi terület elegendő. Ha üzeneteinket úgy szervezzük, hogy azonosítókat 1-től maximum 15-ig terjedően oszthatunk ki (tehát legfeljebb 15 mezőt engedünk meg osztályonként), akkor ez a tulajdonság garantált. 
+	
+	Természetesen ez is a gRPC előnyeihez sorolható, hogy kevesebb adatot kerül átadásra szervertől kliensig, és fordítva.
+	Az adatokat a lehető legtömörebb bináris formátumban képes leírni és szállítani a hálózaton, a JSON-formátum ezzel szemben egy az egyben szövegesen kerül átadásra, ami jóval több adatforgalmat tesz ki.
+
+	Emellett nyugodtan kijelenthetjük, hogy ez a megoldás típusbiztonsági szempontból is előnyösebb, mivel a Proto-nyelvet használva a mezőket eleve típusokkal kötjük, így nem az érkezés helyein kell validálni a megérkezett adatokat. Szöveges szerializáció esetében minden alkalommal, amikor például JSON érkezik, elsősorban ellenőriznünk kell, hogy a fogadott JSON-stringben az értékek típusai rendre megegyeznek-e az osztályban definiált mezők típusaival. Ez a Proto-nyelv esetében automatikusan teljesül, mivel a típussal kapcsolatos hibák már a küldéskor kiütköznek.
+	
+	Az adatokat a lehető legtömörebb bináris formátumban képes leírni és szállítani a hálózaton, a JSON-formátum ezzel szemben egy az egyben szövegesen kerül átadásra, ami jóval több adatforgalmat tesz ki. \cite{grpc_rest}
+	
+	GRPC-vel négyféle metódushívást tudunk leírni
+	\begin{itemize}
+		\item \textit{Unáris hívások}: Itt egyszerű kérés-válasz-üzeneteket cserélünk. Ez Protoban úgy néz ki, hogy a szolgáltatások paramétere és visszatérési értéke is message típusú.
+		\item \textit{Kliens streamelés}: A kliens egy streamet, egy adatfolyamot (kvázi egy listát) küld paraméterben a szerver részére, a kiszolgáló pedig egy normál message-objektummal tér vissza.
+		\item \textit{Szerver streamelés}: A kliens elküld egy kérést, és a szervertől válaszként streamet fogad.
+		\item \textit{Kétirányú streamelés}: A kliens és a szerver is streamekben kommunikál egymással.
+	\end{itemize}
+	%todo: ez alapján sajátot készíteni
 	\begin{figure}[h!]
 		\centering
-		\includegraphics[scale=0.35]{grpc_json}
-		\caption{JSON és Protocol Buffers teljesítményének összehasonlítása}
-		\label{fig:grpc_json}
+		\includegraphics[scale=0.8]{grpc_calls}
+		\caption{gRPC metódushívásainak típusai}
+		\label{fig:grpc_calls}
 	\end{figure}
 	%TODO: magyarázat az ábrához
+	Az alábbi ábrán látható, hogy a gRPC sokkal gyorsabb volt, mint az összes REST-hívás, a kísérlet győztese a \verb*|Client Streaming| volt, ami 15-ször gyorsabb, mint a leglassabb REST-módszer, és legalább 5-6-szor gyorsabb, mint egy átlagos REST JSON-hívásokkal. A másik két gRPC módszer hasonlóan teljesített, és közel egy ezredmásodperccel lassabb. 
 	\cite{grpc_performance}
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.3]{grpc_json}
+		\caption{Szerializáció teljesítményének összehasonlítása JSON és Proto esetében}
+		\label{fig:grpc_json}
+	\end{figure}
 	\chapter{Szakdolgozati projektünkről}
 	Eme dokumentum mellé készített szakdolgozati szoftverprojektemet Sipos Levente hallgatótársam részére, munkájának megkönnyítésére készítem. 
 	Munkánk arról szól, hogy Keresztes Péter tanár úr által Delphiben implementált metódusokat hívunk meg .NETes környezetből. A C\# és Delphi programozási nyelvek összehangolása az én feladatom, az elkészült termék terveim szerint úgynevezett Helper-metódusok implementációit tartalmazó, lefordított\footnote{Lévén a C\# fordított nyelvnek számít, ezért az alkalmazások futtatásához/használatához az elkészült forráskódokat első lépésben futtatható állományra (gépi kódra) kell fordítani egy fordítóprogram segítségével. Ezt a folyamatot szakszóval \textit{compilingnak} vagy \textit{buildelésnek} is nevezzük.} DLL-projekt lesz, amelyeket Levente az ő Windows Forms keretrendszerrel készített grafikus alkalmazásában tud meghívni. A projekt jelen állása szerint szükség volt továbbá egy úgynevezett relayDLL-re, amelyet én állítottam össze.
