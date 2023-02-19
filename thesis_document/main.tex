@@ -26,29 +26,28 @@
 	\maketitle
 	\tableofcontents
 	\begin{abstract}
-		%TODO: összefoglalás, hogy miről szól a szakdolgozat pár mondatban
-		Szakdolgozatom arról szól, hogy...\lipsum[2]
+		Szakdolgozatomban igyekszem kitérni a nyelvek közötti kommunikáció lehetséges megvalósítási módjaira, amelynek legfontosabb mérföldköve a szöveges adatok közlése lesz, mivel amennyiben ez megvalósítható, úgy képessé válunk bármilyen típusú információt -- legyen az szám ilyen formában a másik program részére közölni. Innentől csak annyi a dolgunk, hogy ezeket a közléseket a másik oldalon is egyrészt fogadjuk, másrészt értelmezzük és feldolgozzuk, a megfelelő 
 	\end{abstract}
 	\chapter*{Bevezetés}
 	\addcontentsline{toc}{chapter}{Bevezetés}
 	Kognitív képességeink fejlesztésére különösen oda kell figyelnünk életünk során. Ezen megállapításomat alátámasztja egy COVID-világjárvány utáni időszak, amely időszakban sorra jelennek meg olyan jelentések 
-	%TODO referencia erre
+	%todo: referencia erre
     \cite{brain1}, amelyek azt támasztják alá, hogy a lezárások ideje alatt nőtt a különböző mentális betegségek kialakulásának kockázata. A \textit{demencia} gyűjtőfogalomként alkalmas ezen betegségek együttes megnevezésére.\footnote{A demencia említésekor nem egyetlen betegségre, hanem több hasonló jellegű problémát  csoportosító fogalomra, egy tünetegyüttesre gondolunk. Száznál is több típusát ismerik a demenciának, amelyek közül az Alzheimer-kór a leggyakoribb.}
     
     A különböző digitális eszközök használata számtalan alkalommal hosszas órákon keresztül képes lekötni a figyelmünket, ezért bizonyos külső ingerekre egyre lassabban, kisebb amplitúdóval, azaz nagyobb közömbösséggel tudunk reagálni. 
     
     A demencia, azaz a kognitív képességek leépülésének tünetei közé tartoznak a különböző beszédzavarok, az ítélőképesség, a memorizálás és az elvonatkoztatás képességeinek romlása.
     
-	%TODO: valami aktuálisabbat találni erre
+	%todo: valami aktuálisabbat találni erre
 	\begin{figure}[h!]
 		\centering
 		\includegraphics[scale=0.7]{images/demencia.png}
-		\caption{Valamely demenciával diagnosztizáltak számának emelkedése}
+		\caption{Valamely demenciafajtával diagnosztizáltak számának emelkedése}
 		\label{fig:demencia}
 	\end{figure}
 
 	Az értelmi hanyatlást különféle egészségkárosító szokások -- például az alkoholfogyasztás -- szervi károsodás, akár ezek együttese is okozhatja, a legjelentősebb kockázati tényező ilyen téren azonban az ember életkora. 
-	%TODO: FORRÁSOK!
+	%todo: FORRÁSOK!
 	
 	Szakemberek véleménye szerint a megfelelő étrendek megalkotásával, a társas interakciók intenzitásának és tartalmi színvonalának növelésével, az emberek képzésével mind iskolai, mind munkahelyi szinten megelőzhetjük agyi teljesítőképességünk romlását. 
 	Kifejezetten preventív jelleggel hatnak a különféle társasjátékok, valamint a rejtvényfejtés.\\Egy szó, mint száz: bármi, amivel munkára bírjuk agyunkat, alkalmas arra, hogy gátat vessen annak romlásának.
@@ -58,6 +57,11 @@
 
 	Az általunk készített szoftver támogatást nyújthat csoportfoglalkozásokon, tulajdonképpen egy tornaórát le tudunk vezényelni az eszközöknek köszönhetően. Természetesen az eszközök által kibocsájtott különböző fény- és hangjelzések önmagukban nem hordoznak semmiféle jelentést, a jelzések konkrét  a tornaórákat vezénylő szakemberek dolga közölni a csoport számára.
 	
+	Bevezetésem ezen részén szeretném egy kicsit górcső alá venni témám címét. Ehhez először is meg kell ismerkednünk a címben szereplő két programozási paradigmával\\
+ 	Az imperatív\footnote{\textit{imperare} latin szóból eredetű szó, jelentése: parancsol} programozási paradigma arról szól, hogy a számítógépet egyértelműen, előre meghatározott utasításkészlettel vezéreljük, le kell írnunk a problémát megoldó lépéssorozatot, algoritmust, így az elkészült forráskódot ilyen lépéssorozatok együttese teszi ki. Az algoritmusok implementálásához változókat és vezérlési szerkezeteket (elágazás, ciklus és szekvencia) használunk. Az efféle megközelítést támogató nyelveket nevezzük imperatívnak. Ilyenek például a Java, a C, C++, C\# és a Delphi.
+ 	\\
+ 	Az objektum-orientált programozási paradigma igyekszik a világot lemodellezni olyan formában, hogy a modellt objektumok használatával írja le. Az OOP egyik alaptézise, hogy az adatszerkezet és a rajtuk végzett műveletek egy egységben, az osztályban összpontosulnak. Az osztály a belőle készíthető objektumok ,,tervrajzának'' nevezhető. Ennek megfelelően egy osztályba tartoznak a változók és a rajtuk végrehajtható metódusok. Változóinkat és metódusainkat védettségi szintekkel láthatjuk el, hogy a hozzáférést bizonyos erőforrásokhoz korlátozzuk, ellenőrzött módon végezzük. Az osztályok között kapcsolatokat teremthetünk: öröklődést vagy birtoklást. Azon nyelvet, amelyek ezt a paradigmát támogatják, objektum-orientáltnak minősítjük.
+ 	A fentebb említett nyelvek ezt a paradigmát is támogatják a C nyelv kivételével.
 	\chapter{Programozási nyelvekről általában}
 	\section{A programozási nyelvek formális nyelvek?}
 	\begin{definicio}
@@ -188,18 +192,19 @@
 	A \emph{Marshalling} egy olyan folyamat, amely összetett típusok átalakítására szolgál, hogy egy nyelv adatszerkezetét a másikkal megértessük. Magyar fordításával nem találkoztam ennek a kifejezésnek, de leginkább talán az 'átalakítás' szóval tudjuk leírni, ami adatszerkezetek esetében annyit tesz, hogy más nyelv által is értelmezhetővé tesszük, kevésbé hagyatkozunk az adott nyelv különlegességeire.\cite{wiki_marshalling}
 	\par
 	A kód további portolhatósága, újrahasznosíthatósága végett megéri szabványos formátumokon keresztül kommunikálni, mint azt tesszük API-k\footnote{Az Application Programming Interface utasítások, szabványok és metódusok halmaza, amely leírja a kommunikációt más, külső szoftverek részére. Az API-k lehetőséget biztosítanak két vagy több szoftver közötti adatok cseréjére, valamint adatokon végzett műveletek végrehajtására úgy, hogy annak mikéntjéről az API írója gondoskodik. Másként fogalmazva: az API a szerver azon része, amely felelős a kérések feldolgozásáért és kiszolgálásáért.} vagy konfigurációs fájlok esetében \footnote{Például az \textit{app.config} fájl a C\#-ban XML-formátumban látható.}, ilyenek például az általam használt JSON- vagy XML-formátumok,  hogy más felületekre való költöztetés esetén kompatibilitási probléma többé már ne merülhessen fel.
-	A Marshalling primitív típusok esetén abszolút működőképes, összetett adatszerkezetekre viszont inkább a szabványos szöveges formátumokat érdemes alkalmazni tapasztalatom szerint. Ha ezt elfogadjuk, akkor érdemes megismerkedni a szerializáció és deszerializáció folyamatával. %TODO: befejezni
+
+	A Marshalling primitív típusok esetén abszolút működőképes, összetett adatszerkezetekre viszont inkább a szabványos szöveges formátumokat érdemes alkalmazni tapasztalatom szerint. Ha ezt elfogadjuk, akkor érdemes megismerkedni a szerializáció és deszerializáció folyamatával.
 	\section{Szerializáció}
 		\cite{sof_serialization}
 	\section{Marshalling és szerializáció}
+		A Marshalling az adatok átvitelének folyamata a .NET-alkalmazás kezelt és nem kezelt kódja között. Az egész számok, például az int, short és long adattípusok C\# és Pascal közötti marshallingolásakor néhány fontos dolgot figyelembe kell vennie.
 		\cite{marshalling_serialization}
-	%todo: ezeket szétosztani
+	%todo: befejezni...
 	\section{Adatok konvertálása}
 	\subsection{Egész és valós számok, logikai változók}
 	\subsection{Szövegek}
 		\cite{marshalling_strings}
 	\subsection{Rekordok}
-	%TODO: befejezni...
 	\section{Managed és unmanaged kód közötti különbség}
 	Először is fontos tisztázni, hogy a C\# szemszögéből nézve a \textit{Unmanaged Code} (nem felügyelt kód) elnevezést a .NET-keretrendszer mindenféle külső komponens megbélyegzésére használja, amelyet nem a .NET futtatókörnyezete felügyel és vezérel. Ettől még ezek lehetnek jó kódok, csak szimplán a Common Language Runtimenak nincs közvetlen hatása ezek működésére: a memóriacímeket közvetlenül lehet kezelni, felülírni, így bizonyos esetekben olyan memóriaterületre is hivatkozhat egy változó, amelyet az operációs rendszer nem a program részére foglalt le, ezt \verb*|segfault|nak nevezzük\footnote{Másnéven \textit{access violation} hibának is nevezik, a Delphi inkább ezzel a kifejezéssel él a hiba kijelzésekor.}
 	\cite{managed} 
@@ -220,12 +225,38 @@
 	Átokként és áldásként is felróható, hogy nem enged direkt ráhatást memóriacímekre: hogy a lefoglalások és felszabadítások mikor, a szekvenciának mely pontjain történnek meg, arról nem tudunk konkrét információkat, mivel a GC ezt elrejti előlünk, a program bizonyos pontjain csak sürgetni tudjuk a Garbage Collectort, hogy végezzen optimalizálásokat. 
 	
 	Ami ténylegesen hátrányként említhető, hogy nem enged hozzáférést alacsonyabb szintű részletekhez, így különböző mikrokontrollerek, hardverelemek vezérlésének szemszögéből kiindulva a programozás ezen módja nem tekinthető opciónak.
-	\section{PInvoke}
-		%todo: kifejteni
+	\section{A Platform Invoke működése}
+	A managed és unmanaged kódok közötti adattovábbítást az úgynevezett Platform Invoke (röviden PInvoke) végzi. A PInvoke-keretrendszer a projekt szempontjából egy fekete doboznak (black box) számít, mivel nem ismerjük ennek megvalósítási módját, ezért mindenképp érdemes körüljárnunk, hogy mi történik a háttérben, amikor a \verb*|[DLLImport]|-attribútumot rátesszük egy-egy metódus szignatúrájára.
+	Induljunk ki egy konzolos alkalmazásból, amely egy felügyelet nélküli (unmanaged) Win32-eljárást hív meg:
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.85]{pinvoke_example}
+		\caption{Példa egy külsős, azaz PInvoke-eljárás definíciójára és használatára}
+		\subcaption{Forrás: \cite{pinvoke}}
+		\label{fig_pinvoke_example}
+	\end{figure} egy Sleep-metódust, amelyet egy úgynevezett \,\textit{'kernel32.dll'}-állományban lett definiálva, meghirdetve és implementálva \ref{dll}. Ha ezt a kódot megfuttatnánk, programot két metódus írná le: az egyik a \verb*|Program.Main|\footnote{A Program.Main a program belépési pontja C\# esetében, innentől kezdődik elkészített kódjaink futtatása Lényegében ha a futtatást mappákra vetítenénk le, ő számítana a gyökérkönyvtár (root directory), amiből nyílhatnak további könyvtárak.}, a másik a \verb*|Program.Main| törzsében meghívott DLL-ből érkező \verb*|Sleep|-eljárás, mindkettő IL-kódra fordul.
+	
+	A .NET-keretrendszer 4-es verziója óta (projektünkben 4.7.2-es verziót használtam a DLL elkészítésére) minden PInvoke-kal hívott metódust köztes nyelvre fordítanak, és Just in Time kerül lefordításra a processzor-specifikus futtatható kódra.
+	
+	A következő fogalmak kifejtésre szorulnak:
+	\begin{enumerate}
+		\item \textbf{Call Stack}: A Call Stack (hívási verem) információkat tárol a számítógépes program aktív (meghívott) függvényeiről.\footnote{Végrehajtási veremként, programveremként, vezérlő veremként, gépi veremként is találkozhatunk a fogalommal, ezek mind ugyanazon jelentéssel bírnak a fejlesztők körében.} Bár a hívási verem karbantartása fontos a legtöbb szoftver megfelelő működéséhez, a részletek nem láthatók, magas szintű programozási nyelveken ráadásul automatikusan működnek. Számos processzor utasításkészlete eltérő utasításokat tartalmaz a programverem kezelésére.
+		\cite{callstack}
+		\item \textbf{Call Frame}: A Call Stack hívási keretekből áll. Ezek olyan adatszerkezetek, amelyek az alprogramok állapotára vonatkozó információkat tartalmazzák: változók, visszatérési típus, visszatérés címe. Minden egyes keret egy olyan függvényhívásnak felel meg, amely még nem tért vissza értékkel. Ha például egy DrawLine nevű metódus éppen fut, amelyet a DrawSquare hívta meg, akkor a Call Stack tetejére a DrawLine-metódus tulajdonságait összefoglaló hívási keret kerül. Amikor a metódus lefutott, azaz visszatért a hívás helyére, a Call Stack tetejéről törlődik a metódusnak létrehozott keret.
+		\cite{callstack}
+		\item \textbf{CLR}: A Common Language Runtime .NET-keretrendszer futtatókörnyezete. A fejlesztett kódot, amely a CLR fordítóján megy keresztül, felügyelt (managed) kódnak nevezzük.
+		\cite{clr}
+		\item \textbf{Just-In-Time-fordítás}: A Just-In-Time-fordító .NET-ben a Common Language Runtime (CLR) része, amely a .NET programok végrehajtásának kezeléséért felelős, függetlenül a .NET programozási nyelvtől. A nyelvspecifikus fordító a forráskódot a köztes nyelvre alakítja át. Ezt a köztes nyelvet aztán a Just-In-Time (JIT) fordítóprogram alakítja át gépi kóddá. Ez a gépi kód specifikus arra a számítógépes környezetre, amelyen a JIT-fordító fut. Előnyei, hogy egyrészt gyorsítja a kód futtatását, másrészt segítségével platformfüggetlen C\#-kódok készíthetőek.
+		\cite{jit_compiler}
+	\end{enumerate}
+
+	Amikor a CLR találkozik egy PInvoke metódussal, egy hívási keretet (Call Frame) tárol a Call Stackre (InlinedCallFrame), amely - többek között - a nem menedzselt függvény címét tartalmazza, mielőtt meghívná a tényleges.
+	
+	A csonk viszont lekéri ezt a a \verb*|StubHelpers.GetStubContext()| segítségével, és meghívja a nem felügyelt függvényt.
 		\cite{pinvoke}
 		\cite{interop_native}
 	\section{Memóriakezelés az InterOp marshaller segítségével}
-	Az Interop marshaller a .NET keretrendszer egyik komponense, amely a managed adattípusok unmanaged típusokká történő konverziójáért felelős. A memóriakezelést illetően az Interop marshaller biztosítja, hogy a memória helyesen kerül lefoglalásra, és felszabadításra a konverzió folyamatában, különösen, ha nem felügyelt kóddal dolgozik.
+	Az Interop marshaller a .NET-keretrendszer egyik komponense, amely a managed adattípusok unmanaged típusokká történő konverziójáért felelős. A memóriakezelést illetően az Interop marshaller biztosítja, hogy a memória helyesen kerül lefoglalásra, és felszabadításra a konverzió folyamatában, különösen, ha nem felügyelt kóddal dolgozik.
 	Amikor felügyelt objektumokat ad át nem felügyelt kódnak, az Interop az objektumot mély másolással\footnote{A mély másolás (angoul deep copy) azt jelenti, hogy objektumonként a referencia szerint tárolt mezők is klónozódnak, úgyhogy két objektum között egyáltalán nem lehet közös referencia. Ennek ellentéte a shallow copy, azaz a sekély klónozás, amelyben a tárolt objektumok memóriacíme egy az egyben átmásolásra kerül, de ekkor egy objektum ilyen típusú mezőjének változása a klónban ugyanazt a változást eredményezi.} hozza létre, hogy a nem felügyelt kód a managed objektum befolyásolása nélkül módosíthassa az objektumot. 
 	
 	Amikor viszont nem felügyelt objektumokat adunk át a felügyelt kód részére, az Interop marshal egy sekély másolatot hoz létre, így a felügyelt kód hozzáférhet a memóriához. Ez azt jelenti, hogy írhatja és olvashatja egyaránt ezen változók értékeit.
@@ -244,32 +275,36 @@
 	\section{Gondolataim a streamalapú kommunikációról}
 	Ebben a megközelítésben a kliens és szerver kódjának nyelve megegyezik, a téma szempontjából már ez is egy tanulsággal szolgál: kell egy közös nyelv, egy szerződés a két fél között, amelytől egyik fél sem térhet el\footnote{Amennyiben valamelyik fél eltér a meghatározott szabványtól, a kommunikáció nem fog létrejönni, a kliens és a szerver nem fogja érteni egymást.}: a streamalapú kommunikáció ezt az alábbi módon valósítja meg: szövegesen eljuttatja a szerver számára a végrehajtani kívánt metódus nevét és paramétereit.
 	
-	Például egy kliensalkalmazásban elküldhetjük az alábbi üzenetet a streamen keresztül: \textit{"ADD|2|3"}, ezt a szerver a várakozás állapotában megkapja, rá is illeszti az üzenet első tagját ($"ADD"$) az általa ismert parancsokra, és amennyiben ismeri az $"ADD"$ parancsot, meghívja rá saját $Add(int\ a,\ int\ b)$-függvényét, majd egy hasonló stream üzenetet küld vissza a kliens számára: \textit{"OK|5"}. \cite{elearning_stream}
+	Például egy kliensalkalmazásban elküldhetjük az alábbi üzenetet a streamen keresztül: \textit{"ADD|2|3"}, ezt a szerver a várakozás állapotában megkapja, rá is illeszti az üzenet első tagját -- esetünkben ez az $"ADD"$ -- az általa ismert parancsokra, és amennyiben ismeri az $"ADD"$ parancsot, meghívja rá saját $Add(int\ a,\ int\ b)$-függvényét, majd egy hasonló stream üzenetet küld vissza a kliens számára: \textit{"OK|5"}. \cite{elearning_stream}
 	
-	Láthatjuk, hogy hasonlóság a küldött üzenetek között, van a két fél között egy megállapodás, egy szabvány, ami leírja a kommunikáció formáját. Elméletem szerint ez már önmagában nevezhető egy közös nyelvnek a kommunikációban résztvevő két komponens között. 
+	Láthatjuk, hogy van hasonlóság a küldött üzenetek között, egy szabvány, ami leírja a kommunikáció formáját. Elméletem szerint ez már önmagában nevezhető egy közös nyelvnek a kommunikációban résztvevő két fél között. 
 	
-	A szerver ismeri az $\mathbb{A} = \{"ADD", "SUB", "MUL", "DIV", "EXIT"\}$ parancsokat, tehát $\mathbb{A}$-halmaz elemeit, ezen halmaz elemeit bátran nevezhetjük a közös nyelvet leíró kulcsszavaknak, amelyekkel a távoli számítógépen metódusokat hívhatunk meg), és a kliensnek erről feltétlenül tudnia kell, hogy ismerje ezen parancsok meghívási módját (kvázi az üzenetküldésre használt nyelv szintaxisát!), valamint ezeket meghívva milyen eredményt várhat.
+	A szerver -- így a kliens is -- ismeri a következő halmaz elemeit: $$\mathbb{A} = \{"ADD", "SUB", "MUL", "DIV", "EXIT"\}$$
+	Ezeket véleményem szerint bátran nevezhetjük a közös nyelv \textbf{kulcsszavainak}, (amelyek használatával a kliens a távoli számítógép implementált metódusait hívhatjuk meg), és a résztvevő feleket ezekre feltétlenül fel kell készítenünk, hogy ezen parancsok meghívási módja, tehát az üzenetküldésre használt nyelv \textbf{szintaxisa}, valamint a várható eredmény ismert legyen.
 	
-	Ha továbbgondoljuk, a nyelv szemantikája is megadható: tegyük fel, hogy az előbb felsorolt parancsok használatához szükség van bejelentkezésre. Bejelentkezik $"LOGIN|username|password"$ üzenettel a szerverre, amely eldönti, hogy a bejelentkezési adatok passzolnak-e az általa eltárolt felhasználói rekordok bármelyikével, amennyiben igen, bejelentkezteti a felhasználót a szerverre. Ekkor már a többi parancs is megnyílik a számára, a $"LOGIN"$-parancs letiltásra kerül. Ha a bejelentkezést követően a felhasználó a $"LOGIN|username|password"$-parancsot ismételten kiadná, kapna a szervertől egy $"ERROR|ALREADY\_LOGGED\_IN"$ üzenetet. 
-	%todo: szintaktika - szemantika footnoteok
-	Szintaktikailag\footnote{Szintaktika} ugyan helyes parancsot adott ki a felhasználó -- azaz az általa futtatott kliensprogram --, de már a parancs meghívása ebben a kontextusban (ebben a párhuzamban kontextusnak számíthatjuk a sessiont)\footnote{Egy többfelhasználós rendszerben munkamenetnek (session) nevezzük azt az időszakot, ami eltelik a felhasználó be- és kijelentkeztetése között, ekkor az szabadon végezheti a dolgát, nem kell minden egyes funkció használatához bejelentkeznie.} már egyszer megtörtént, így a megkapott hibaüzenetben tulajdonképpen egy \textit{szemantikai hibáról}\footnote{Szemantika} kap tájékoztatást a felhasználó.
+	Ha továbbgondoljuk, a nyelv szemantikája is megadható: tegyük fel, hogy az előbb felsorolt parancsok használatához szükség van bejelentkezésre. Bejelentkezik $$"LOGIN|username|password"$$ üzenettel a szerverre, amely eldönti, hogy a bejelentkezési adatok passzolnak-e az általa eltárolt felhasználói rekordok bármelyikével, amennyiben igen, bejelentkezteti a felhasználót a szerverre. Ekkor már a többi parancs is megnyílik a számára, a $"LOGIN"$-parancs letiltásra kerül. Ha a bejelentkezést követően a felhasználó a $$"LOGIN|username|password"$$ parancsot ismételten kiadná, kapna a szervertől egy $"ERROR|ALREADY\_LOGGED\_IN"$ üzenetet. 
+	Szintaktikailag\footnote{\textbf{Szintaxis :} A szavak és mondatok helyességét vizsgáló tudományág. Programozásban az elgépelt kulcsszavak, azonosítók, az idézőjelek és zárójelek helytelen használata, és így tovább. A Chomsky 2-es típusú (kontextustól független) nyelvtanok leírják a legtöbb programozási nyelv szintaxisát.} ugyan helyes parancsot adott ki a felhasználó -- azaz az általa futtatott kliensprogram --, de már a parancs meghívása ebben a kontextusban (ebben a párhuzamban kontextusnak számíthatjuk a sessiont)\footnote{Egy többfelhasználós rendszerben munkamenetnek (session) nevezzük azt az időszakot, ami eltelik a felhasználó be- és kijelentkeztetése között, ekkor az szabadon végezheti a dolgát, nem kell minden egyes funkció használatához bejelentkeznie.} már egyszer megtörtént, így a megkapott hibaüzenetben tulajdonképpen egy \textit{szemantikai hibáról}\footnote{\textbf{Szemantika (jelentéstan)}: A mondatok jelentésének vizsgálata egy kontextuson belül. A programozási nyelvek terén ez azt jelenti, hogy kifejezéseket vizsgálhatunk, hogy annak az van-e értelme az adott kontextuson belül. Például amikor egy 'i' nevű változónak növeljük az értékét (\textit{i = i + 1} vagy \textit{i++}), viszont 'i' korábban nem volt definiálva, akkor \textit{szemantikai hibáról} beszélünk. A Chomsky 1-es típusú (kontextusfüggő) nyelvtanok képesek leírni a legtöbb programozási nyelv szemantikáját.} kap tájékoztatást a felhasználó.
 	
 	\section{RESTful alkalmazások}
+	A szerver-kliens-architektúrák megvalósításának egyik legnépszerűbb módja egy RESTful alkalmazás készítése. A szerver különféle erőforrásai (adatbázisban lévő különböző táblák, az ezeket módosító függvények) különböző Unified Resource Identifiers (URI) címeken keresztül érhetőek el. A kliensnek elegendő ezen URI-címek valamelyikét meghívni, a hívással egy kérést intéz a szerver felé, majd az valamilyen szabványos szöveges formátummal -- ilyen például a JSON is -- képes visszaküldeni a kérés eredményét a kliensprogram számára.
+	
+	
 	
 	\section{Google RPC és a Proto-nyelv}
 	\label{grpc}
-	A Google RPC, röviden gRPC a Google jóvoltából készült nyílt forráskódú RPC-keretrendszer. Remote Procedure Call-nak\footnote{magyarul: Távoli eljáráshívás} nevezzük, amikor $A$ processz meghívja $B$ processz valamely meghirdetett szolgáltatását, így $B$ a kért műveletet implementációja szerint elvégzi, majd $A$ részére válaszüzenetben visszajuttatja az általa kért művelet eredményét. Így $A$-nak nem kell törődnie a végrehajtott algoritmus részleteivel, ennek implementációja és futtatása $B$ processzre delegálódik. Ez lehetőséget teremt arra, hogy bizonyos kódrészleteket egy másik számítógépre, egy szerverre helyezzünk át, ettől lesz a hívás 'távoli'.
-	A gRPC-t számos programozási nyelv támogatja, a teljesség igénye nélkül ezek a Java, C\#, C, C++, Kotlin, Python és PHP-nyelvek. Még Delphiben is létezik egy külső komponens, amit a projekthez hozzáadva használhatjuk a gRPC nyújtotta szolgáltatásokat. \cite{grpc_delphi}
+	A Google RPC, röviden gRPC a Google jóvoltából készült nyílt forráskódú RPC-keretrendszer. Remote Procedure Callnak\footnote{magyarul: Távoli eljáráshívás} nevezzük, amikor $A$ processz meghívja $B$ processz valamely meghirdetett szolgáltatását, így $B$ a kért műveletet implementációja szerint elvégzi, majd $A$ részére visszajuttatja az általa kért művelet eredményét. Így $A$-nak nem kell törődnie a végrehajtott algoritmus részleteivel, ennek implementációja és futtatása $B$ processzre delegálódik. Ez lehetőséget teremt arra, hogy bizonyos kódrészleteket, implementációkat egy másik számítógépre, egy szerverre helyezzünk át, ettől lesz a hívás ''távoli''.
+
+	Hogy az RPC-t jobban megértsük, gondoljunk egy távirányítóra: a távirányítóval képesek vagyunk távolról vezérelni a televíziót, be- és kikapcsolhatjuk, csatornát válthatunk a segítségével, változtassunk annak hangerején, és így tovább. A távirányító a televízió azon tulajdonságait tudja elérni, amelyek számára ''meg vannak hirdetve'', azaz amely gombokra reagál a tévékészülék. A tévé által meghirdetett szolgáltatásait meg tudjuk hívni távirányítón keresztül. A ''távoli hívás'' segítségével elértük, hogy ne kelljen minden alkalommal fizikailag közel lennünk a készülékhez, amikor annak beállításain módosítani kívánunk. Ugyanakkor a távirányító használata alternatív megoldásként is szolgál olyan esetekre, amikor fizikai interakció nem vagy nehezebben kivitelezhető (például meghibásodott a nyomógomb vagy túl magasan helyezkedik el a televízió).
 	
-	%TODO: RPC - távirányítós példát kifejteni
+	A gRPC-t számos programozási nyelv támogatja, a teljesség igénye nélkül ezek a Java, C\#, C, C++, Kotlin, Python és PHP-nyelvek. Még Delphiben is létezik egy külső komponens, amit a projekthez hozzáadva használhatjuk a gRPC nyújtotta szolgáltatásokat. \cite{grpc_delphi}
 
 	A keretrendszer működtetője az úgynevezett \textit{Protocol Buffers}, amely nyelv- platformfüggetlen adatcserét biztosít. A gRPC-ben ennek a segítségével teremthetünk kapcsolatot különböző vagy azonos programozási nyelven készített alkalmazásaink között, egy szerveralkalmazáshoz különféle platformokra írt kliensprogram is kapcsolódhat, mivel a kérések és válaszok nyelvezete közös, szabványos. 
 	
-	Ami weboldalaknál a HTML és a JSON-formátum, az a gRPC esetén a Proto-nyelv, ami átjárást biztosít akár más nyelven írt programok részére is. Amely nyelv képes implementálni a gRPC-t, és a Proto-nyelvből le tudja gyártani maga forráskódját, és a forráskódjából generálható a Proto-formátum, az alkalmas ezen a nyelven keresztül összekapcsolódni más, ugyanezt a keretrendszert alkalmazó szerverprogrammal is. A Proto-nyelv választott témám szempontjából kruciális, mivel kifejezetten erre a célra lett kitalálva, hogy programozási nyelvek felett álljon, ezért úgy gondolom, érdemes tovább vizsgálnunk a nyelvben rejlő lehetőségeket.
+	Ami weboldalaknál a HTML és a JSON-formátum, az a gRPC esetén a Proto-nyelv, ami átjárást biztosít akár más nyelven írt programok részére is. Amely nyelv képes implementálni a gRPC-t, a Proto-nyelvből le tudja gyártani maga forráskódját, valamint a forráskódjából is generálható a Proto-formátum, az alkalmas ezen a nyelven keresztül összekapcsolódni más, ugyanezt a keretrendszert alkalmazó szerverprogrammal is. A Proto-nyelv választott témám szempontjából kruciális, mivel kifejezetten erre a célra lett kitalálva, hogy programozási nyelvek felett álljon, ezért úgy gondolom, érdemes tovább vizsgálnunk a nyelvben rejlő lehetőségeket.
 
-	Miért kell ehhez egy külön nyelv? Nem lehetne maradni a jól bevált JSON-nél? A Proto nyelv további előnyökkel jár, amelyeket sem a JSON, sem az XML, sem bármilyen  más szerializált formátum nem tud biztosítani: az adatszerkezeteket szigorúan típusosan írja le.
+	Miért kell ehhez egy külön nyelv? Nem lehetne maradni a jól bevált JSON-nél? A Proto-nyelv további előnyökkel jár, amelyeket sem a JSON, sem az XML, sem bármilyen  más szerializált formátum nem tud biztosítani: az adatszerkezeteket szigorúan típusosan írja le.
 
-	Ezenkívül nemcsak adatok, hanem szolgáltatások leírására egyaránt alkalmas a Proto-nyelv, ezért is érdemes az RPC ezen változatát használni, mivel nagyobb rugalmasságot biztosít, mint egy átlagos szerializált formátum.
+	Ezenkívül nemcsak adatok, hanem szolgáltatások leírására is egyaránt alkalmas a Proto-nyelv, ezért is érdemes az RPC ezen változatát használni, mivel nagyobb rugalmasságot biztosít, mint egy átlagos szerializált formátum.
 	\begin{figure}[h]
 		\centering
 		\includegraphics[scale=0.4]{protobuf}
@@ -295,30 +330,33 @@
 		\item \textit{Szerver streamelés}: A kliens elküld egy kérést, és a szervertől válaszként streamet fogad.
 		\item \textit{Kétirányú streamelés}: A kliens és a szerver is streamekben kommunikál egymással.
 	\end{itemize}
-	%todo: ez alapján sajátot készíteni
 	\begin{figure}[h!]
 		\centering
-		\includegraphics[scale=0.8]{grpc_calls}
+		\includegraphics[scale=0.9]{grpc_calls}
 		\caption{gRPC metódushívásainak típusai}
 		\label{fig:grpc_calls}
 	\end{figure}
-	%TODO: magyarázat az ábrához
-	Az alábbi ábrán látható, hogy a gRPC sokkal gyorsabb volt, mint az összes REST-hívás, a kísérlet győztese a \verb*|Client Streaming| volt, ami 15-ször gyorsabb, mint a leglassabb REST-módszer, és legalább 5-6-szor gyorsabb, mint egy átlagos REST JSON-hívásokkal. A másik két gRPC módszer hasonlóan teljesített, és közel egy ezredmásodperccel lassabb. 
+	\subsection{Jobb a Proto a JSON-formátumnál?}
+	Az alábbi ábrán látható, hogy a bináris szerializációt alkalmazó Proto-kérések futásidőben sokkal gyorsabbnak bizonyultak, mint a JSON-t használó REST-hívások, a kísérlet győzteseként a \textit{kliens streamelés} került ki (63.25 ezredmásodperccel), ami körülbelül 13-szor gyorsabb, mint a leglassabb REST-módszer (792.51 ms), és legalább 5-6-szor gyorsabb, mint egy átlagos REST JSON-hívásokkal. A másik két gRPC-hívás (Unáris és kötegelt\footnote{A \textit{batch}, azaz kötegelt programozásban nagy mennyiségű adatot kötegelt formában dolgozunk fel. Az adatok egy bizonyos időszakban összegyűlnek, majd ezek feldolgozása egy menetben történik. Ilyen például a bérszámfejtés, ami megvárja, hogy egy munkás munkaórái összegyűljenek a hónap során, majd a hónap lezárultát követően a megadható munkabért meghatározza. Forrás:\cite{batch}} kliens streamelt hívás 63.39 ms és 69.52 ms eredményekkel) is hasonlóan teljesítettek, és pár ezredmásodperccel maradtak le az első helyezetthez képest.
 	\cite{grpc_performance}
 	\begin{figure}[h!]
 		\centering
-		\includegraphics[scale=0.3]{grpc_json}
+		\includegraphics[scale=0.35]{grpc_json}
 		\caption{Szerializáció teljesítményének összehasonlítása JSON és Proto esetében}
+		\subcaption{Forrás: \cite{grpc_performance}}
 		\label{fig:grpc_json}
 	\end{figure}
+	Általánosságban elmondható, hogy a hívható metódusoknak a következő tulajdonságokkal kell rendelkezniük:
+	\begin{enumerate}
+		\item publikusak: A meghívható metódusok listáját a kéréseket kezelő komponens -- amely a szolgáltatásokat implementálja -- közölje valamilyen formában (egy szerződésben) a hívó fél, a kliens számára.
+		%todo: kibővíteni
+	\end{enumerate}
 	\chapter{Szakdolgozati projektünkről}
 	Eme dokumentum mellé készített szakdolgozati szoftverprojektemet Sipos Levente hallgatótársam részére, munkájának megkönnyítésére készítem. 
 	Munkánk arról szól, hogy Keresztes Péter tanár úr által Delphiben implementált metódusokat hívunk meg .NETes környezetből. A C\# és Delphi programozási nyelvek összehangolása az én feladatom, az elkészült termék terveim szerint úgynevezett Helper-metódusok implementációit tartalmazó, lefordított\footnote{Lévén a C\# fordított nyelvnek számít, ezért az alkalmazások futtatásához/használatához az elkészült forráskódokat első lépésben futtatható állományra (gépi kódra) kell fordítani egy fordítóprogram segítségével. Ezt a folyamatot szakszóval \textit{compilingnak} vagy \textit{buildelésnek} is nevezzük.} DLL-projekt lesz, amelyeket Levente az ő Windows Forms keretrendszerrel készített grafikus alkalmazásában tud meghívni. A projekt jelen állása szerint szükség volt továbbá egy úgynevezett relayDLL-re, amelyet én állítottam össze.
 	\section{Miről is szól a projektünk?}
 	
-	Egy mentális egészségfejlesztésre használatos alkalmazást fejlesztésére vállalkoztunk 2022 szeptemberében, amely elméleti alapjait Somodi László futballedző munkásságának köszönhetjük, ezek gondolati vonulatairól titoktartási szerződésünk
-	%TODO: Ezt akár betehetnénk ide vagy hivatkozhatnánk rá valamilyen formában
-	lévén csak nagyon érintőlegesen fogok beszámolni a későbbiekben. 
+	Egy mentális egészségfejlesztésre használatos alkalmazást fejlesztésére vállalkoztunk 2022 szeptemberében, amely elméleti alapjait Somodi László futballedző munkásságának köszönhetjük, ezek gondolati vonulatairól titoktartási szerződésünk lévén csak nagyon érintőlegesen fogok beszámolni a későbbiekben. 
 	
 	A készített alkalmazásunk gyakorlatilag különböző fény- és hangjelzések kibocsátására alkalmas eszközök (lámpák, nyilak és hangszórók) vezérléséből áll, egy úgynevezett \emph{intelligens szobában} az eredeti tervek szerint 8 eszköz (a készített program azonban tetszőleges, $n$ darabszámú eszköz vezérlésére lett felkészítve) együttes vezérlését kell kezelnünk megadott időközönként, amely időközöket egyszerűen ütemnek fogjuk nevezni.
 	A módszer alkalmazása az intelligens szobával együtt működik teljességében.
@@ -340,17 +378,27 @@
 	
 	A két nyelv \textbf{erősen típusosnak} számít, mivel egy változó definiálásakor meg kell mondanunk azt is, hogy milyen típusú értékeket szeretnénk abban tárolni, a típusok már a forráskódban explicit módon megjelennek, így az adott nyelv fordítóprogramja fel van készítve a változó típusaira, amely változó hatókörén\footnote{Hatókör, illetve \textit{scope} alatt a program azon részét, kontextusát értjük, amely magába foglalja az adott változót. Ezen kontextusban vizsgálva a változó "életben van", tehát a memóriában hely van lefoglalva számára, nevére vagy memóriacímére hivatkozva értékét felülírhatjuk, kiolvashatjuk.} belül nem is változhat meg. Ahogy azt már korábban is említettem, a változó típusa meghatározza, hogy az értéket hogyan kell értelmezni a memóriában, a megadott típusnak mely műveletei vannak értelmezve, így például \verb|string| típuson nem értelmezhetünk logikai ÉS (konjunkció)-műveletet.
 	
-	Az elkészült kódok teljesítménye alapján is érdemes összehasonlítani a két nyelvet. Ehhez először is külön kell választanunk a fordításhoz és a futtatáshoz szükséges időt, lévén ezek fordított (nem interpretált) nyelvek, ezért ezek nem szimultán módon\footnote{nem egyidőben, nem egyszerre} történnek. A Delphi fordítóprogramja azonnal gépi kódot\footnote{A gépi kódban már az utasításokat is számok jelzik, ezen nyelv utasításkészlete már a számítógépben működő processzor típusától is erősen függ. Gépi kód az esetek nagy részében fordítóprogram eredménye, a hardverközeli vezérlőprogramok elkészítéséhez is inkább a magasabb szinten álló Assembly nyelvet használják.} készít, míg a C\# esetében első lépésben egy köztes nyelvű\footnote{A(z) (Common) Intermediate Language a .NET-keretrendszerben a magasabb absztrakciós szintű C\# és a legalacsonyabb szintű gépi kód között helyezkedik el, ami még processzortól és operációs rendszertől független. A .NET Runtime futtatókörnyezete képes futtatni.} kód készül, amelyet a .NET virtuális gép képes futtatni. Fordítási időben a Delphi-kód nyertesnek számít, futásidőben azonban közel ekvivalens a két nyelv révén gyártott kód.
+	Az elkészült kódok teljesítménye alapján is érdemes összehasonlítani a két nyelvet. Ehhez először is külön kell választanunk a fordításhoz és a futtatáshoz szükséges időt, lévén ezek fordított (nem interpretált) nyelvek, ezért ezek nem szimultán módon\footnote{nem egyidőben, nem egyszerre} történnek. A Delphi fordítóprogramja azonnal gépi kódot\footnote{A gépi kódban már az utasításokat is számok jelzik, ezen nyelv utasításkészlete már a számítógépben működő processzor típusától is erősen függ. Gépi kód az esetek nagy részében fordítóprogram eredménye, a hardverközeli vezérlőprogramok elkészítéséhez is inkább a magasabb szinten álló Assembly nyelvet használják.} készít, míg a C\# esetében első lépésben egy köztes nyelvű\footnote{A(z) (Common) Intermediate Language a .NET-keretrendszerben a magasabb absztrakciós szintű C\# és a legalacsonyabb gépi kód között ,,félúton'' helyezkedik el, ami még processzortól és operációs rendszertől független. A .NET Runtime futtatókörnyezete képes futtatni.} kód készül, amelyet a .NET virtuális gép képes futtatni. Bár fordítási időben a Delphi-kód abszolút győztesnek tekinthető -- mivel fordítóprogramja közvetlenül futtatható állományt készít --, a két nyelv segítségével készített programok futásideje közel azonos. Így megállapítható, hogy mérvadó teljesítménybeli különbséget kizárólag a fordítás folyamatában észlelhetünk.
 	
 	Ha ennél is tovább megyünk, akkor a C\#-nak nagy előnye származik abból a Delphivel való összevetésben, hogy aszinkron\footnote{ Az aszinkron programozás lehetővé teszi, hogy az alkalmazás egy időigényes folyamat futtatását háttérbe helyezze, így a programot futtató szál, lévén nem várakozik a válaszra, addig ugyanúgy képes a felhasználói interakciókat kiszolgálni. \cite{async}} kódolási lehetőséget is biztosít, amely felgyorsítja a végrehajtást, jobban ki tudja használni a rendelkezésre álló CPU teljesítményét. A LINQ\footnote{A \textbf{Language Integrated Query} (magyarul: nyelvbe ágyazott lekérdezés) egy gyűjtőfogalom a C\# nyelvbe épített szintaktikai elemekre, amely elemek lehetővé teszik, hogy akár lambda kifejezésként, akár SQL-szintaxishoz hasonló módon meg tudjunk fogalmazni lekérdezéseket bizonyos - iterálható, vagyis bejárható, az IEnumerable-interfészt megvalósító - szerkezetekre. Ilyen szerkezetnek minősül például a \textit{List} is.} használata \verb|yield| kulcsszóval az iterációkban biztosítja, hogy csak akkor van végrehajtva a kód, amikor ténylegesen szükség van rá (lusta kiértékelés). A delegate-ek használata szintén növelheti a C\#-kódok teljesítményét, bár a Delphi is rendelkezik ehhez hasonló funkciókkal.
-	%TODO: esetleg ide jöhetne egy C\# és Delphi futásidő-összehasonlítási ábra (benchmark)
+	%todo: esetleg ide jöhetne egy C\# és Delphi futásidő-összehasonlítási ábra (benchmark)
 	\cite{perf_comp}
 	
 	A fejlesztés folyamán elkészített \textbf{modulokat} a különböző programozási nyelvek eltérő megnevezéseket használnak.\footnote{Az említett példákon kívül a Java-nyelvben \textit{package}-ként, míg a Pythonban \textit{module}-ként hivatkoznak az osztályokat összegyűjtő egységre.} A vizsgált két nyelv tekintetében is ez áll fenn: a C\# \verb|namespace|, míg a Delphi \verb|unit| kifejezéssel illeti, a lényegük ugyanaz lesz: 
 	\begin{enumerate}
-		\item Mivel nagy projekteknél előfordulhat, hogy két, funkciójában eltérő osztálynak ugyanazt a nevet kellene adnunk, nem tehetnénk meg, mivel a fordítóprogram, így a futó program sem tudná eldönteni, hogy a két változat közül éppen melyiket kívánjuk használni. Ezt a problémát orvosolják például, hogy külön modulokban tudjunk azonos elnevezésű osztályokat kezelni.
-		\item Fontos továbbá, hogy mivel nem az nagyobb átláthatóság végett nem egy fájlban dolgozunk, és esetleg több kollégával fejlesztünk 
-		\item Egy lefejlesztett DLL tekintetében is szükség van egyetlen összefoglaló névre, amit a futtatható állomány
+		\item Elnevezések: Mivel nagy projekteknél előfordulhat, hogy két, funkciójában eltérő osztálynak ugyanazt a nevet kellene adnunk, nem tehetnénk meg, mivel a fordítóprogram nem tudná eldönteni, hogy a két változat közül éppen melyiket kívánjuk érvényesíteni. Ezt a problémát orvosoljuk például a kódok modulokra való felosztásával.
+		
+		\item Egységbe zárás: A modulok lehetővé teszik a programozók számára, hogy egy funkcionalitás végrehajtási részleteit kapszulázzák és elrejtsék. Ez azt jelenti, hogy a modulok tiszta felületet biztosítanak a funkcionalitással való interakcióhoz, miközben a mögöttes kódot elrejtik és védik a véletlen változásoktól.
+		
+		\item Újrafelhasználhatóság: A kód modulokba történő kapszulázásával a programozók olyan kódot hozhatnak létre, amely több programban is felhasználható. Ez csökkenti a fejlesztési időt és erőfeszítéseket azáltal, hogy a programozók újra felhasználhatják a már megírt és tesztelt kódot.
+		
+		\item Karbantarthatóság: Ha a kódot modulokba szervezik, könnyebb karbantartani és frissíteni, mivel az egyik modulban anélkül lehet változtatásokat végrehajtani, hogy az befolyásolná az azt használó többi modult. Ez javítja a kód karbantarthatóságát és csökkenti a hibák bevezetésének valószínűségét.
+		
+		\item Moduláris felépítés: A modulok megkönnyítik a nagy programok kisebb, könnyebben kezelhető darabokra bontását. Ez megkönnyíti a kód megértését és a program különböző részein való egyidejű munkát.
+		
+		Összességében a modulok a modern programozás alapvető részét képezik, mivel hatékony mechanizmust biztosítanak a kód szervezéséhez, újrafelhasználásához és karbantartásához.
+		Ezért a programozók a programokat önálló darabokra tervezik, amelyeket meg tudnak írni, majd elfelejtik a belső részek részleteit, és csak a külsőségekkel foglalkoznak, azzal, hogy mit csinál a darab. A modulok ennek egyik módja,
+		\item Egy lefejlesztett DLL tekintetében szükség van egy olyan összefoglaló névre, amire a használathoz hivatkozni tudunk.
 	\end{enumerate} \cite{delphi_basics}
 	
 	Ami közös még a két nyelvben, hogy a fejlesztés moduljaiból Win32-szabványnak megfelelő DLL-ek készülhetnek a segítségükkel, ezek szintén lefordított, gépi kódú állományok, amelyek más szoftver forráskódjában felhasználhatóak, lényegében így válnak futtatható állománnyá.
@@ -365,9 +413,7 @@
 	\begin{itemize}
 		\item Assembly nyelv
 		\item case insensitive
-	\end{itemize}
-	\cite{pascal_csharp}
-	
+	\end{itemize}\cite{pascal_csharp}
 	\section{Alaphelyzet}
 	Amikor a munkát megkezdtem, rendelkezésemre állt Dr. Király Roland tanár úr által fejlesztett Delphis asztali alkalmazás, amely -- mint kiderült -- a mai napig teljes mértékben használható. Ezen alkalmazás forráskódjában követtem végig az hardvereket működtető függvények hívási sorrendjét (szekvenciáját), ezek módját és eredményeit, az esetlegesen előforduló hibaüzeneteket. 
 	Ezen alkalmazás C\#-nyelvű megfelelőjének elkészítését és továbbgondolását kaptuk feladatként Leventével.
@@ -388,7 +434,7 @@
 		\item \verb*|Dev485Exception|: Eszközök tömbjére vonatkozó hibaüzenetek
 		\item \verb*|SLDLLException|: A DLL működésével kapcsolatos hibaüzenetek
 		\item \verb*|USBDisconnectedException|: Az USB-porton nem észlelhető eszköz hibaüzenete.
-		%TODO: újabbakat hozzáadni!
+		%todo: újabbakat hozzáadni!
 	\end{itemize}
 	\begin{figure}[h!]
 		\centering
@@ -399,7 +445,7 @@
 		\label{fig:errcodes}
 	\end{figure}
 	\subsection{A WinForm bemutatása}
-	A \textit{WinForm}, teljes nevén a \textit{Windows Forms} a .NET GUI-fejlesztést\footnote{A GUI a Graphical User Interface (grafikus felhasználói interfész) kifejezés rövidítése, asztali alkalmazásokat értünk alatta, amely átlagfelhasználók számára kényelmesebb megközelítés a konzolos alkalmazásokkal szemben} támogató keretrendszere, amelynek segítségével egy asztali alkalmazást egyszerűbb módon el tudunk készíteni. 
+	A \textit{WinForm}, teljes nevén a \textit{Windows Forms} a .NET GUI-fejlesztést\footnote{A GUI a \textbf{Graphical User Interface} (grafikus felhasználói interfész) kifejezés rövidítése, asztali alkalmazásokat értünk alatta, amely átlagfelhasználók számára kényelmesebb megközelítés a konzolos alkalmazásokkal szemben} támogató keretrendszere, amelynek segítségével egy asztali alkalmazást egyszerűbb módon el tudunk készíteni. 
 	
 	Előkészített, a HTML-nyelvből már jól ismert, valamint ezek tárházát bővítő vezérlőelemekkel (gombok, legördülő listák, adattáblázatok, és így tovább) gondoskodik azok újrahasznosíthatóságáról. A Visual Studio fejlesztői környezet egy Designer-felülettel is rendelkezik, amellyel gyorsan és különösebb képzelőerő nélkül elkészíthetjük grafikus alkalmazásaink vázát.
 	
@@ -407,7 +453,9 @@
 	
 	Amikor a felhasználó műveletet hajt végre egy űrlapon vagy annak vezérlőelemein, ez a művelet eseményeket generál. Az alkalmazás kódban reagálhat ezekre az eseményekre, amennyiben azok bekövetkeznek, de figyelmen kívül is hagyhatja azokat.\cite{winform}
 	\subsection{DLL-ek üzenetküldése Win32-ben}
-	Van egy üzenetlista\footnote{A Message Queue (üzenetsor) egy sor (queue) adatszerkezetben, érkezési sorrendben tárolja az üzeneteket, majd ezek ugyanezt a sorrendet megtartva kerülnek le róla.}, amin keresztül kommunikál az operációs rendszer a futó programmal, ezt projektünk szempontjából Levente ablakos alkalmazása fogja jelenteni. Az operációs rendszer ráteszi a lenyomott gomb által kiváltott üzenetet erre a listára, tehát például amikor az egér bal gombjával kattintunk,	akkor azt ténylegesen nem a futó program fogja észlelni, mivel az operációs rendszer a központ, ahova az I/O-kérések befutnak. \footnote{Az operációs rendszer eleve azért felelős, hogy elossza az erőforrásokat és kezelje a kimeneti-bemeneti perifériákat, így az egerünk által kiadott jel is az operációs rendszerhez érkezik be.}
+	Egy üzenetlistán\footnote{A Message Queue (üzenetsor) egy sor (queue) adatszerkezetben, érkezési sorrendben tárolja az üzeneteket, majd ezek ugyanezt a sorrendet megtartva kerülnek le róla.} keresztül kommunikál az operációs rendszer a futó programmal, ezt projektünk szempontjából Levente ablakos alkalmazása fogja jelenteni. Az operációs rendszer ráteszi a lenyomott gomb által kiváltott üzenetet erre a listára, tehát például amikor az egér bal gombjával kattintunk, akkor azt ténylegesen nem a futó program fogja észlelni, mivel az operációs rendszer a központ, ahova az I/O-kérések befutnak. 
+
+	Az operációs rendszer eleve azért felelős, hogy elossza az erőforrásokat és kezelje a kimeneti-bemeneti perifériákat, így az egerünk által kiadott jel is az operációs rendszerhez érkezik be.
 	Az alábbi lépéssorozat fog lejátszódni:
 	\begin{enumerate}
 		\item Az operációs rendszer ráteszi a \verb*|WM_LBUTTONDOWN|-üzenetet az üzenetsorra.
@@ -416,7 +464,9 @@
 		\item A programunk meghívja a \verb*|TranslateMessage|- és \verb*|DispatchMessage|-függvényeket, utóbbiban az operációs rendszer meghívja az asztali alkalmazás WndProc-függvényét Ez minden esetben lezajlik, attól függetlenül, hogy az ki van-e fejtve vagy sem.
 		\item Az ablakos alkalmazásban válaszolunk az I/O-kérésre (például egy gombra kattintva újabb ablakot nyitunk meg) vagy éppen figyelmen kívül is hagyhatjuk, ekkor a felhasználó belátja, hogy lényegében nem is történt semmi.
 	\end{enumerate}
+
 	Már az is Win32-üzenetet vált ki, ha szimplán mozgatjuk az egerünket, ekkor az egér új pozíciója is az üzenetben tárolásra kerül, innen és a Form előre meghatározott tulajdonságaiból (ablak pozíciója, szélessége és magassága) tudjuk detektálni például, hogy az egér az ablak területére érkezett\footnote{Erre vonatkozó esemény a MouseEnter-event Windows Forms esetében.}.
+
 	Ha erre a felhasználói bemenetre fel van készítve a programunk által üzenetküldésre használt metódus\footnote{Egy-egy Win32-üzenet feldolgozását Windows Form asztali alkalmazás esetében a WndProc-metódus szolgálja.}, akkor az érzékeli, hogy erre az eseményre reagálnia kell, így egy másik állapotba lép. Természetesen a készített programban lehetőségünk van arra is, hogy egyszerűen ignoráljuk az operációs rendszer felől érkező üzeneteket.
 	
 	A felhasználó ebből az egész folyamatból csak annyit érzékelhet, hogy a lenyomott gomb hatására valami esemény történt a programban, így ő azt gondolhatja, hogy közvetlenül a program érzékelte az interakciót. Lényegében ez is történik, csak az operációs rendszer végzi az I/O-eszközökről érkező jelek feldolgozását, és erről egy Win32-üzenet formájában tájékoztatja az éppen futó asztali alkalmazást is.
@@ -426,10 +476,11 @@
 	A Delphis projekt erősen függ az SLDLL-ben megkívánt típusoktól, ezért a teljes kódot nem tudjuk C\#-ra átültetni.
 	\subsubsection{Megoldás} 
 	Erre a problémára megoldást nyújthat akár a marshalling, akár a szerializáció, mi a projektben utóbbi módszert választottuk az előző problémából levont következtetés miatt: ha stringet át tudunk adni, akkor bármilyen típust képesek vagyunk leírni szöveges formában, ezt átadva újból fel tudjuk építeni a másik nyelvben. A C\#-os objektumok példányai egy erre dedikált forrásból (JSON-formátumú szövegből) fognak értékeket kapni.
+
 	A lényege a megoldásnak, hogy szerializálással küszöböljük ki a két nyelv közötti kompatibilitási hiányosságokat, ezért csak olyan adatokkal kommunikálunk, amelyek ismertek, feldolgozhatóak mindkét nyelv számára. Ilyenek a primitívek, az egész, lebegőpontos, logikai és szöveges típusok).
 	\begin{figure}[h!]
 		\centering
-		\includegraphics[scale=0.75]{json_szerializalas_azonositok}
+		\includegraphics[scale=0.89]{json_szerializalas_azonositok}
 		\caption{Eszközök azonosítóinak átadása JSON-formátumon keresztül}
 		\label{json_azonositok}
 	\end{figure}
@@ -437,11 +488,14 @@
 	\subsubsection{Megoldás:} A korábbi SLDLL-hez fűzzük őket, vagy tegyük egy új DLL-állományba őket, és ezeket is meg kell hirdetnünk a C\#-os futtatókörnyezet számára is. A választott megoldásom az új DLL-re esett, egy úgynevezett \verb*|relayDLL| nevezetű állomány forráskódját megírtam Delphiben, amelyen keresztül az SLDLL-függvényeket meg tudjuk hívni.
 	
 	Ennek legfőbb indoka az volt, ami eldöntötte, hogy érdemes a hívó (.NETben készült \verb*|FormHelperDLL|) és hívott (\verb*|SLDLL|) felek között egy köztes réteget elkészíteni, hogy Delphiben különböző globális változók kapnak értéket, amelyeket nem tudunk máshol definiálni, csakis Delphiben, tehát a hívás környezetét így tudjuk megteremteni, hogy az értékadások ténylegesen működjenek, ne fussunk \verb*|NullReferenceException|-hibákra.\\
+
 	A \verb*|relayDLL| használatával ellenőrzöttebb módon tudom meghívni az \verb*|SLDLL|-ben meghirdetett függvényeket, ebből nem is kell mindent meghirdetni, csak annyit, amennyit ténylegesen a vezérléshez használnunk szükséges. Ezenkívül több, általam definiált hibakódot is vissza tudok adni, amelyek kiváltó okáról C\#-ban megfelelő kivételek segítségével tájékoztatni tudjuk a felhasználókat.
 	\subsection{Az SLDLL\_Open-függvény paraméterezése}
-	\subsubsection{A probléma leírása:} Az \verb*|SLDLL_Open|-függvény várja az ablakos alkalmazás handle-mezőjét, amely az üzenetküldést engedélyezi az SLDLL-függvények részéről.
+	\subsubsection{A probléma leírása:} Az \verb*|SLDLL_Open|-függvény várja az ablakos alkalmazástól egy úgynevezett Handle-t, amely az üzenetküldést engedélyezi az SLDLL-függvények részéről.
 	\subsubsection{Megoldás: } C\#-ban a Formnak (a függvényeket meghívó félnek) létezik egy Handle nevezetű pointere, amit átadhatunk az SLDLL-nek.
-	\subsection{Stringek átadása Delphi DLL-ből C\# részére}
+	\subsection{Stringek átadása két nyelv között}
+	\subsubsection{A probléma leírása:} Különösen fontos, hogy Delphiből át tudjunk adni a Delphis relayDLL-ből a C\# részére stringeket, mivel ha ezt sikerül elérnénk, akkor bármit le tudunk írni stringként.
+
 	Korábban szakdolgozati témánkat előkészítendő egy példaprojekt keretein belül kísérleteztem bizonyos Delphiből érkező típusok C\#-nak való átadásával. Ez természetesen kiterjedt a karakterláncokkal való kommunikációra is, mivel ha szöveget képesek vagyunk átadni, akkor lényegében segítségükkel bármilyen más típus formátuma is -- így a rekordoké is -- leírható és feldolgozható.
 
 	Az alábbi példában vizsgáltam a referencia szerinti paraméterátadás működőképességét is, ez abban nyilvánult meg, hogy mind Delphi, mind C\# oldalon meghirdettem egy kimenő (out) paramétert, ami azt jelzi a fordító számára, hogy ez a változó az eljárás futtatásakor fog beállítódni, ennek értékét -- mivel memóriacímet adtunk át -- a függvényt hívó környezetből is el tudjuk érni. Ez különösen akkor hasznos, amikor egy függvényhívással több változó értékét is viszont szeretnénk látni.
@@ -459,41 +513,44 @@
 	\end{figure}
 	A C\#-ban ily módon végeztem el az eljárás deklarációját, ebben a példaprogramban ez le is futott, azonban a szakdolgozati projektünkhöz ez a megoldás nem volt megfelelő.
 	\begin{figure}[h!]
-		\includegraphics[scale=0.7]{hibas_string_csharp}
+		\centering
+		\includegraphics[scale=0.75]{hibas_string_csharp}
 		\caption{Az eljárás hibás szignatúrája C\#-ban}
 		\label{hibas_string_csharp}
 	\end{figure}
 	\subsubsection{Megoldás}
 	\begin{figure}[h!]
 		\centering
-		\includegraphics[scale=0.65]{string_delphi}
+		\includegraphics[scale=0.75]{string_delphi}
 		\caption{A függvény helyes Delphi-deklarációja}
 		\label{string_delphi}
 	\end{figure}
 	Stringek formájában alapértelmezetten a C\# marshalling komponense Delphiből \verb*|PWideChar| típusú változókat vár. Amennyiben Delphiben a metódus WideStringet kér paraméterben, akkor azt a C\#-oldali marshallerrel a \verb*|[MarshalAs(UnmanagedType.BStr)]| attribútum segítségével tudjuk közölni.
 	\begin{figure}[h!]
 		\centering
-		\includegraphics[scale=0.6]{string_csharp}
+		\includegraphics[scale=0.64]{string_csharp}
 		\caption{A függvény helyes szignatúrája C\#-ban}
 		\label{string_csharp}
 	\end{figure}
 	
 	\cite{sof_strhandling}
-	%todo: problémák kifejtése
-	\section{A relayDLL-ben eldobott kivételek nem kezelhetőek}
-	\subsection{Megoldás} Hibakódokkal jelezzük a C\# felé, ha esetleg hibára futott valamelyik függvény, ebből a hibakódból a C\# tudni fogja, hogy milyen típusú kivételt dobjon az asztali alkalmazás számára, amelyek már lehetnek egyénileg elkészített Exception-objektumok.
-	\section{uzfeld metódus CSharp-os megfelelője}
-	\subsection{Megoldás}
+	\subsection{A Delphiben eldobott kivételek nem kezelhetőek}
+	\subsubsection{A probléma leírása:} Delphiben dobott kivételeket a C\# úgy érzékeli, mint hiba a külső komponensben, a tényleges kiváltó okát nem tudjuk meg.
+	\subsubsection{Megoldás} Hibakódokkal jelezzük a C\# felé, ha esetleg hibára futott valamelyik függvény, ebből a hibakódból a C\# tudni fogja, hogy milyen típusú kivételt dobjon az asztali alkalmazás számára, amelyek már lehetnek egyénileg elkészített Exception-objektumok.
+	\subsection{uzfeld-metódus megfelelője C\#-ban}
+	\subsubsection{A probléma leírása:} Delphiben az ablakos alkalmazásnak volt egy úgynevezett \verb*|uzfeld| nevezetű metódusa, amely a DLL üzeneteinek kezelésére szolgált, ez hívódik meg az \verb*|SLDLL_Open| meghívása után\footnote{Ez a tény, hogy a Listelem-függvény tulajdonképpen a Felmeres előtt kell, hogy meghívódjon, a Delphi7-es fejlesztői környezetének debug és breakpoint funkcióinak segítségével derült ki. Ennek használatával sorról sorra tudtam követni a program végrehajtását.} (ezért került átadásra a formot azonosító Handle). Ez azért fontos, mert az \verb*|SLDLL_Listelem|-függvény ezen az uzfeld-metóduson keresztül kerül meghívásra, a drb485 és a dev485 a program ezen pontján kapnak ténylegesen értelmezhető értékeket.
+	\subsubsection{Megoldás}
 	Elméletem szerint létezik ennek egy szabványos megfelelője, C\#-ban ez \verb*|WndProc|-metódus, ami szintén Message-típusú változót vár referencia szerint átadva, ezzel tud az SLDLL futásidőben kommunikálni.
-	Innentől kezdve:
+	Innentől kezdve a következő lépések játszódnak le:
 	\begin{enumerate}
 		\item \verb*|SLDLL_Open| kivált egy üzenetet (Win32 Message).
-		\item Ezen az üzeneten keresztül az operációs rendszer meghívja a Form \verb*|WndProc| metódusát\footnote{ezt azért teheti meg, mivel az \textit{SLDLL\_Open} hívásakor átadott Form Handle-n keresztül ismeri, hogy merre továbbítsa a rendszerüzeneteket.}.
-		\item Amennyiben a felmérés sikeresen lezajlott, a \verb*|WndProc| meghívja a dev485 és drb485 változókat beállító \verb*|SLDLL_ListElem|-függvényt, mielőtt az \verb*|SLDLL_Felmeres|-re kerülne a sor. A megfelelő hívási szekvencia így automatikusan biztosított.
+		\item Ezen az üzeneten keresztül az operációs rendszer meghívja a Form \verb*|WndProc| metódusát\footnote{Ezt megteheti, mivel az Open hívásakor átadott Handle révén tudja, hogy merre továbbítsa az üzeneteket.}.
+		\item Amennyiben a felmérés sikeresen lezajlott, a \verb*|WndProc| meghívja a \verb*|dev485| és \verb*|drb485| változókat beállító \verb*|SLDLL_ListElem|-függvényt, mielőtt az \verb*|SLDLL_Felmeres|-re kerülne a sor. A megfelelő hívási szekvencia így automatikusan biztosított.
 	\end{enumerate}
-	\section{Eszközök azonosítóinak, típusainak átadása}
-	\subsection{Megoldás}
-	A Delphiben tárolt tömb (dev485) eszközeinek legfontosabb mezőjét (ami az eszközt azonosítója, tehát az azonosítót XML-fájlba kimentjük vagy JSON-formátumú szöveggé alakítjuk. Az azonosító önmagában meghatározza az eszköz típusát, úgyhogy elég azt átadni. \cite{sof_xmlcreate}
+	\subsection{Eszközök azonosítóinak, típusainak átadása}
+	\subsubsection{A probléma leírása: } Hogyan közöljük a felmért (USB-re csatlakoztatott) eszközök azonosítóját és típusát a C\# részére?
+	\subsubsection{Megoldás}
+	A Delphiben tárolt tömb (dev485) eszközeinek legfontosabb mezőjét (ami az eszközt azonosítója, tehát az azonosítót XML-fájlba kimentjük \cite{sof_xmlcreate}, vagy JSON-formátumú szöveggé alakítjuk. Az azonosító önmagában meghatározza az eszköz típusát, úgyhogy elég azt átadni.
 	Az eszközök típusát a következő módon tudjuk meghatározni kizárólag beállított azonosítóikon keresztül:
 	\begin{itemize}
 		\item \verb*|SLLELO|: \$4000 -> lámpa azonosítók \$4000 .. \$4fff (decimálisan: 16 384 .. 20 479) tartományon kaphatnak értéket.
@@ -508,15 +565,26 @@
 
 	\section{A hangszóró egy egész hanglistát kezel - JSON}
 	\subsection{Megoldás}
-	egy hanglistát több index|volume|length 3-as ír le, a pipe, azaz '|'-karakter mentén széttördelt szövegen 3-as lépésközzel iterálhatunk végig.
-	%TODO: ennek megoldása Delphiben
+	egy hanglistát több \textit{index|volume|length}-hármas ír le, a pipe, azaz '|'-karakter mentén széttördelt szövegen 3 lépésközzel iterálhatunk végig.
+	\begin{figure}[h!]
+		\centering
+		\includegraphics{speaker_solved}
+		\caption{Megoldás a problémára}
+		\label{speaker_solved}
+	\end{figure}
 	\section{A hangszóró egy egész hanglistát kezel - kód}
 	\subsection{Megoldás}
-	A Speaker-osztályban az eszköz viselkedését leíró 3 mezőt (index, volume és length) egy külön objektumba szervezzük ki (Sound), és a Speaker -- azonosítóján kívül -- kizárólag Sound-típusú objektumok listáját tartalmazza, a listát JSON-ben \textit{"index|volume|length"} rendezett hármasok összefűzésével szerializálja, a listához kizárólag listakezelő függvényekkel lehet hozzáférni (törlés, módosítás, hozzáadás), majd az \verb*|SLDLL_Hangkuldes| számára kiküldött H-tömböt (hanglistát) Delphiben egy ciklussal a JSON-nel átadott adatok szerint a megfelelő sorrendben feltöltjük, az előző probléma megoldásában ennek mikéntjét fejtettem ki.
-	%TODO: ennek megoldása C#-ban
+	A Speaker-osztályban az eszköz viselkedését leíró 3 mezőt (index, volume és length) egy külön objektumba szervezzük ki (Sound), és a Speaker -- azonosítóján kívül -- kizárólag Sound-típusú objektumok listáját tartalmazza, a listát JSON-ben \textit{"index|volume|length"} rendezett hármasok összefűzésével szerializálja, a listához kizárólag listakezelő függvényekkel lehet hozzáférni (törlés, módosítás, hozzáadás), majd az \verb*|SLDLL_Hangkuldes| számára kiküldött H-tömböt (hanglistát) Delphiben egy ciklussal a JSON-nel átadott adatok szerint a megfelelő sorrendben feltöltjük, az előző probléma megoldásában ennek mikéntjét kifejtettem.
+	%todo: ennek megoldása C#-ban
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.7]{speaker_csharp}
+		\caption{A hangszóró hanglistát kezel - megoldás C\# nyelven}
+		\label{speaker_csharp}
+	\end{figure}
 	\section{Két DLL működésének tesztelése}
 	\cite{sof_debug_dll}
-	%TODO: kifejteni
+	%todo: kifejteni
 	\section{Teljesítmények összehasonlítása Delphi és C\#-hívások esetében}
 	\cite{sof_elapsed_time}
 	
