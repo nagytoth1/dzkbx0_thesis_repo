@@ -13,5 +13,6 @@
 \select@language {magyar} \contentsline {figure}{\numberline {4.4.}{\ignorespaces Az eljárás hibás szignatúrája C\#-ban\relax }}{30}{figure.caption.16}%
 \select@language {magyar} \contentsline {figure}{\numberline {4.5.}{\ignorespaces A függvény helyes Delphi-deklarációja\relax }}{30}{figure.caption.18}%
 \select@language {magyar} \contentsline {figure}{\numberline {4.6.}{\ignorespaces A függvény helyes szignatúrája C\#-ban\relax }}{30}{figure.caption.19}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.7.}{\ignorespaces Megoldás a problémára\relax }}{33}{figure.caption.26}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.8.}{\ignorespaces A hangszóró hanglistát kezel - megoldás C\# nyelven\relax }}{33}{figure.caption.27}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.7.}{\ignorespaces Hangszóróval lejátszható hangok listája\relax }}{33}{figure.caption.26}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.8.}{\ignorespaces Megoldás a problémára\relax }}{33}{figure.caption.29}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.9.}{\ignorespaces A hangszóró hanglistát kezel - megoldás C\# nyelven\relax }}{34}{figure.caption.30}%

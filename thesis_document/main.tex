@@ -4,7 +4,7 @@
 \usepackage[magyar]{babel}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage{mathtools,amssymb,amsthm,pdfpages, subcaption, comment, enumitem, booktabs, graphicx, lipsum}
+\usepackage{mathtools,amssymb,amsthm,pdfpages, subcaption, comment, enumitem, booktabs, graphicx}
 \footnotestyle{rule=fourth}
 \captionsetup[subfigure]{labelformat=empty} % subcaptionre ne tegyen számozást
 \graphicspath{{./images/}} % képeket innen importálom be
@@ -288,8 +288,6 @@
 	\section{RESTful alkalmazások}
 	A szerver-kliens-architektúrák megvalósításának egyik legnépszerűbb módja egy RESTful alkalmazás készítése. A szerver különféle erőforrásai (adatbázisban lévő különböző táblák, az ezeket módosító függvények) különböző Unified Resource Identifiers (URI) címeken keresztül érhetőek el. A kliensnek elegendő ezen URI-címek valamelyikét meghívni, a hívással egy kérést intéz a szerver felé, majd az valamilyen szabványos szöveges formátummal -- ilyen például a JSON is -- képes visszaküldeni a kérés eredményét a kliensprogram számára.
 	
-	
-	
 	\section{Google RPC és a Proto-nyelv}
 	\label{grpc}
 	A Google RPC, röviden gRPC a Google jóvoltából készült nyílt forráskódú RPC-keretrendszer. Remote Procedure Callnak\footnote{magyarul: Távoli eljáráshívás} nevezzük, amikor $A$ processz meghívja $B$ processz valamely meghirdetett szolgáltatását, így $B$ a kért műveletet implementációja szerint elvégzi, majd $A$ részére visszajuttatja az általa kért művelet eredményét. Így $A$-nak nem kell törődnie a végrehajtott algoritmus részleteivel, ennek implementációja és futtatása $B$ processzre delegálódik. Ez lehetőséget teremt arra, hogy bizonyos kódrészleteket, implementációkat egy másik számítógépre, egy szerverre helyezzünk át, ettől lesz a hívás ''távoli''.
@@ -386,19 +384,19 @@
 	
 	A fejlesztés folyamán elkészített \textbf{modulokat} a különböző programozási nyelvek eltérő megnevezéseket használnak.\footnote{Az említett példákon kívül a Java-nyelvben \textit{package}-ként, míg a Pythonban \textit{module}-ként hivatkoznak az osztályokat összegyűjtő egységre.} A vizsgált két nyelv tekintetében is ez áll fenn: a C\# \verb|namespace|, míg a Delphi \verb|unit| kifejezéssel illeti, a lényegük ugyanaz lesz: 
 	\begin{enumerate}
-		\item Elnevezések: Mivel nagy projekteknél előfordulhat, hogy két, funkciójában eltérő osztálynak ugyanazt a nevet kellene adnunk, nem tehetnénk meg, mivel a fordítóprogram nem tudná eldönteni, hogy a két változat közül éppen melyiket kívánjuk érvényesíteni. Ezt a problémát orvosoljuk például a kódok modulokra való felosztásával.
+		\item \textbf{Elnevezések}: Mivel nagy projekteknél előfordulhat, hogy két, funkciójában eltérő osztálynak ugyanazt a nevet kellene adnunk, nem tehetnénk meg, mivel a fordítóprogram nem tudná eldönteni, hogy a két változat közül éppen melyiket kívánjuk érvényesíteni. Ezt a problémát orvosoljuk például a kódok modulokra való felosztásával.
 		
-		\item Egységbe zárás: A modulok lehetővé teszik a programozók számára, hogy egy funkcionalitás végrehajtási részleteit kapszulázzák és elrejtsék. Ez azt jelenti, hogy a modulok tiszta felületet biztosítanak a funkcionalitással való interakcióhoz, miközben a mögöttes kódot elrejtik és védik a véletlen változásoktól.
+		\item \textbf{Egységbe zárás}: A modulok lehetővé teszik a programozók számára, hogy egy funkcionalitás végrehajtási részleteit kapszulázzák és elrejtsék. Ez azt jelenti, hogy a modulok tiszta felületet biztosítanak a funkcionalitással való interakcióhoz, miközben a mögöttes kódot elrejtik és védik a véletlen változásoktól.
 		
-		\item Újrafelhasználhatóság: A kód modulokba történő kapszulázásával a programozók olyan kódot hozhatnak létre, amely több programban is felhasználható. Ez csökkenti a fejlesztési időt és erőfeszítéseket azáltal, hogy a programozók újra felhasználhatják a már megírt és tesztelt kódot.
+		\item \textbf{Újrafelhasználhatóság}: A kód modulokba történő kapszulázásával a programozók olyan kódot hozhatnak létre, amely több programban is felhasználható. Ez csökkenti a fejlesztési időt és erőfeszítéseket azáltal, hogy a programozók újra felhasználhatják a már megírt és tesztelt kódot.
 		
-		\item Karbantarthatóság: Ha a kódot modulokba szervezik, könnyebb karbantartani és frissíteni, mivel az egyik modulban anélkül lehet változtatásokat végrehajtani, hogy az befolyásolná az azt használó többi modult. Ez javítja a kód karbantarthatóságát és csökkenti a hibák bevezetésének valószínűségét.
+		\item \textbf{Karbantarthatóság}: Ha a kódot modulokba szervezik, könnyebb karbantartani és frissíteni, mivel az egyik modulban anélkül lehet változtatásokat végrehajtani, hogy az befolyásolná az azt használó többi modult. Ez javítja a kód karbantarthatóságát és csökkenti a hibák bevezetésének valószínűségét.
 		
-		\item Moduláris felépítés: A modulok megkönnyítik a nagy programok kisebb, könnyebben kezelhető darabokra bontását. Ez megkönnyíti a kód megértését és a program különböző részein való egyidejű munkát.
+		\item \textbf{Moduláris felépítés}: A modulok használatával kódjainkat több kisebb, könnyebben kezelhető darabra szedhetjük szét. Ez megkönnyíti a kód megértését, és mivel a komponensek így külön fájlokban találhatóak, így a kódot szimultán módon a fejlesztőcsapat több tagja is fejlesztheti.
 		
-		Összességében a modulok a modern programozás alapvető részét képezik, mivel hatékony mechanizmust biztosítanak a kód szervezéséhez, újrafelhasználásához és karbantartásához.
-		Ezért a programozók a programokat önálló darabokra tervezik, amelyeket meg tudnak írni, majd elfelejtik a belső részek részleteit, és csak a külsőségekkel foglalkoznak, azzal, hogy mit csinál a darab. A modulok ennek egyik módja,
-		\item Egy lefejlesztett DLL tekintetében szükség van egy olyan összefoglaló névre, amire a használathoz hivatkozni tudunk.
+		\item \textbf{Importálhatóság}: A modul legyen beemelhető más komponensbe, ehhez szükség van egy olyan összefoglaló névre, amire hivatkozni tudunk, amikor a modult használni szeretnénk máshol is.
+		
+		Összességében a modulok használata a modern programozás alapja, mivel segítségükkel kódjaink a későbbiekben felhasználhatóak több helyen is, karbantartásuk gyorsabb és egyszerűbb. A programozók a programokat önálló darabokra tervezik, amelyeket meg tudnak írni, majd akár el is felejthetik egy-egy komponens belső működését, tehát hogy a problémára adott megoldás hogyan lett megoldva, elég csak azzal foglalkozniuk, hogy mi az a problémakör, amit a program ezen szelete lefed.
 	\end{enumerate} \cite{delphi_basics}
 	
 	Ami közös még a két nyelvben, hogy a fejlesztés moduljaiból Win32-szabványnak megfelelő DLL-ek készülhetnek a segítségükkel, ezek szintén lefordított, gépi kódú állományok, amelyek más szoftver forráskódjában felhasználhatóak, lényegében így válnak futtatható állománnyá.
@@ -536,10 +534,10 @@
 	\cite{sof_strhandling}
 	\subsection{A Delphiben eldobott kivételek nem kezelhetőek}
 	\subsubsection{A probléma leírása:} Delphiben dobott kivételeket a C\# úgy érzékeli, mint hiba a külső komponensben, a tényleges kiváltó okát nem tudjuk meg.
-	\subsubsection{Megoldás} Hibakódokkal jelezzük a C\# felé, ha esetleg hibára futott valamelyik függvény, ebből a hibakódból a C\# tudni fogja, hogy milyen típusú kivételt dobjon az asztali alkalmazás számára, amelyek már lehetnek egyénileg elkészített Exception-objektumok.
+	\subsubsection{Megoldás:} Hibakódokkal jelezzük a C\# felé, ha esetleg hibára futott valamelyik függvény, ebből a hibakódból a C\# tudni fogja, hogy milyen típusú kivételt dobjon az asztali alkalmazás számára, amelyek már lehetnek egyénileg elkészített Exception-objektumok.
 	\subsection{uzfeld-metódus megfelelője C\#-ban}
 	\subsubsection{A probléma leírása:} Delphiben az ablakos alkalmazásnak volt egy úgynevezett \verb*|uzfeld| nevezetű metódusa, amely a DLL üzeneteinek kezelésére szolgált, ez hívódik meg az \verb*|SLDLL_Open| meghívása után\footnote{Ez a tény, hogy a Listelem-függvény tulajdonképpen a Felmeres előtt kell, hogy meghívódjon, a Delphi7-es fejlesztői környezetének debug és breakpoint funkcióinak segítségével derült ki. Ennek használatával sorról sorra tudtam követni a program végrehajtását.} (ezért került átadásra a formot azonosító Handle). Ez azért fontos, mert az \verb*|SLDLL_Listelem|-függvény ezen az uzfeld-metóduson keresztül kerül meghívásra, a drb485 és a dev485 a program ezen pontján kapnak ténylegesen értelmezhető értékeket.
-	\subsubsection{Megoldás}
+	\subsubsection{Megoldás:}
 	Elméletem szerint létezik ennek egy szabványos megfelelője, C\#-ban ez \verb*|WndProc|-metódus, ami szintén Message-típusú változót vár referencia szerint átadva, ezzel tud az SLDLL futásidőben kommunikálni.
 	Innentől kezdve a következő lépések játszódnak le:
 	\begin{enumerate}
@@ -548,8 +546,8 @@
 		\item Amennyiben a felmérés sikeresen lezajlott, a \verb*|WndProc| meghívja a \verb*|dev485| és \verb*|drb485| változókat beállító \verb*|SLDLL_ListElem|-függvényt, mielőtt az \verb*|SLDLL_Felmeres|-re kerülne a sor. A megfelelő hívási szekvencia így automatikusan biztosított.
 	\end{enumerate}
 	\subsection{Eszközök azonosítóinak, típusainak átadása}
-	\subsubsection{A probléma leírása: } Hogyan közöljük a felmért (USB-re csatlakoztatott) eszközök azonosítóját és típusát a C\# részére?
-	\subsubsection{Megoldás}
+	\subsubsection{A probléma leírása:} Hogyan közöljük a felmért (USB-re csatlakoztatott) eszközök azonosítóját és típusát a C\# részére?
+	\subsubsection{Megoldás:}
 	A Delphiben tárolt tömb (dev485) eszközeinek legfontosabb mezőjét (ami az eszközt azonosítója, tehát az azonosítót XML-fájlba kimentjük \cite{sof_xmlcreate}, vagy JSON-formátumú szöveggé alakítjuk. Az azonosító önmagában meghatározza az eszköz típusát, úgyhogy elég azt átadni.
 	Az eszközök típusát a következő módon tudjuk meghatározni kizárólag beállított azonosítóikon keresztül:
 	\begin{itemize}
@@ -563,9 +561,22 @@
 
 	Ez az eljárás a gRPC megoldására hasonlít, amelyet a  \ref{grpc} alfejezetben ki is fejtettem, a C\# és a Delphi között akár az XML, akár a JSON közös nyelvként (hídként) funkcionál.
 
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.79]{frequencies}
+		\caption{Hangszóróval lejátszható hangok listája}
+		\subcaption{Forrás: Saját szerkesztés}
+		\label{fig:frequencies}
+	\end{figure}
 	\section{A hangszóró egy egész hanglistát kezel - JSON}
-	\subsection{Megoldás}
-	egy hanglistát több \textit{index|volume|length}-hármas ír le, a pipe, azaz '|'-karakter mentén széttördelt szövegen 3 lépésközzel iterálhatunk végig.
+	\subsubsection{A probléma leírása:} A hangszórók nem feltétlenül csak egy bizonyos hang, hanem egy egész hangsorozat lejátszására is képesek. Egy hang lejátszásához 3 értéket kell tudnunk:
+	\begin{enumerate}
+		\item index -- sorszám: Ez egy egész szám, amely egy elemre hivatkozik a frekvenciákat tartalmazó tömbből, tehát az értéke $[0;n-1]$ intervallumból kerülhet ki, ahol $n: $ a tömb hossza, esetünkben $n=50$. \ref{fig:frequencies} Ennek segítségével megadhatjuk, hogy milyen magas hangot szeretnénk a hangszóró részére lejátszásra kiküldeni.
+		\item volume -- hangerő: Ez egy egész szám, amely 0 és 63 között vehet fel értéket.
+		\item length -- időtartam: Szintén egész szám, amely 0 és 10000 között enged értéket beállítani az általam készített SLFormHelper DLL-ben. Ezzel megadhatjuk, hogy a hangszóró a lejátszáshoz mennyi időt vegyen igénybe, ez milliszekundumban, azaz ezredmásodperc egységben értendő.
+	\end{enumerate}
+	\subsubsection{Megoldás}
+	Egy hanglistát több \textit{index|volume|length}-hármas ír le, a pipe, azaz '|'-karakter mentén széttördelt szövegen 3 lépésközzel iterálhatunk végig.
 	\begin{figure}[h!]
 		\centering
 		\includegraphics{speaker_solved}
