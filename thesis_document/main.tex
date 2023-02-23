@@ -4,7 +4,7 @@
 \usepackage[magyar]{babel}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage{mathtools,amssymb,amsthm,pdfpages, subcaption, comment, enumitem, booktabs, graphicx}
+\usepackage{mathtools,amssymb,amsthm,pdfpages, subcaption, comment, enumitem, booktabs, graphicx, fancyvrb}
 \footnotestyle{rule=fourth}
 \captionsetup[subfigure]{labelformat=empty} % subcaptionre ne tegyen számozást
 \graphicspath{{./images/}} % képeket innen importálom be
@@ -23,6 +23,7 @@
 	\supervisor{Dr. Király Roland\\egyetemi docens}
 	\city{Eger}
 	\date{2022}
+	\VerbatimFootnotes
 	\maketitle
 	\tableofcontents
 	\begin{abstract}
@@ -190,7 +191,6 @@
 	\end{enumerate}
 	\section{Mi a helyzet az algoritmusokkal?}
 	Adatokat tudunk tárolni, és ezt tesszük azért, mert tervünk van velük, azaz valamit szeretnénk velük kezdeni. Az adatszerkezeteken végzett véges számú elemi lépéssorozatot algoritmusnak nevezzük. Az adatszerkezetek algoritmusok nélkül lényegében olyanok, mint a matematikai műveletek operátorok (összeadás, kivonás, stb.) nélkül, végül -- ha már említettem a természetes nyelveket-- mint a főnevek igék nélkül.
-
 	
 	\chapter{Marshalling}
 	\section{Kommunikáció adatszerkezeteken keresztül}
@@ -207,51 +207,56 @@
 		\cite{marshalling_serialization}
 	\section{Adatok konvertálása}
 	\subsection{Egész és valós számok, logikai változók}
-	Egyszerű adattípusok azok, amelyek nem tartalmaznak más adattípusokat. Ezek az alapjai minden más típusnak. Példák a menedzselt primitív szám típusokra: \verb*|System.Byte|, \verb*|System.Int32|, \verb*|System.UInt32|, és \verb*|System.Double|.
-	Összetett adattípusok, amelyek más adattípusokból épülnek fel. Például egy osztály vagy egy struktúra, amelyek magukban foglalnak egyszerű vagy egyéb összetett típusokat.
+	A primitívek közül numerikus értékek esetében egyszerűbb a Marshalling, mivel ezek minden nyelvben gyakorlatilag ugyanúgy vannak értelmezve.	Egyszerű adattípusok azok, amelyek nem tartalmaznak más adattípusokat. Ezek az alapjai minden más típusnak. Példák a menedzselt primitív szám típusokra: \verb*|System.Byte|, \verb*|System.Int32|, \verb*|System.UInt32|, és \verb*|System.Double|.
 	\cite{marsh}
 	\subsection{Szövegek}
-		%todo
-		A szöveges nem menedzselt típusok Marshalling-folyamata bonyolultabb, mint a numerikusoké, mert ezek különleges kezelést igényelnek. Az alább táblázat röviden mutatja a felügyelet nélküli szöveges adattípusokat.
+		A szöveges unmanaged típusok Marshalling-folyamata bonyolultabb, mint a numerikusoké, mert ezek külön bánásmódot igényelnek.
 		
-		Az ANSI és az Unicode két olyan karakterkódolás, amelyet a maguk idejében széles körben használtak. Az ANSI nagyon régi, és olyan operációs rendszerekben használják, mint a Windows 95/98, míg az Unicode egy újabb kódolás, amelyet minden modern operációs rendszerben használnak, ezért használják. A fő különbség az, hogy az ANSI-nek számos korlátja van, amelyek nem voltak nyilvánvalóak, amikor először használták, de fájdalmasan nyilvánvalóvá váltak, ahogy a számítógépek világszerte elterjedtek.
+		Az ANSI és a Unicode két olyan karakterkódolási szabvány, amelyek a legelterjedtebbek. Az ANSI-hoz képest a Unicode számít újabb kódolásnak, amelyet a modern rendszerek használnak. Amikor a számítógépek világszerte elterjedtek, nyilvánvalóvá vált, hogy az ANSI képtelen minden nemzet különböző karaktereit (példának okáért a magyar nyelvben található ékezetes betűket) kódolni, mivel a lehetséges variációk száma elfogyott, ezért az Unicode-szabványok (ide tartoznak az UTF-8, UTF-16, illetve UTF-32 néven ismert kódolások) váltották fel az ANSI-szabványt.
 		
-		Az ANSI legnagyobb hátránya, hogy a használt nyelvtől függően több kódtáblát használ, amelyek közül néhány megfelel az angol (Nyugat-Európában latin néven ismert), a görög, a török, a héber, az arab és sok más nyelvnek. Ha az adatokhoz hozzáférő összes számítógép ugyanazt a kódlapot használja, akkor nincsenek problémák, de ha különböző kódlapokat használnak, akkor az olvasott és írt adatok nem fognak egyezni. Ez adatrongáláshoz és bizonyos esetekben programhibához vezethet.
+		Az ANSI legnagyobb hátránya, hogy a használt nyelvtől/régiótól függően több úgynevezett kódlapot foglal magában. Amennyiben az összes számítógép ugyanazt használja, abban az esetben nincs probléma, de ha a kódlapok eltérnek, akkor a leírt szövegek értelmezhetetlenné válnak, és bizonyos esetekben programhibához is vezethetnek. Használatuk ebből következően jelenleg már nem javasolt. \cite{ansi_unicode}
+				
+		A stringek alapértelmezetten BSTR-típusként (Unicode-szabványú karakterként) kerülnek fogadásra a .NET-keretrendszerben. Én a biztonság kedvéért a DLL-ben ettől függetlenül is jelzem a Marshaller számára \verb*|[MarshalAs(UnmanagedType.BStr)]|-attribútum használatával.
 		
-		Az ANSI-t nem lehet adaptálni, mert csak nyolc bitet használ minden egyes kódpont ábrázolására. Ez a szélesség rögzített, és összesen csak 256 kombináció lehetséges. Ezzel szemben a Unicode akár 32 bitet is használ minden egyes kódpontra, és az UTF-32 is fix szélességet használ. A karakterenkénti négy bájt használata azonban nagyon pazarló, ezért az UTF-8 és az UTF-16 változó szélességű kódolást használ a helytakarékosság érdekében.
-		
-		Mivel a Unicode egy új szabvány, várhatóan nem támogatott a régebbi operációs rendszerekben; bár az UTF-8 és az ANSI kódpontok közel azonosak, nem lehet őket régebbi operációs rendszerekben, például a Windows 95-ben működésre bírni. Ezért a Unicode-ot használó programok nem fognak megfelelően működni ezeken az operációs rendszereken. Ezzel szemben az ANSI programok futtathatók az újabb operációs rendszereken, mivel létezik egy konverziós mechanizmus az ANSI és a Unicode között. Csak azzal kell tisztában lenni, hogy ez a konverzió némi további feldolgozási többletköltséget jelent. Lehet, hogy a modern számítógépeken ez nem olyan fontos, de a program hatékonyságának növelése érdekében mégis figyelembe kell vennie.
-		
-		Következtetés.
-		
-		1. Az ANSI egy nagyon régi karakterkód, és az Unicode ma már a szabvány.
-		2.Az ANSI különböző oldalakat használ a különböző nyelvekhez, míg az Unicode nem.
-		3.Az ANSI fix szélességű kódolást használ, a Unicode pedig fix és változó szélességű kódolást egyaránt.
-		4.A Unicode programok nem működnek a régebbi rendszereken.
-		5.Az ANSI programok lassabbak, mint a Unicode programok a modern számítógépeken. \cite{ansi_unicode}
-		
-		A Platform invoke másolja a string paramétereket, szükség esetén a .NET Framework formátumból (Unicode) a nem kezelt formátumba (ANSI) konvertálja őket. Mivel a kezelt karakterláncok megváltoztathatatlanok, a platform invoke nem másolja vissza őket a nem kezelt memóriából a kezelt memóriába, amikor a függvény visszatér.
-		
-		A következő táblázat felsorolja a karakterláncok marshalling-opcióit, leírja használatukat, és linket ad a megfelelő .NET Framework-mintához.
-		Mind a System.String, mind a System.Text.StringBuilder osztályok hasonlóan viselkednek.
-		
-		A karakterláncok COM-stílusú BSTR-típusként vagy nullvégű karakterláncként (null karakterrel végződő karaktersorozat) marshallolhatók. A karakterláncban lévő karaktereket Unicode (a Windows rendszereken alapértelmezett) vagy ANSI kódként lehet átvinni.
-		
-		Interfészekben használt karakterláncok
-		A következő táblázat a string adattípus marshalling lehetőségeit mutatja be, amikor nem kezelt kódhoz metódusargumentumként marshallingolják. A MarshalAsAttribute attribútum több UnmanagedType felsorolási értéket biztosít a karakterláncok COM-interfészekbe történő marshalozásához.
-		
-		Enumerációs típus A nem kezelt formátum leírása
-		UnmanagedType.BStr (alapértelmezett) Egy COM-stílusú BSTR, előre meghatározott hosszúsággal és Unicode karakterkódolással.
-		UnmanagedType.LPStr Egy mutató egy ANSI karakterekből álló nullvégű tömbre.
-		UnmanagedType.LPWStr Unicode karakterek nullvégű tömbjére mutató mutató.
-		Ez a táblázat a Stringre vonatkozik. A StringBuilder esetében csak az UnmanagedType.LPStr és az UnmanagedType.LPWStr opciók engedélyezettek.
-		
-		A következő példa az IStringWorker interfészben deklarált stringeket mutatja.
-		\cite{marshalling_strings}
+		A stringek marshalling-folyamata felügyelet nélküli (unmanaged) kód esetében így működik: egy úgynevezett \verb*|MarshalAsAttribute|-attribútumot fűzhetünk a string paraméterek, valamint visszatérési értékek elé, hogy felkészítsük a marshallert, hogy pontosan milyen típusú stringet kell várnia. Több \verb*|UnmanagedType|-érték is megadható a karakterláncok fajtájától függően.\cite{marshalling_strings}\\
+		Ezek közül hármat mindenképp érdemes megemlíteni:
+		\begin{itemize}
+			\item \verb*|UnmanagedType.BStr| (alapértelmezett) Előre meghatározott hosszúságú, Unicode-karakterkódolású szöveg található a túloldalon.
+			\item \verb*|UnmanagedType.LPStr| Egy pointer ANSI-karakterekből álló tömbre, amelyet a nullkarakter (\verb*|\0|) zár.
+			\item \verb*|UnmanagedType.LPWStr| Egy pointer Unicode-karakterekből álló tömbre, amelyet szintén a nullkarakter zár.
+		\end{itemize}
+		Ennek gyakorlati alkalmazása C\#-ban a következő, általam készített példaprogram kódrészletén megfigyelhető:
+		\begin{figure}[h!]
+			\centering
+			\hspace*{-0.6in}
+			\includegraphics[scale=0.75]{marshalas}
+			\caption{Példa két metódusra, amelyben stringeket használunk.}
+			\label{fig:marshalas}
+		\end{figure}
 	\subsection{Rekordok}
+	A rekordok már az összetett adattípusok kategóriájába tartoznak, amelyek primitív és/vagy összetett adattípusokból épülnek fel. Ilyen például egy osztály (\textit{class}) vagy egy struktúra (\textit{struct}) -- C++ nyelvben megtalálható még esetleg a union is --, amelyek magukban foglalnak egyszerű vagy egyéb összetett típusokat.
+	Az alábbi C nyelvű kódrészleten keresztül szemléltetem, hogy hogyan is néznek ki a gyakorlatban az összetett típusok. Az általam létrehozott \verb*|ListaElem| nevezetű struktúra két mezőt tartalmaz: egy primitívet\footnote{Az \verb*|uint8_t| C-ben a char, azaz a byte típussal ekvivalens, 1 bájton tárolt, előjel nélküli egész értéknek felel meg.}, valamint egy összetett típust, ami itt történetesen szintén \verb*|ListaElem| típusú, de bármilyen más rekordtípust tartalmazhatna.
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.95]{linkedlist_struct}
+		\caption{Példa egy rekord definíciójára}
+		\label{fig:linkedlist_struct}
+	\end{figure}
+
+	Lévén összetett típusról van szó, gondolhatjuk, hogy a struktúrák marshallingolása ebből fakadóan nehezebb folyamat, és ez minden bizonnyal így is van. További fejtörést okozhat például az alábbi ábrán látható Delphiben deklarált rekord típus felépítése C\# nyelvben. A probléma ebben az esetben az, hogy míg Delphiben értelmezve van a unionok\footnote{A union egy olyan adatszerkezet, amelyben bizonyos mezőkből vagy az egyik vagy a másik kerül érvényesítésre attól függően, hogy az adott rekord milyen tulajdonságokkal rendelkezik. A példában ha az eszköz -- azonosítójából fakadóan -- lámpa (vagy nyíl), akkor a \verb*|vilrgb| és \verb*|nilmeg| mezők kerülnek érvényesítésre, amennyiben viszont hangszóró, akkor a másik kettő, a \verb*|handrb| és \verb*|handtbp| mezők értékére vagyunk kíváncsiak, a két-két mező ugyanazon a memóriaterületen tárolódik, tehát egyrészt memóriát tudunk megspórolni azzal, hogy egyszerre csak az egyiket használjuk, másrészt az osztályok öröklődését helyettesíthetjük unionok segítségével. Forrás: \cite{jsorber_unions}} használata, C\# tekintetében már ez nem opció.
+	
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.85]{sldll_union}
+		\caption{Példa egy union típus definíciójára. Forrás: SLDLL}
+		\label{fig:sldll_union}
+	\end{figure}
+
+	A rekordok szempontjából inkább a szerializáció a nyerő stratégia, tehát ezeket az egységeket átalakítjuk egy bájtalapú adatfolyamra (streamre), amely tárolható, könnyen átküldhető valamilyen csatornán\footnote{Csatorna alatt érthetünk akár egy XML vagy JSON formátumú fájlt, akár egy stringet, akár valami más koncepción alapuló bájtfolyamot is, mint például a Protocol Buffers esetében.} keresztül, és a másik nyelv számára is átalakítható a maga nyelvi sajátosságainak megfelelően (más szóval: kódolható és dekódolható).
+	Látni fogjuk, hogy a projektben én ezt úgy oldottam meg,
 	\section{Managed és unmanaged kód közötti különbség}
 	\label{managed_unmanaged}
-	Először is fontos tisztázni, hogy a C\# szemszögéből nézve a \textit{Unmanaged Code} (nem felügyelt kód) elnevezést a .NET-keretrendszer mindenféle külső komponens megbélyegzésére használja, amelyet nem a .NET futtatókörnyezete felügyel és vezérel. Ettől még ezek lehetnek jó kódok, csak szimplán a Common Language Runtimenak nincs közvetlen hatása ezek működésére: a memóriacímeket közvetlenül lehet kezelni, felülírni, így bizonyos esetekben olyan memóriaterületre is hivatkozhat egy változó, amelyet az operációs rendszer nem a program részére foglalt le, ezt \verb*|segfault|nak nevezzük\footnote{Másnéven \textit{access violation} hibának is nevezik, a Delphi inkább ezzel a kifejezéssel él a hiba kijelzésekor.}
+	Először is fontos tisztázni, hogy a C\# szemszögéből nézve a \textit{Unmanaged Code} (nem felügyelt kód) elnevezést a .NET-keretrendszer mindenféle külső komponens megbélyegzésére használja, amelyet nem a .NET futtatókörnyezete felügyel és vezérel. Ettől még ezek lehetnek jó kódok, csak szimplán a Common Language Runtimenak nincs közvetlen hatása ezek működésére: a memóriacímeket közvetlenül lehet kezelni, felülírni, így bizonyos esetekben olyan memóriaterületre is hivatkozhat egy változó, amelyet az operációs rendszer nem a program részére foglalt le, ezt \verb*|segfault|nak nevezzük\footnote{Másnéven \textit{access violation} hibának is nevezik, a Delphi inkább ezzel a kifejezéssel írja le a hibát.}
 	\cite{managed} 
 	A Common Language Runtime használatával fejlesztett kódot kezelt vagy felügyelt -- managed -- kódnak nevezzük. Más szóval, ez az a kód, amely a .NET futtatókörnyezete által végrehajtásra kerül. 
 	A menedzselt kód futási környezete számos szolgáltatást nyújt a programozó számára: ilyen a kivételkezelés, típusok ellenőrzése, a memória lefoglalása és felszabadítása, így a Garbage Collection\footnote{A Garbage Collection, azaz szemétgyűjtés egy automatikusan végbemenő optimalizálási folyamat, amely során futásidő közben felszabadulnak olyan memóriaterületek, amelyek a kód korábbi részén lefoglalásra kerültek, azonban a program későbbi szakaszban már egyáltalán nem történik hivatkozás rájuk.}, és így tovább. A fent említett szolgáltatások a fejlesztőket szolgálják, hogy biztonságosabb és optimálisabb kódot készíthessenek.
@@ -281,7 +286,8 @@
 		\caption{Példa egy külsős, azaz PInvoke-eljárás definíciójára és használatára}
 		\subcaption{Forrás: \cite{pinvoke}}
 		\label{fig_pinvoke_example}
-	\end{figure} egy Sleep-metódust, amelyet egy úgynevezett \,\textit{'kernel32.dll'}-állományban lett definiálva, meghirdetve és implementálva \ref{dll}. Ha ezt a kódot megfuttatnánk, programot két metódus írná le: az egyik a \verb*|Program.Main|\footnote{A Program.Main a program belépési pontja C\# esetében, innentől kezdődik elkészített kódjaink futtatása Lényegében ha a futtatást mappákra vetítenénk le, ő számítana a gyökérkönyvtár (root directory), amiből nyílhatnak további könyvtárak.}, a másik a \verb*|Program.Main| törzsében meghívott DLL-ből érkező \verb*|Sleep|-eljárás, mindkettő IL-kódra fordul.
+	\end{figure} 
+	egy Sleep-metódust, amelyet egy úgynevezett \,\textit{'kernel32.dll'}-állományban lett definiálva, meghirdetve és implementálva \ref{dll}. Ha ezt a kódot megfuttatnánk, programot két metódus írná le: az egyik a \verb*|Program.Main|\footnote{A Program.Main a program belépési pontja C\# esetében, innentől kezdődik elkészített kódjaink futtatása Lényegében ha a futtatást mappákra vetítenénk le, ő számítana a gyökérkönyvtár (root directory), amiből nyílhatnak további könyvtárak.}, a másik a \verb*|Program.Main| törzsében meghívott DLL-ből érkező \verb*|Sleep|-eljárás, mindkettő IL-kódra fordul.
 	
 	A .NET-keretrendszer 4-es verziója óta (projektünkben 4.7.2-es verziót használtam a DLL elkészítésére) minden PInvoke-kal hívott metódust köztes nyelvre fordítanak, és Just in Time kerül lefordításra a processzor-specifikus futtatható kódra.
 	

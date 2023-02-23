@@ -1,18 +1,21 @@
 \select@language {magyar} \contentsline {figure}{\numberline {1.}{\ignorespaces Valamely demenciafajtával diagnosztizáltak számának emelkedése\relax }}{1}{figure.caption.3}%
 \select@language {magyar} \addvspace {10\p@ }
 \select@language {magyar} \addvspace {10\p@ }
-\select@language {magyar} \contentsline {figure}{\numberline {2.1.}{\ignorespaces Példa egy külsős, azaz PInvoke-eljárás definíciójára és használatára\relax }}{13}{figure.caption.4}%
+\select@language {magyar} \contentsline {figure}{\numberline {2.1.}{\ignorespaces Példa két metódusra, amelyben stringeket használunk.\relax }}{10}{figure.caption.4}%
+\select@language {magyar} \contentsline {figure}{\numberline {2.2.}{\ignorespaces Példa egy rekord definíciójára\relax }}{11}{figure.caption.5}%
+\select@language {magyar} \contentsline {figure}{\numberline {2.3.}{\ignorespaces Példa egy union típus definíciójára. Forrás: SLDLL\relax }}{11}{figure.caption.6}%
+\select@language {magyar} \contentsline {figure}{\numberline {2.4.}{\ignorespaces Példa egy külsős, azaz PInvoke-eljárás definíciójára és használatára\relax }}{13}{figure.caption.7}%
 \select@language {magyar} \addvspace {10\p@ }
-\select@language {magyar} \contentsline {figure}{\numberline {3.1.}{\ignorespaces Beadandó projektben készített .proto állomány (részlet)\relax }}{18}{figure.caption.5}%
-\select@language {magyar} \contentsline {figure}{\numberline {3.2.}{\ignorespaces gRPC metódushívásainak típusai\relax }}{20}{figure.caption.6}%
-\select@language {magyar} \contentsline {figure}{\numberline {3.3.}{\ignorespaces Szerializáció teljesítményének összehasonlítása JSON és Proto esetében\relax }}{20}{figure.caption.7}%
+\select@language {magyar} \contentsline {figure}{\numberline {3.1.}{\ignorespaces Beadandó projektben készített .proto állomány (részlet)\relax }}{19}{figure.caption.8}%
+\select@language {magyar} \contentsline {figure}{\numberline {3.2.}{\ignorespaces gRPC metódushívásainak típusai\relax }}{21}{figure.caption.9}%
+\select@language {magyar} \contentsline {figure}{\numberline {3.3.}{\ignorespaces Szerializáció teljesítményének összehasonlítása JSON és Proto esetében\relax }}{22}{figure.caption.10}%
 \select@language {magyar} \addvspace {10\p@ }
-\select@language {magyar} \contentsline {figure}{\numberline {4.1.}{\ignorespaces Hibakódok és magyarázataik}}{27}{figure.caption.8}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.2.}{\ignorespaces Eszközök azonosítóinak átadása JSON-formátumon keresztül\relax }}{29}{figure.caption.10}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.3.}{\ignorespaces Delphiben írt eljárás, amely paraméterében egy kimenő string paramétert vár.\relax }}{31}{figure.caption.15}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.4.}{\ignorespaces Az eljárás hibás szignatúrája C\#-ban\relax }}{31}{figure.caption.16}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.5.}{\ignorespaces A függvény helyes Delphi-deklarációja\relax }}{31}{figure.caption.18}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.6.}{\ignorespaces A függvény helyes szignatúrája C\#-ban\relax }}{32}{figure.caption.19}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.7.}{\ignorespaces Hangszóróval lejátszható hangok listája\relax }}{34}{figure.caption.26}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.8.}{\ignorespaces Megoldás a problémára\relax }}{35}{figure.caption.29}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.9.}{\ignorespaces A hangszóró hanglistát kezel - megoldás C\# nyelven\relax }}{35}{figure.caption.30}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.1.}{\ignorespaces Hibakódok és magyarázataik}}{29}{figure.caption.11}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.2.}{\ignorespaces Eszközök azonosítóinak átadása JSON-formátumon keresztül\relax }}{32}{figure.caption.13}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.3.}{\ignorespaces Delphiben írt eljárás, amely paraméterében egy kimenő string paramétert vár.\relax }}{34}{figure.caption.18}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.4.}{\ignorespaces Az eljárás hibás szignatúrája C\#-ban\relax }}{34}{figure.caption.19}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.5.}{\ignorespaces A függvény helyes Delphi-deklarációja\relax }}{34}{figure.caption.21}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.6.}{\ignorespaces A függvény helyes szignatúrája C\#-ban\relax }}{34}{figure.caption.22}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.7.}{\ignorespaces Hangszóróval lejátszható hangok listája\relax }}{36}{figure.caption.29}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.8.}{\ignorespaces Megoldás a problémára\relax }}{37}{figure.caption.32}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.9.}{\ignorespaces A hangszóró hanglistát kezel - megoldás C\# nyelven\relax }}{38}{figure.caption.33}%
