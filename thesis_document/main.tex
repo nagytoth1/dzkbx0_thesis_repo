@@ -26,7 +26,7 @@
 	\maketitle
 	\tableofcontents
 	\begin{abstract}
-		Szakdolgozatomban igyekszem kitérni a nyelvek közötti kommunikáció lehetséges megvalósítási módjaira, amelynek legfontosabb mérföldköve a szöveges adatok közlése lesz, mivel amennyiben ez megvalósítható, úgy képessé válunk bármilyen típusú információt -- legyen az szám ilyen formában a másik program részére közölni. Innentől csak annyi a dolgunk, hogy ezeket a közléseket a másik oldalon is egyrészt fogadjuk, másrészt értelmezzük és feldolgozzuk, a megfelelő 
+		Szakdolgozatomban kifejtem az \textit{interlingvális}\footnote{Az interlingua kifejezés a latin \textit{inter} (között) és \textit{lingua} (nyelv) szavak összetételéből adódik. Jelentése ,,nyelvek között''.} kommunikáció lehetséges megvalósítási módjait, amelynek legfontosabb mérföldköve a szöveges adatok valamilyen szabvány szerinti közlése, tehát a szerializáció lesz, mivel a folyamat segítségével képessé válhatunk bármilyen típusú adatot -- legyen az szám, logikai változó, esetleg egy teljes objektum -- ilyen formában a másik program részére közölni. Innentől csak annyi a dolgunk, hogy a másik oldalt is felkészítsük ezen szabványos formátumú közlések fogadására és feldolgozására. Ennek gyakorlati haszna bemutatásra kerül szakdolgozatunkhoz készített szoftver keretein belül, amelynek célja, hogy különböző típusú eszközöket vezéreljünk a C\# nyelvi adottságaival az általam készített C\# nyelvű SLFormHelper, valamint Keresztes Péter tanár úr által létrehozott Delphi-Assembly-kódból készült SLDLL DLL-ek munkájának összehangolásával. Ez a két DLL, mint később látni fogjuk, nem lesz elegendő, szükség volt egy harmadik, úgynevezett RelayDLL-re, amely áthidalja a két nyelv sajátosságait, és ténylegesen olyan elemeket használ, amelyet mindkét nyelv hasznosítani tud a maga számára. Ezt én készítettem abból a célból, hogy a kommunikáció tulajdonképpen ezen a ,,hídon'' keresztül, szabályozott módon teremtődjön a Delphi és a C\# programozási nyelvek között.
 	\end{abstract}
 	\chapter*{Bevezetés}
 	\addcontentsline{toc}{chapter}{Bevezetés}
@@ -194,7 +194,7 @@
 	
 	\chapter{Marshalling}
 	\section{Kommunikáció adatszerkezeteken keresztül}
-	A \emph{Marshalling} egy olyan folyamat, amely összetett típusok átalakítására szolgál, hogy egy nyelv adatszerkezetét a másikkal megértessük. Magyar fordításával nem találkoztam ennek a kifejezésnek, de leginkább talán az 'átalakítás' szóval tudjuk leírni, ami adatszerkezetek esetében annyit tesz, hogy más nyelv által is értelmezhetővé tesszük, kevésbé hagyatkozunk az adott nyelv különlegességeire.\cite{wiki_marshalling}
+	A \emph{Marshalling} egy olyan folyamat, amely összetett típusok átalakítására szolgál, hogy egy nyelv adatszerkezetét a másikkal megértessük. Magyar fordításával nem találkoztam ennek a kifejezésnek, de leginkább talán az 'átalakítás' szóval tudjuk leírni, ami adatszerkezetek esetében annyit tesz, hogy más nyelv által is értelmezhetővé tesszük, kevésbé hagyatkozunk az adott nyelv különlegességeire.\cite{sof_marshalling}
 	\par
 	A kód további portolhatósága, újrahasznosíthatósága végett megéri szabványos formátumokon keresztül kommunikálni, mint azt tesszük API-k\footnote{Az Application Programming Interface utasítások, szabványok és metódusok halmaza, amely leírja a kommunikációt más, külső szoftverek részére. Az API-k lehetőséget biztosítanak két vagy több szoftver közötti adatok cseréjére, valamint adatokon végzett műveletek végrehajtására úgy, hogy annak mikéntjéről az API írója gondoskodik. Másként fogalmazva: az API a szerver azon része, amely felelős a kérések feldolgozásáért és kiszolgálásáért. Forrás: \cite{api}} vagy konfigurációs fájlok esetében, ilyenek például az általam használt JSON- vagy XML-formátumok,  hogy más felületekre való költöztetés esetén kompatibilitási probléma többé már ne merülhessen fel.
 
@@ -207,20 +207,46 @@
 		\cite{marshalling_serialization}
 	\section{Adatok konvertálása}
 	\subsection{Egész és valós számok, logikai változók}
-	Egyszerű adattípusok azok, amelyek nem tartalmaznak más adattípusokat. Ezek az alapjai minden más típusnak. Példák a menedzselt primitív szám típusokra: System.Byte, System.Int32, System.UInt32, ésSystem.Double.
+	Egyszerű adattípusok azok, amelyek nem tartalmaznak más adattípusokat. Ezek az alapjai minden más típusnak. Példák a menedzselt primitív szám típusokra: \verb*|System.Byte|, \verb*|System.Int32|, \verb*|System.UInt32|, és \verb*|System.Double|.
 	Összetett adattípusok, amelyek más adattípusokból épülnek fel. Például egy osztály vagy egy struktúra, amelyek magukban foglalnak egyszerű vagy egyéb összetett típusokat.
 	\cite{marsh}
-	\subsubsection{Blittable és non-blittable típusok}
-	%todo
-	A legtöbb adattípus egyaránt közösen kezeli a menedzselt és nem menedzselt memóriát, és nem igényelnek speciális kezelést. Ezeket a típusokat hívják Blittable típusoknak. Más típusok különleges kezelést igényelnek, ezeket hívjuk NON-BLITTABLE típusoknak. A legtöbb egyszerű típus Blittable és minden összetett típus Non-Blittable. Az alábbi táblázat a .Net-ben található Blittable adattípusok listáját tartalmazza.
-	
-	A következő táblázat néhány nem menedzselt adattípust tartalmaz, amelyek Windows alatt C/C++-ban léteznek, és megfelelteti mindegyikhez a hozzá tartozó .Net adattípust.
-	
-	Néhány nem menedzselt adattípusnak hasonló a neve, mint a menedzselt típusoknak, de attól még azok jelentése különböző. Példa erre a LONG, aminek hasonló a neve, mint a System.Long. Azonban a LONG 32 bites a System.Long pedig 64 bites!
-	
-	Most egy példa alapján létrehozzuk PInvoke segítségével a MessageBoxEx függvényt C\# alatt. A példa bemutatja, hogyan lehet a marshalling folyamattal ezt pontosan megvalósítani. A MarshalAsAttribute attribútumot fogjuk használni. A példa eredményeként egy üzenet fog megjelenni a felhasználó számára. A MessageBoxEx függvény eredeti nem menedzselt definíciója:
 	\subsection{Szövegek}
-		A szöveges nem menedzselt típusok Marshallingja bonyolultabb, mint a numerikusoké, mert ezek a típusok non-blittable típusok, így különleges kezelést igényelnek. Az alább táblázat röviden mutatja a nem menedzselt szöveges adattípusokat.
+		%todo
+		A szöveges nem menedzselt típusok Marshalling-folyamata bonyolultabb, mint a numerikusoké, mert ezek különleges kezelést igényelnek. Az alább táblázat röviden mutatja a felügyelet nélküli szöveges adattípusokat.
+		
+		Az ANSI és az Unicode két olyan karakterkódolás, amelyet a maguk idejében széles körben használtak. Az ANSI nagyon régi, és olyan operációs rendszerekben használják, mint a Windows 95/98, míg az Unicode egy újabb kódolás, amelyet minden modern operációs rendszerben használnak, ezért használják. A fő különbség az, hogy az ANSI-nek számos korlátja van, amelyek nem voltak nyilvánvalóak, amikor először használták, de fájdalmasan nyilvánvalóvá váltak, ahogy a számítógépek világszerte elterjedtek.
+		
+		Az ANSI legnagyobb hátránya, hogy a használt nyelvtől függően több kódtáblát használ, amelyek közül néhány megfelel az angol (Nyugat-Európában latin néven ismert), a görög, a török, a héber, az arab és sok más nyelvnek. Ha az adatokhoz hozzáférő összes számítógép ugyanazt a kódlapot használja, akkor nincsenek problémák, de ha különböző kódlapokat használnak, akkor az olvasott és írt adatok nem fognak egyezni. Ez adatrongáláshoz és bizonyos esetekben programhibához vezethet.
+		
+		Az ANSI-t nem lehet adaptálni, mert csak nyolc bitet használ minden egyes kódpont ábrázolására. Ez a szélesség rögzített, és összesen csak 256 kombináció lehetséges. Ezzel szemben a Unicode akár 32 bitet is használ minden egyes kódpontra, és az UTF-32 is fix szélességet használ. A karakterenkénti négy bájt használata azonban nagyon pazarló, ezért az UTF-8 és az UTF-16 változó szélességű kódolást használ a helytakarékosság érdekében.
+		
+		Mivel a Unicode egy új szabvány, várhatóan nem támogatott a régebbi operációs rendszerekben; bár az UTF-8 és az ANSI kódpontok közel azonosak, nem lehet őket régebbi operációs rendszerekben, például a Windows 95-ben működésre bírni. Ezért a Unicode-ot használó programok nem fognak megfelelően működni ezeken az operációs rendszereken. Ezzel szemben az ANSI programok futtathatók az újabb operációs rendszereken, mivel létezik egy konverziós mechanizmus az ANSI és a Unicode között. Csak azzal kell tisztában lenni, hogy ez a konverzió némi további feldolgozási többletköltséget jelent. Lehet, hogy a modern számítógépeken ez nem olyan fontos, de a program hatékonyságának növelése érdekében mégis figyelembe kell vennie.
+		
+		Következtetés.
+		
+		1. Az ANSI egy nagyon régi karakterkód, és az Unicode ma már a szabvány.
+		2.Az ANSI különböző oldalakat használ a különböző nyelvekhez, míg az Unicode nem.
+		3.Az ANSI fix szélességű kódolást használ, a Unicode pedig fix és változó szélességű kódolást egyaránt.
+		4.A Unicode programok nem működnek a régebbi rendszereken.
+		5.Az ANSI programok lassabbak, mint a Unicode programok a modern számítógépeken. \cite{ansi_unicode}
+		
+		A Platform invoke másolja a string paramétereket, szükség esetén a .NET Framework formátumból (Unicode) a nem kezelt formátumba (ANSI) konvertálja őket. Mivel a kezelt karakterláncok megváltoztathatatlanok, a platform invoke nem másolja vissza őket a nem kezelt memóriából a kezelt memóriába, amikor a függvény visszatér.
+		
+		A következő táblázat felsorolja a karakterláncok marshalling-opcióit, leírja használatukat, és linket ad a megfelelő .NET Framework-mintához.
+		Mind a System.String, mind a System.Text.StringBuilder osztályok hasonlóan viselkednek.
+		
+		A karakterláncok COM-stílusú BSTR-típusként vagy nullvégű karakterláncként (null karakterrel végződő karaktersorozat) marshallolhatók. A karakterláncban lévő karaktereket Unicode (a Windows rendszereken alapértelmezett) vagy ANSI kódként lehet átvinni.
+		
+		Interfészekben használt karakterláncok
+		A következő táblázat a string adattípus marshalling lehetőségeit mutatja be, amikor nem kezelt kódhoz metódusargumentumként marshallingolják. A MarshalAsAttribute attribútum több UnmanagedType felsorolási értéket biztosít a karakterláncok COM-interfészekbe történő marshalozásához.
+		
+		Enumerációs típus A nem kezelt formátum leírása
+		UnmanagedType.BStr (alapértelmezett) Egy COM-stílusú BSTR, előre meghatározott hosszúsággal és Unicode karakterkódolással.
+		UnmanagedType.LPStr Egy mutató egy ANSI karakterekből álló nullvégű tömbre.
+		UnmanagedType.LPWStr Unicode karakterek nullvégű tömbjére mutató mutató.
+		Ez a táblázat a Stringre vonatkozik. A StringBuilder esetében csak az UnmanagedType.LPStr és az UnmanagedType.LPWStr opciók engedélyezettek.
+		
+		A következő példa az IStringWorker interfészben deklarált stringeket mutatja.
 		\cite{marshalling_strings}
 	\subsection{Rekordok}
 	\section{Managed és unmanaged kód közötti különbség}
