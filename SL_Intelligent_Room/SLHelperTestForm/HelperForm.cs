@@ -19,12 +19,15 @@ namespace SLHelperTestForm
             {
                 //label1.Text = CallOpen(this.Handle).ToString();
                 CallFillDev485Static(true);
+                CallFillDev485Static(true);
             }
             catch (DllNotFoundException ex)
             {
+                MessageBox.Show(ex.Message);
                 Logger.WriteLog(ex.Message, SeverityLevel.ERROR);
             }catch (Dev485Exception ex)
             {
+                MessageBox.Show(ex.Message);
                 Logger.WriteLog(ex.Message, SeverityLevel.ERROR);
             }
         }
@@ -42,12 +45,12 @@ namespace SLHelperTestForm
 
         private void btnOpen_Click(object sender, EventArgs e)
         {
-            label1.Text = CallOpen(this.Handle).ToString();
+            CallOpen(this.Handle);
         }
         private void btnFelmeres_Click(object sender, EventArgs e)
         {
             btnFelmeres.Enabled = false;
-            label2.Text = CallFelmeres().ToString();
+            CallFelmeres();
             listBox1.DataSource = Devices;
         }
 

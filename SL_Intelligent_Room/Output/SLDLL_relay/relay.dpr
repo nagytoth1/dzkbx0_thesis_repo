@@ -26,20 +26,20 @@ function convertJSONToDEV485(var json_source: WideString):DEVLIS; Forward;
 //checks whether the settings of the devices are correct
 function validateExtractedDeviceValues(const actDeviceType:string; const elements: TStringList):byte; Forward;
 //decides which type the given device belongs to (LED-arrow, LED-light or Speaker) and calls the corresponding set-method
-function setDeviceByType(const i: integer; var actDeviceType: string; var actDeviceSettings: string): byte; Forward;
+function setDeviceByType(const i: byte; var actDeviceType: string; var actDeviceSettings: string): byte; Forward;
 //sets a device of a LED-arrow and LED-light type
-procedure setLEDDevice(i, red, green, blue, direction:integer); Forward; overload;
-procedure setLEDDevice(i, red, green, blue:integer); Forward; overload;
+procedure setLEDDevice(i, red, green, blue, direction: byte); Forward; overload;
+procedure setLEDDevice(i, red, green, blue: byte); Forward; overload;
 //sets a device of a Speaker type
-procedure setSpeaker(i:integer; elements:TStringList); Forward;
-procedure printErrors(result: integer); Forward;
+procedure setSpeaker(i: byte; elements:TStringList); Forward;
+procedure printErrors(result: word); Forward;
 
 function fill_devices_list_with_devices(): byte; stdcall;
 begin
 	if drb485 > 0 then
 	begin
-	result := DEV485_ALREADY_FILLED; //a tomb mar fel van toltve
-	exit;
+		result := DEV485_ALREADY_FILLED; //a tomb mar fel van toltve
+		exit;
 	end;
 	drb485 := 3;
 	SetLength(dev485, drb485);
@@ -48,7 +48,7 @@ begin
 	dev485[2].azonos := $4004; //lampa
 	result := EXIT_SUCCESS;
 end;
-function Open(wndhnd:DWord): DWord; stdcall;
+function Open(wndhnd:DWord): word; stdcall;
 var
 	nevlei, devusb: pchar;
 begin
@@ -56,21 +56,21 @@ begin
 	showmessage(format('Open done, nevlei = %s devusb = %s', [nevlei, devusb]));
 end;
 
-function Felmeres(): DWord; stdcall;
+function Felmeres(): word; stdcall;
 begin
   result := SLDLL_Felmeres();
   showmessage(Format('Felmeres eredmenye %d &dev485 = %p &dev485[0] = %p', [result, @dev485, @dev485[0]]));
 end;
 
 //sets the pointer of dev485 - called in uzfeld-method
-function Listelem(var numberOfDevices: byte): dword; stdcall;
+function Listelem(var numberOfDevices: byte): word; stdcall;
 begin
 	result := SLDLL_Listelem(@dev485);
 	drb485 := numberOfDevices;
 	showmessage(Format('Listelem sikeres, eredmenye %d dev485 = %p &dev485[0] = %p &dev485[1] = %p', [Result, dev485, @dev485[0], @dev485[1]]));
 end;
 
-function SetTurnForEachDeviceJSON(var json_source: WideString):integer; stdcall;
+function SetTurnForEachDeviceJSON(var json_source: WideString):word; stdcall;
 var
 	i, j: byte;
 	jsonArrayElements: TStringList;
@@ -98,7 +98,7 @@ begin
   result := SLDLL_SetLista(drb485, devList);
 end;
 
-procedure printErrors(result: integer);
+procedure printErrors(result: word);
 begin
 	if result = 0 then exit;
 	if result = DEVTYPE_UNDEFINED then
@@ -117,7 +117,7 @@ function ConvertDEV485ToXML(var outPath:WideString): byte; stdcall;
 var
   xmlDocument : IXMLDOCUMENT;
   rootNode, node : IXMLNODE;
-  i : integer;
+  i : byte;
 begin
 	if(drb485 = 0) or (not Assigned(dev485)) then
 	begin
@@ -144,7 +144,7 @@ function ConvertDEV485ToJSON(out outputStr: WideString): byte; stdcall;
 //TStringBuilder was introduced in Delphi version 2009, therefore that's not an option in our case
 var
   buffer: WideString;
-  i: integer;
+  i: byte;
 begin
   if (drb485 = 0) or (not Assigned(dev485)) then
   begin
@@ -186,11 +186,8 @@ function convertJSONToDEV485(var json_source: WideString):DEVLIS; //returns arra
 var
   //input looks like this: [{"azonos" : 16388, "tipus" : "L"},{"azonos": 120, "tipus" : "0"}, ... ]
   jsonArrayElements: TStringList;
-  json_element: string;
-  i : integer;
-  k : integer;
-  dev_azonos: SmallInt;
-  json_value: string;
+  json_element, json_value: string;
+  i, k, dev_azonos: word;
 begin
   SetLength(dev485, MAX_DEVICECOUNT);
   jsonArrayElements := reduceJSONSourceToElements(json_source);
@@ -203,12 +200,12 @@ begin
     if json_value = '' then
 		continue;
 	
-	// if the given string does not represent a valid integer (invalid), result is -1
-    dev_azonos := strToIntDef(json_value, -1);
-    if dev_azonos = -1 then
+	// if the given string does not represent a valid int (invalid), result is -1
+    dev_azonos := strToIntDef(json_value, high(word));
+    if dev_azonos = high(word) then
         writeln(Format('Invalid deviceID %s at device %d', [json_value, i])); //if there is a wrong deviceID in JSON, the loop still continues
         continue;
-    dev485[k].azonos := dev_azonos; //dev485[k].azonos gets the value '16388' as an integer
+    dev485[k].azonos := dev_azonos; //dev485[k].azonos gets the value '16388' as an int
     //these 2 fields are constants
     dev485[k].produc := PRODUCER; 
     dev485[k].manufa := MANUFACTURER;
@@ -252,7 +249,7 @@ begin
    StringReplace(Input, Delimiter, '"' + Delimiter + '"', [rfReplaceAll]) + '"' ;
 end;
 
-function setDeviceByType(const i: integer; var actDeviceType: string; var actDeviceSettings: string): byte;
+function setDeviceByType(const i: byte; var actDeviceType: string; var actDeviceSettings: string): byte;
 var 
 	elements: TStringList;
 begin
@@ -321,11 +318,11 @@ begin
 	end;
 	result := EXIT_SUCCESS;
 end;
-procedure setLEDDevice(i, red, green, blue:integer); overload;
+procedure setLEDDevice(i, red, green, blue:byte); overload;
 begin
 	setLEDDevice(i, red, green, blue, 2);
 end;
-procedure setLEDDevice(i, red, green, blue, direction:integer); overload;
+procedure setLEDDevice(i, red, green, blue, direction:byte); overload;
 begin
 	try
 		devList[i].vilrgb.rossze := red;
@@ -336,9 +333,9 @@ begin
 		showmessage('LEDDevice setting failed.');
 	end;
 end;
-procedure setSpeaker(i: integer; elements: TStringList);
+procedure setSpeaker(i: byte; elements: TStringList);
 var
-	j, k: integer;
+	j, k: byte;
 begin
 	j := 0;
 	k := 0;

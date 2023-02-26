@@ -16,16 +16,16 @@ namespace SLFormHelper
         /// <exception cref="SLDLLException"></exception>
         /// <exception cref="USBDisconnectedException"></exception>
         /// <exception cref="DllNotFoundException"></exception>
-        /// <returns>Numerikus érték, amely a végrehajtás sikerességéről tájékoztat.</returns>
-        public static int CallOpen(IntPtr handle)
+        public static void CallOpen(IntPtr handle)
         {
             //TODO: DelphiDLL-t hív, ennek milyen visszatérési értékei vannak? - ennek megfelelő Exception-öket dobni
-            int result = OpenSLDLL(handle);
-            if (result == 1247)
-                throw new SLDLLException("Az SLDLL_Open függvény már meg lett hívva korábban.");
-            if (result == 1626)
-                throw new USBDisconnectedException("Nincs csatlakoztatott USB-eszköz.");
-            return result;
+            ushort result = OpenSLDLL(handle);
+            if (result == (ushort) Win32Error.ERROR_SUCCESS)
+                return;
+            if (result == (ushort) Win32Error.ERROR_ALREADY_INITIALIZED)
+                throw new SLDLLException("Hiba az SLDLL megnyitásakor: Az SLDLL_Open függvény már meg lett hívva korábban.");
+            if (result == (ushort) Win32Error.ERROR_FUNCTION_NOT_CALLED)
+                throw new USBDisconnectedException("Hiba az SLDLL megnyitásakor: Nincs csatlakoztatott USB-eszköz.");
         }
         /// <summary>
         /// Delphi-metódust hív (Felmeres), amely az USB-portra csatlakoztatott eszközöket (lámpákat, nyilakat, valamint hangszórókat) felméri
@@ -33,17 +33,19 @@ namespace SLFormHelper
         /// <exception cref="DllNotFoundException"></exception>
         /// <exception cref="Dev485Exception"></exception>
         /// <exception cref="SLDLLException"></exception>
-        /// <returns>Numerikus érték, amely a végrehajtás sikerességéről tájékoztat.</returns>
-        public static int CallFelmeres()
+        public static void CallFelmeres()
         {
             //TODO: DelphiDLL-t hív, ennek milyen visszatérési értékei vannak? - ennek megfelelő Exception-öket dobni
-            int result = Felmeres();
+            ushort result = Felmeres();
 
-            if (result == 255)
-                throw new Dev485Exception("Az eszközöket tartalmazó dev485 tömb üres!");
-            if (result == 1114)
-                throw new SLDLLException("Az SLDLL_Open-függvény a program ezen pontján még nem lett meghívva.");
-            return result;
+            if (result == (ushort)Win32Error.ERROR_SUCCESS)
+                return;
+            if (result == 254)
+                throw new Dev485Exception("Hiba felmérés közben: Az eszközöket tartalmazó dev485 tömb üres!");
+            if (result == (ushort) Win32Error.ERROR_DLL_INIT_FAILED)
+                throw new SLDLLException("Hiba felmérés közben: SLDLL_Open még nem került meghívásra.");
+            else
+                throw new Exception("Hiba felmérés közben: Egyéb műveleti hiba.");
         }
         /// <summary>
         /// Delphi-metódust hív (Listelem), amely a Delphiben tárolt eszközök tömbjét és számát beállítja.
@@ -51,26 +53,24 @@ namespace SLFormHelper
         /// <exception cref="DllNotFoundException"></exception>
         /// <exception cref="Dev485Exception"></exception>
         /// <exception cref="SLDLLException"></exception>
-        /// <returns>Numerikus érték, amely a végrehajtás sikerességéről tájékoztat.</returns>
-        public static int CallListelem(ref byte drb485, bool useJSON = true)
+        public static void CallListelem(ref byte drb485, bool useJSON = true)
         {
             //TODO: DelphiDLL-t hív, ennek milyen visszatérési értékei vannak? - ennek megfelelő Exception-öket dobni
-            int result = Listelem(ref drb485);
-            if (result == 255)
+            ushort result = Listelem(ref drb485);
+            if (result == 254)
                 throw new Dev485Exception("Az eszközöket tartalmazó dev485 tömb üres!");
-            if (result == 1114)
-                throw new SLDLLException("Az SLDLL_Open-függvény a program ezen pontján még nem lett meghívva.");
-            if (devices.Count != 0) //ha nem üres az eszközlista, ürítsük ki az eszköz- és ütemek listáját
+            if (result == (ushort)Win32Error.ERROR_DLL_INIT_FAILED)
+                throw new SLDLLException("Hiba az eszközök beállítása közben: SLDLL_Open még nem került meghívásra.");
+            if (result == (ushort)Win32Error.ERROR_SUCCESS)
             {
                 devices.Clear();
                 turnDurations.Clear();
+                if (useJSON)
+                    JSONToDeviceList(); //ez fogja feltölteni a C#-os listát*/
+                else
+                    XMLToDeviceList();
+                turnDurations.Add(2000); //alapból beállítjuk egy ütem hosszát
             }
-            if (useJSON)
-                JSONToDeviceList(); //ez fogja feltölteni a C#-os listát*/
-            else
-                XMLToDeviceList();
-            turnDurations.Add(2000); //alapból beállítjuk egy ütem hosszát
-            return result;
         }
         /// <summary>
         /// Delphi-metódust hív, amely a dev485-öt 3 eszközzel tölti fel attól függetlenül, hogy milyen eszközök vannak ténylegesen csatlakoztatva.
@@ -79,8 +79,9 @@ namespace SLFormHelper
         /// </summary>
         public static void CallFillDev485Static(bool useJSON = true)
         {
-            //TODO: DelphiDLL-t hív, ennek milyen visszatérési értékei vannak? - ennek megfelelő Exception-öket dobni
-            FillDev485WithStaticData(); //Delphiben feltölti a dev485-tömböt, drb485-öt beállítja 3-ra
+            byte result = FillDev485WithStaticData(); //Delphiben feltölti a dev485-tömböt, drb485-öt beállítja 3-ra
+            if (result == 253)
+                throw new Dev485Exception("Az eszközök tömbje már fel lett töltve!");
             turnDurations.Add(2000);
             if (useJSON)
                 JSONToDeviceList();
@@ -111,8 +112,10 @@ namespace SLFormHelper
         public static void CallSetTurnForEachDevice(ref string json_source)
         {
             //TODO: DelphiDLL-t hív, ennek milyen visszatérési értékei vannak? - ennek megfelelő Exception-öket dobni
-            int result = SetTurnForEachDevice(ref json_source);
-            if (result == 1114) 
+            ushort result = SetTurnForEachDevice(ref json_source);
+            if (result == (ushort) Win32Error.ERROR_SUCCESS) 
+                return;
+            if (result == (ushort) Win32Error.ERROR_DLL_INIT_FAILED) 
                 throw new SLDLLException("Hiba kiküldés közben: SLDLL_Open még nem került meghívásra.");
             else throw new Exception("Hiba kiküldés közben: Egyéb hiba");
         }
@@ -121,6 +124,7 @@ namespace SLFormHelper
         /// Feldolgozza a Win32-es üzeneteket a Form és a rendszer/DLL között.
         /// </summary>
         /// <param name="msg">A feldolgozandó Win32-szabványnak megfelelő üzenet.</param>
+        /// <exception cref="ArgumentException"></exception>
         public static void CallWndProc(ref Message msg)
         {
             if (msg.Msg != 0x0400 || msg.WParam.ToInt32() == 0) 
@@ -130,8 +134,12 @@ namespace SLFormHelper
             {
                 //-------Pozitív válaszkódok (tájékoztatások) esetei--------
                 case ErrorCodes.FELMOK:
-                    drb485 = (byte)msg.LParam;
-                    CallListelem(ref drb485, true).ToString();
+                    try
+                    {
+                        DRB485 = (byte)msg.LParam;
+                    }
+                    catch (ArgumentException) { throw; }
+                    CallListelem(ref drb485, true);
                     break;
                 case ErrorCodes.AZOOKE: break;
                 //megváltoztattam az eszköz számát, akkor jön ez a válasz  
@@ -166,12 +174,12 @@ namespace SLFormHelper
         public static byte DRB485 { 
             get { return drb485; } 
             set { 
-                if (value < 0) 
+                if (value < 0)
                     throw new ArgumentException("Eszközök darabszáma nem lehet negatív!");
                 drb485 = value;
             } 
         }
-        enum ErrorCodes:sbyte
+        private enum ErrorCodes:sbyte
         {
             FELMOK = 1,                       // A felmérés rendben lezajlott
             AZOOKE = 2,                       // Az azonosító váltás rendben lezajlott
@@ -180,11 +188,24 @@ namespace SLFormHelper
             HANGEL = 7,                       // A hangstring állapota
             STATKV = 8,                       // A státusz értéke
             LISVAL = 9,                       // A táblázat végének a válasza 
-            USBREM = -1,                        // Az USB vezérlő eltávolításra került
-            VALTIO = -2,                        // Felmérés közben válaszvárás time-out következett be
-            FELMHK = -3,                        // Felmérés vége hibával
-            FELMHD = -4,                        // Nincs egy darab sem hibakód (elvben sem lehet ilyen)
+            USBREM = -1,                      // Az USB vezérlő eltávolításra került
+            VALTIO = -2,                      // Felmérés közben válaszvárás time-out következett be
+            FELMHK = -3,                      // Felmérés vége hibával
+            FELMHD = -4,                      // Nincs egy darab sem hibakód (elvben sem lehet ilyen)
             FELMDE = -5                       // A 16 és 64 bites darabszám nem egyforma (elvben sem lehet ilyen)
+        }
+        private enum Win32Error:ushort
+        {
+            ERROR_SUCCESS = 0,
+            ERROR_INVALID_DATA = 13,
+            ERROR_BAD_LENGTH = 24,
+            ERROR_REQ_NOT_ACCEP = 71,
+            ERROR_ALREADY_ASSIGNED = 85,
+            ERROR_OPEN_FAILED = 110,
+            ERROR_MOD_NOT_FOUND = 126,
+            ERROR_DLL_INIT_FAILED = 1114,
+            ERROR_ALREADY_INITIALIZED = 1247,
+            ERROR_FUNCTION_NOT_CALLED = 1626
         }
         #endregion
         #region RelayDLL által exportált (publikus) függvények C#-os átirata
@@ -199,13 +220,13 @@ namespace SLFormHelper
         /// </param>
         /// <returns>Numerikus érték, amely a végrehajtás sikerességéről tájékoztat.</returns>
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "Open")]
-        extern private static int OpenSLDLL(IntPtr hwnd);
+        extern private static ushort OpenSLDLL(IntPtr hwnd);
 
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "Felmeres")]
-        extern private static int Felmeres();
+        extern private static ushort Felmeres();
 
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "Listelem")]
-        extern private static int Listelem([In] ref byte drb485);
+        extern private static ushort Listelem([In] ref byte drb485);
 
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "ConvertDEV485ToXML")]
         extern private static byte ConvertDeviceListToXML([MarshalAs(UnmanagedType.BStr)][In] ref string outputStr);
@@ -214,7 +235,7 @@ namespace SLFormHelper
         extern private static byte ConvertDeviceListToJSON([MarshalAs(UnmanagedType.BStr)][Out] out string outputStr);
 
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "SetTurnForEachDeviceJSON")]
-        extern private static int SetTurnForEachDevice([MarshalAs(UnmanagedType.BStr)][In] ref string json_source);
+        extern private static ushort SetTurnForEachDevice([MarshalAs(UnmanagedType.BStr)][In] ref string json_source);
 
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "fill_devices_list_with_devices")]
         extern private static byte FillDev485WithStaticData();
@@ -224,7 +245,7 @@ namespace SLFormHelper
         #endregion
         #region Mezők
         private const string DLLPATH = "..\\SLDLL_relay\\relay.dll";
-        private static List<Device> devices = new List<Device>();
+        private static readonly List<Device> devices = new List<Device>();
         private static List<ushort> turnDurations = new List<ushort>();
         public static List<ushort> Durations { get { return turnDurations; } set { turnDurations = value; } }
         public static List<Device> Devices { get { return devices; } }

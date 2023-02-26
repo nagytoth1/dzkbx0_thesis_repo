@@ -8,7 +8,7 @@ uses SLDLL, Classes, XMLIntf, XMLDoc, Sysutils, Types, Messages, Dialogs;
 const
   MAX_DEVICECOUNT = 100;
   UZESAJ = WM_USER + 0;
-  PRODUCER = 'Somodi Lï¿½szlï¿½';
+  PRODUCER = 'Somodi László';
   MANUFACTURER = 'Pluszs Kft.';
   RELAY_PATH = 'relay.dll';
   //error codes instead of exceptions - the cause thrown exceptions cannot be detected by C# PInvoke
@@ -30,17 +30,17 @@ var
 
 //exported, public methods, these can be called from C#
 // start using DLL
-function Open(wndhnd:DWord): DWord; stdcall; external RELAY_PATH;
+function Open(wndhnd:DWord): word; stdcall; external RELAY_PATH;
 // setting dev485 array -> uzfeld-method's alternative in C# is going to call this
-function Listelem(var numberOfDevices: byte): dword; stdcall; external RELAY_PATH; //uzfeld fogja hï¿½vni
+function Listelem(var numberOfDevices: byte): word; stdcall; external RELAY_PATH; //uzfeld fogja hï¿½vni
 // start of scanning available devices
-function Felmeres(): DWord; stdcall; external RELAY_PATH;
+function Felmeres(): word; stdcall; external RELAY_PATH;
 //converting dev485 to JSON-format - JSON-serializing
 function ConvertDEV485ToJSON(out outputStr: WideString): byte; stdcall; external RELAY_PATH;
 //converting dev485 to XML-format - XML-serializing
 function ConvertDEV485ToXML(var outPath:WideString): byte; stdcall; external RELAY_PATH;
 //sends an array of statements to ALL devices, this is going to be 1 turn (the passive device during the turn gets 'empty' signal)
-function SetTurnForEachDeviceJSON(var json_source: WideString):integer; stdcall; external RELAY_PATH;
+function SetTurnForEachDeviceJSON(var json_source: WideString):word; stdcall; external RELAY_PATH;
 //fills dev485 with dummy devices
 //used only for testing purposes - therefore I used snake_case naming convention to differentiate it
 function fill_devices_list_with_devices(): byte; stdcall; external RELAY_PATH;
