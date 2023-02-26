@@ -22,7 +22,7 @@ namespace SLFormHelper
         /// <param name="level">The type of the message to log. Default: INFO</param>
         public static void WriteLog(string message, SeverityLevel level = SeverityLevel.INFO)
         {
-            using (StreamWriter writer = new StreamWriter(LOG_PATH)) //automatically delete StreamWriter
+            using (StreamWriter writer = new StreamWriter(path: LOG_PATH, append: true)) //automatically delete StreamWriter
             {
                 writer.WriteLine($"[{level}] {DateTime.Now:yyyy'-'MM'-'dd HH':'mm':'ss}: {message}");
             }

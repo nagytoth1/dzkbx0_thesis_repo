@@ -17,7 +17,8 @@ namespace SLHelperTestForm
         {
             try
             {
-                label1.Text = CallOpen(this.Handle).ToString();
+                //label1.Text = CallOpen(this.Handle).ToString();
+                CallFillDev485Static(true);
             }
             catch (DllNotFoundException ex)
             {
@@ -35,7 +36,6 @@ namespace SLHelperTestForm
         /// <param name="msg">A feldolgozandó Win32-szabványnak megfelelő üzenet.</param>
         protected override void WndProc(ref Message msg)
         {
-            //CallWndProc(ref msg, ref dev485Set);
             CallWndProc(ref msg);
             base.WndProc(ref msg);
         }
@@ -113,11 +113,27 @@ namespace SLHelperTestForm
             ofd.Filter = "JSON-file (*.json)|*.json";
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                LoadDeviceSettings(ofd.FileName);
-                Console.WriteLine("Betöltés miatt {0} lett.", Devices[0]);
+                try
+                {
+                    LoadDeviceSettings(ofd.FileName);
+                }
+                catch (Exception exc)
+                {
+                    MessageBox.Show(exc.Message);
+                    Logger.WriteLog(exc.Message, SeverityLevel.WARNING);
+                    return;
+                }
                 string json_source = DevicesToJSON();
                 Console.WriteLine(json_source);
-                CallSetTurnForEachDevice(ref json_source);
+                try
+                {
+                    CallSetTurnForEachDevice(ref json_source);
+                    Console.WriteLine("Ütemek kiküldve!");
+                }
+                catch(Exception exc)
+                {
+                    MessageBox.Show(exc.Message);
+                }
             }
         }
 

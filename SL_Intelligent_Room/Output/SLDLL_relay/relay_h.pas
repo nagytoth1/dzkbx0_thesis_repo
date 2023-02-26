@@ -8,18 +8,18 @@ uses SLDLL, Classes, XMLIntf, XMLDoc, Sysutils, Types, Messages, Dialogs;
 const
   MAX_DEVICECOUNT = 100;
   UZESAJ = WM_USER + 0;
-  PRODUCER = 'Somodi László';
+  PRODUCER = 'Somodi Lï¿½szlï¿½';
   MANUFACTURER = 'Pluszs Kft.';
   RELAY_PATH = 'relay.dll';
   //error codes instead of exceptions - the cause thrown exceptions cannot be detected by C# PInvoke
-  DEV485_NULL = 255;
   DEV485_EMPTY = 254;
   DEV485_ALREADY_FILLED = 253;
-  TURNNUM_OUTOFBOUNDS = 252;
-  DEVCOUNT_IDENTITY_ERROR = 251;
   DEVTYPE_UNDEFINED = 250;
   DEVSETTINGS_INVALID_FORMAT = 249;
   DEVSETTING_FAILED = 248;
+  DEVSETTING_SPEAKER_FAILED = 247;
+  DEVSETTING_ARROW_FAILED = 246;
+  DEVSETTING_LIGHT_FAILED = 245;
   EXIT_SUCCESS = 0;
  
 var
@@ -32,7 +32,7 @@ var
 // start using DLL
 function Open(wndhnd:DWord): DWord; stdcall; external RELAY_PATH;
 // setting dev485 array -> uzfeld-method's alternative in C# is going to call this
-function Listelem(var numberOfDevices: byte): dword; stdcall; external RELAY_PATH; //uzfeld fogja hívni
+function Listelem(var numberOfDevices: byte): dword; stdcall; external RELAY_PATH; //uzfeld fogja hï¿½vni
 // start of scanning available devices
 function Felmeres(): DWord; stdcall; external RELAY_PATH;
 //converting dev485 to JSON-format - JSON-serializing

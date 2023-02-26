@@ -10,12 +10,12 @@
 \select@language {magyar} \contentsline {figure}{\numberline {3.2.}{\ignorespaces gRPC metódushívásainak típusai\relax }}{21}{figure.caption.9}%
 \select@language {magyar} \contentsline {figure}{\numberline {3.3.}{\ignorespaces Szerializáció teljesítményének összehasonlítása JSON és Proto esetében\relax }}{22}{figure.caption.10}%
 \select@language {magyar} \addvspace {10\p@ }
-\select@language {magyar} \contentsline {figure}{\numberline {4.1.}{\ignorespaces Hibakódok és magyarázataik}}{29}{figure.caption.11}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.2.}{\ignorespaces Eszközök azonosítóinak átadása JSON-formátumon keresztül\relax }}{32}{figure.caption.13}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.3.}{\ignorespaces Delphiben írt eljárás, amely paraméterében egy kimenő string paramétert vár.\relax }}{34}{figure.caption.18}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.4.}{\ignorespaces Az eljárás hibás szignatúrája C\#-ban\relax }}{34}{figure.caption.19}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.5.}{\ignorespaces A függvény helyes Delphi-deklarációja\relax }}{34}{figure.caption.21}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.6.}{\ignorespaces A függvény helyes szignatúrája C\#-ban\relax }}{34}{figure.caption.22}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.7.}{\ignorespaces Hangszóróval lejátszható hangok listája\relax }}{36}{figure.caption.29}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.8.}{\ignorespaces Megoldás a problémára\relax }}{37}{figure.caption.32}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.9.}{\ignorespaces A hangszóró hanglistát kezel - megoldás C\# nyelven\relax }}{38}{figure.caption.33}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.1.}{\ignorespaces Hibakódok és magyarázataik}}{30}{figure.caption.11}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.2.}{\ignorespaces Eszközök azonosítóinak átadása JSON-formátumon keresztül\relax }}{33}{figure.caption.13}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.3.}{\ignorespaces Delphiben írt eljárás, amely paraméterében egy kimenő string paramétert vár.\relax }}{35}{figure.caption.18}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.4.}{\ignorespaces Az eljárás hibás szignatúrája C\#-ban\relax }}{35}{figure.caption.19}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.5.}{\ignorespaces A függvény helyes Delphi-deklarációja\relax }}{35}{figure.caption.21}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.6.}{\ignorespaces A függvény helyes szignatúrája C\#-ban\relax }}{35}{figure.caption.22}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.7.}{\ignorespaces Hangszóróval lejátszható hangok listája\relax }}{37}{figure.caption.29}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.8.}{\ignorespaces Megoldás a problémára\relax }}{38}{figure.caption.32}%
+\select@language {magyar} \contentsline {figure}{\numberline {4.9.}{\ignorespaces A hangszóró hanglistát kezel - megoldás C\# nyelven\relax }}{39}{figure.caption.33}%

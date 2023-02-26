@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -16,6 +15,7 @@ namespace SLFormHelper
         /// Az eszközbeállítások mentéséről és tárolásáról az UnloadDeviceSettings-metódus gondoskodik.
         /// </summary>
         /// <param name="jsonFile">Beolvasni kívánt JSON-fájl elérési útvonala.</param>
+        /// <exception cref="JsonException"></exception>
         public static void LoadDeviceSettings(string jsonFile)
         {
             string fileContent;
@@ -36,11 +36,7 @@ namespace SLFormHelper
             {
                 ValidateSettings(turnSettings);
             }
-            catch (JsonException e)
-            {
-                Logger.WriteLog(e.Message, SeverityLevel.WARNING);
-                return;
-            }
+            catch (JsonException) { throw; }
             for (int j = 0; j < turnSettings.Length; j++)
             {
                 for (int i = 0; i < devices.Count; i++)
@@ -61,7 +57,7 @@ namespace SLFormHelper
         /// Ez biztosítja, hogy például egy lámpának ne tudjunk hangértékeket beállítani.
         /// </summary>
         /// <param name="turnSettings"></param>
-        /// /// <exception cref="JsonException"></exception>
+        /// <exception cref="JsonException"></exception>
         private static void ValidateSettings(SerializedTurnSettings[] turnSettings)
         {
             if (turnSettings == null || turnSettings.Length == 0)
@@ -108,6 +104,7 @@ namespace SLFormHelper
         /// <summary>
         /// Az eszközlistát JSON-formátumú szöveggé alakítja (szerializálja).
         /// </summary>
+        /// 
         /// <returns>Az eszközlista JSON-reprezentációja.</returns>
         public static string DevicesToJSON()
         {

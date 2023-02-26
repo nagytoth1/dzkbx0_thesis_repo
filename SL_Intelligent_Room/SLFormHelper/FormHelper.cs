@@ -15,6 +15,7 @@ namespace SLFormHelper
         /// <param name="handle">Az ablakos alkalmazás Handle-je, ez ahhoz kell, hogy az SLDLL_Open és a többi függvény üzeneteket küldözgethessen az alkalmazásunk számára.</param>
         /// <exception cref="SLDLLException"></exception>
         /// <exception cref="USBDisconnectedException"></exception>
+        /// <exception cref="DllNotFoundException"></exception>
         /// <returns>Numerikus érték, amely a végrehajtás sikerességéről tájékoztat.</returns>
         public static int CallOpen(IntPtr handle)
         {
@@ -29,6 +30,9 @@ namespace SLFormHelper
         /// <summary>
         /// Delphi-metódust hív (Felmeres), amely az USB-portra csatlakoztatott eszközöket (lámpákat, nyilakat, valamint hangszórókat) felméri
         /// </summary>
+        /// <exception cref="DllNotFoundException"></exception>
+        /// <exception cref="Dev485Exception"></exception>
+        /// <exception cref="SLDLLException"></exception>
         /// <returns>Numerikus érték, amely a végrehajtás sikerességéről tájékoztat.</returns>
         public static int CallFelmeres()
         {
@@ -44,6 +48,9 @@ namespace SLFormHelper
         /// <summary>
         /// Delphi-metódust hív (Listelem), amely a Delphiben tárolt eszközök tömbjét és számát beállítja.
         /// </summary>
+        /// <exception cref="DllNotFoundException"></exception>
+        /// <exception cref="Dev485Exception"></exception>
+        /// <exception cref="SLDLLException"></exception>
         /// <returns>Numerikus érték, amely a végrehajtás sikerességéről tájékoztat.</returns>
         public static int CallListelem(ref byte drb485, bool useJSON = true)
         {
@@ -104,7 +111,10 @@ namespace SLFormHelper
         public static void CallSetTurnForEachDevice(ref string json_source)
         {
             //TODO: DelphiDLL-t hív, ennek milyen visszatérési értékei vannak? - ennek megfelelő Exception-öket dobni
-            SetTurnForEachDevice(ref json_source);
+            int result = SetTurnForEachDevice(ref json_source);
+            if (result == 1114) 
+                throw new SLDLLException("Hiba kiküldés közben: SLDLL_Open még nem került meghívásra.");
+            else throw new Exception("Hiba kiküldés közben: Egyéb hiba");
         }
         /// <summary>
         /// Ez lényegében a Delphiben található uzfeld-metódus C#-os változata
@@ -204,10 +214,13 @@ namespace SLFormHelper
         extern private static byte ConvertDeviceListToJSON([MarshalAs(UnmanagedType.BStr)][Out] out string outputStr);
 
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "SetTurnForEachDeviceJSON")]
-        extern private static byte SetTurnForEachDevice([MarshalAs(UnmanagedType.BStr)][In] ref string json_source);
+        extern private static int SetTurnForEachDevice([MarshalAs(UnmanagedType.BStr)][In] ref string json_source);
 
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "fill_devices_list_with_devices")]
         extern private static byte FillDev485WithStaticData();
+        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "set_turn_static")]
+        extern private static byte SetTurnWithStaticStatic([MarshalAs(UnmanagedType.BStr)][In] ref string json_source);
+        
         #endregion
         #region Mezők
         private const string DLLPATH = "..\\SLDLL_relay\\relay.dll";

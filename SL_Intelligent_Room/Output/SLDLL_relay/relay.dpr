@@ -26,32 +26,34 @@ function convertJSONToDEV485(var json_source: WideString):DEVLIS; Forward;
 //checks whether the settings of the devices are correct
 function validateExtractedDeviceValues(const actDeviceType:string; const elements: TStringList):byte; Forward;
 //decides which type the given device belongs to (LED-arrow, LED-light or Speaker) and calls the corresponding set-method
-procedure setDeviceByType(const i: integer; var actDeviceType: string; var actDeviceSettings: string);Forward;
+function setDeviceByType(const i: integer; var actDeviceType: string; var actDeviceSettings: string): byte; Forward;
 //sets a device of a LED-arrow and LED-light type
-procedure setLEDDevice(i, red, green, blue, direction:integer); Forward;
+procedure setLEDDevice(i, red, green, blue, direction:integer); Forward; overload;
+procedure setLEDDevice(i, red, green, blue:integer); Forward; overload;
 //sets a device of a Speaker type
 procedure setSpeaker(i:integer; elements:TStringList); Forward;
+procedure printErrors(result: integer); Forward;
 
 function fill_devices_list_with_devices(): byte; stdcall;
 begin
-  if(Assigned(dev485)) or (length(dev485) > 0) then
-  begin
-    result := DEV485_ALREADY_FILLED;
-    exit;
-  end;
-  drb485 := 3;
-  SetLength(dev485, drb485);
-  dev485[0].azonos := $c004;
-  dev485[1].azonos := $8004;
-  dev485[2].azonos := $4004;
-  result := EXIT_SUCCESS;
+	if drb485 > 0 then
+	begin
+	result := DEV485_ALREADY_FILLED; //a tomb mar fel van toltve
+	exit;
+	end;
+	drb485 := 3;
+	SetLength(dev485, drb485);
+	dev485[0].azonos := $c004; //hangszoro
+	dev485[1].azonos := $8004; //nyil
+	dev485[2].azonos := $4004; //lampa
+	result := EXIT_SUCCESS;
 end;
-
 function Open(wndhnd:DWord): DWord; stdcall;
 var
- nevlei, devusb: pchar;
+	nevlei, devusb: pchar;
 begin
-  result := SLDLL_Open(wndhnd, UZESAJ, @nevlei, @devusb);
+	result := SLDLL_Open(wndhnd, UZESAJ, @nevlei, @devusb);
+	showmessage(format('Open done, nevlei = %s devusb = %s', [nevlei, devusb]));
 end;
 
 function Felmeres(): DWord; stdcall;
@@ -70,7 +72,7 @@ end;
 
 function SetTurnForEachDeviceJSON(var json_source: WideString):integer; stdcall;
 var
-	i: integer;
+	i, j: byte;
 	jsonArrayElements: TStringList;
 	json_element1, json_element2: string;
 	actDeviceType: string;
@@ -78,17 +80,37 @@ var
 begin
 	//decode the JSON of the current turn (type + settings fields)
 	jsonArrayElements := reduceJSONSourceToElements(json_source);
-	for i := 0 to drb485 - 1 do //for [0;drb485] inclusive
+	i := 0; j := 0;
+	while(j < drb485) do
 	begin
 		json_element1 := jsonArrayElements[i]; //loads the actual device
 		json_element2 := jsonArrayElements[i+1]; //loads the actual device
     	//I want the first char of string 
 		actDeviceType := extractValueFromJSONField(json_element1, 'type'); //gets the type of the device
     	actDeviceSettings := extractValueFromJSONField(json_element2, 'settings'); //for example: 255|0|0|1
-		devList[i].azonos := dev485[i].azonos;
-		setDeviceByType(i, actDeviceType, actDeviceSettings);
+		devList[j].azonos := dev485[j].azonos;
+		result := setDeviceByType(j, actDeviceType, actDeviceSettings); //SEHException
+		//TODO: is there no such result that leads to ending the loop?
+		printErrors(result);
+		inc(j);
+		inc(i, 2);
   end; //case
   result := SLDLL_SetLista(drb485, devList);
+end;
+
+procedure printErrors(result: integer);
+begin
+	if result = 0 then exit;
+	if result = DEVTYPE_UNDEFINED then
+		showmessage('Eszkoz tipusa nem meghatarozhato.')
+	else if result = DEVSETTINGS_INVALID_FORMAT then 
+		showmessage('Eszkoz beallitasai nem megfeleloek.')
+	else if result = DEVSETTING_ARROW_FAILED then
+		showmessage('Nyil beallitasi hiba.')
+	else if result = DEVSETTING_SPEAKER_FAILED then
+		showmessage('Hangszoro beallitasi hiba.')
+	else
+		showmessage('Egyeb hiba.');
 end;
 
 function ConvertDEV485ToXML(var outPath:WideString): byte; stdcall;
@@ -132,7 +154,7 @@ begin
     exit;
   end;
   buffer := '[';  //JSON-array is going to be created
-  i:=0;
+  i := 0;
   while i < drb485 do
   begin
     buffer := buffer + Format('{"azonos":%d},', [dev485[i].azonos]);
@@ -184,13 +206,12 @@ begin
 	// if the given string does not represent a valid integer (invalid), result is -1
     dev_azonos := strToIntDef(json_value, -1);
     if dev_azonos = -1 then
-        showmessage(Format('Invalid deviceID %s', [json_value]));
+        writeln(Format('Invalid deviceID %s at device %d', [json_value, i])); //if there is a wrong deviceID in JSON, the loop still continues
         continue;
     dev485[k].azonos := dev_azonos; //dev485[k].azonos gets the value '16388' as an integer
     //these 2 fields are constants
     dev485[k].produc := PRODUCER; 
     dev485[k].manufa := MANUFACTURER;
-	writeln(Format('%d. eszkoz azonos: %d', [k, dev485[k].azonos]));
 	inc(k);
   end;
   writeln('Array dev485 has been created from JSON-string successfully!');
@@ -230,27 +251,33 @@ begin
    Strings.DelimitedText :=  '"' +
    StringReplace(Input, Delimiter, '"' + Delimiter + '"', [rfReplaceAll]) + '"' ;
 end;
-//actDeviceSettings hangsz�r�n�l: "settings" : "10|1|100|20|2|200"
-procedure setDeviceByType(const i: integer; var actDeviceType: string; var actDeviceSettings: string);
+
+function setDeviceByType(const i: integer; var actDeviceType: string; var actDeviceSettings: string): byte;
 var 
 	elements: TStringList;
 begin
 	elements := TStringList.Create;
-	split('|', actDeviceSettings, elements);
-	if validateExtractedDeviceValues(actDeviceType, elements) <> 0 
+	//actDeviceSettings look like this: "255|0|0" -> split by delimiter '|' -> elements
+	split('|', actDeviceSettings, elements); 
+	result := validateExtractedDeviceValues(actDeviceType, elements);
+	//returns an error:  DEVTYPE_UNDEFINED, DEVSETTINGS_INVALID_FORMAT, DEVSETTING_ARROW_FAILED, DEVSETTING_SPEAKER_FAILED
+	if result <> EXIT_SUCCESS
 		then exit;
+
+	//result = 0 from here on...
 	if actDeviceType = 'L' then
 	begin
+		showmessage(format('setting LEDLight to values red = %s green = %s blue = %s', [elements[0], elements[1], elements[2]]));
 		setLEDDevice( 	//LEDLight
 			i,
 			strToIntDef(elements[0], 0), 	//red
 			strToIntDef(elements[1], 0), 	//green
-			strToIntDef(elements[2], 0),  //blue
-			2);                           //direction - constantly 2
+			strToIntDef(elements[2], 0));  	//blue
 		exit;
 	end;
 	if actDeviceType = 'N' then
 	begin
+		showmessage(format('setting LEDArrow to values red = %s green = %s blue = %s direction = %s', [elements[0], elements[1], elements[2], elements[3]]));
 		setLEDDevice( 	//LEDArrow
 			i,
 			strToIntDef(elements[0], 0), 	//red
@@ -261,11 +288,9 @@ begin
 	end;
 	if actDeviceType = 'H' then
 	begin
-		setSpeaker(i, elements);
+		setSpeaker(i, elements); //actDeviceSettings for speakers: "settings" : "10|1|100|20|2|200"
 		exit;
 	end;
-	showmessage('Az eszkoz tipusa ismeretlen.');
-	exit;
 end;
 //validates the settings of given device in case of JSON-format
 function validateExtractedDeviceValues(const actDeviceType:string; const elements: TStringList):byte;
@@ -285,18 +310,22 @@ begin
 	if (actDeviceType = 'N') and (elements.Count <> 4) then
 	begin
 		showmessage('Nyil beallitasa sikertelen: rossz JSON-formatum.');
-		result := DEVSETTINGS_INVALID_FORMAT;
+		result := DEVSETTING_ARROW_FAILED;
 		exit;
 	end;
 	if (actDeviceType = 'H') and (elements.Count mod 3 <> 0) then
 	begin
 		showmessage('Hangszoro beallitasa sikertelen: rossz JSON-formatum.'); //when "settings"-field is not appropriate (empty, contains invalid number of elements)
-		result := DEVSETTINGS_INVALID_FORMAT;
+		result := DEVSETTING_SPEAKER_FAILED;
 		exit;
 	end;
-	result := 0;
+	result := EXIT_SUCCESS;
 end;
-procedure setLEDDevice(i, red, green, blue, direction:integer);
+procedure setLEDDevice(i, red, green, blue:integer); overload;
+begin
+	setLEDDevice(i, red, green, blue, 2);
+end;
+procedure setLEDDevice(i, red, green, blue, direction:integer); overload;
 begin
 	try
 		devList[i].vilrgb.rossze := red;
@@ -313,12 +342,12 @@ var
 begin
 	j := 0;
 	k := 0;
-	while j < elements.Count - 2 do //6 db 0 1 2 3 4 5
+	while j < elements.Count - 2 do
 	begin
 		H[k].hangso := strToIntDef(elements[j], 0); //5 index
 		H[k].hanger := strToIntDef(elements[j+1], 0); //63 volume
 		H[k].hangho := strToIntDef(elements[j+2], 0); //1000 length
-		showmessage(format('setting speaker to hangindex = %d hangero = %d hanghossz = %d values...', [H[k].hangso, H[k].hanger, H[k].hangho]));
+		showmessage(format('setting %d. sound to index = %d volume = %d length = %d values...', [k, H[k].hangso, H[k].hanger, H[k].hangho]));
 		inc(j, 3);
 		inc(k);
 	end;

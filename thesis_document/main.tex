@@ -22,7 +22,7 @@
 	\author{Nagy-Tóth Bence\\Szak: Programtervező informatikus\\Specializáció: Szoftverfejlesztő informatikus}
 	\supervisor{Dr. Király Roland\\egyetemi docens}
 	\city{Eger}
-	\date{2022}
+	\date{\the\year{}}
 	\VerbatimFootnotes
 	\maketitle
 	\tableofcontents
@@ -467,17 +467,38 @@
 	A következőkben a Keresztes Péter tanár úr által Delphiben implementált metódusokat, ezek kezelésének lehetőségeit fogom részletezni.
 	Általánosságban elmondható, hogy minden függvény egész típusú értékkel tér vissza, amely érték tájékoztat a lefutás eredményességéről: amennyiben a hívott metódus sikeresen (hiba, kivétel nélkül) lefutott, 0-val tér vissza, ahogy ezt egyébként az operációs rendszerek processzeinél is megszokhattuk. Ettől eltérő értékek az egyes hibatípusokat hivatottak meghatározni a Win32-szabvány\footnote{A Win32-es hibakódok szabványa szerint minden hibakódnak a $0x0000$ (decimálisan: 0) és $0xFFFFFF$ (decimálisan: $16\,777\,215$) közötti tartományban kell lennie.} keretein belül. Ezen hibakódok projektünkre vonatkozó részét az alábbi táblázatban \ref{fig:errcodes} összegyűjtöttem. \cite{errcodes}
 	
+	A DLL, miután használatba vettük, az \verb*|SLDLL_Open| hívásakor paraméterben megadott címre (A Form Handle-címe) küldött	Win32-üzenetekkel tartja a kapcsolatot a felhasználóval (hívó féllel). Az üzenet (Message) WParam értéke tartalmazza minden esetben a lefutás sikerességéről szóló információt.
+	Míg a negatív értékek hibaüzenetnek, addig a pozitívak tájékoztatásnak számítanak az elvégzett feladat sikerességét illetően. Ha az üzenethez tartozik paraméter, adat, akkor arra az	üzenet LParam értéke hivatkozik. Erre vonatkozó példával \verb*|SLDLL_Listelem| függvény hívásakor találkoztam, amikor is az eszközök darabszámát jelentő egész számot kell kigyűjtenünk a Win32-üzenetben beállított LParam értéke szerint.           
+	\begin{itemize}
+		\item FELMOK (1)  LParam -> a felmérés által talált eszközök száma                  
+		\item FIRMUZ (3)  LParam -> a frissítés adatait tartalmazó struktúra (UPGPCK) címe                          
+		\item LEDRGB (5)  LParam -> az általános állaptinformáció struktúra (ELVSTA) címe    
+		\item NYIRGB (6)  LParam -> az általános állaptinformáció struktúra (ELVSTA) címe    
+		\item HANGEL (7)  LParam -> az általános állaptinformáció struktúra (ELVSTA) címe    
+		\item STATKV (8)  LParam -> az általános állaptinformáció struktúra (ELVSTA) címe    
+		\item LISVAL (9)  LParam -> a táblázat végrehajtás végének hibakódja                 
+		\item FELMHK (-3) LParam -> a felmérés hibás                     
+	\end{itemize}
+	
+	Az egyes funkciók visszatérési kódja tájékoztat a hívás sikeres vagy            
+	sikertelen voltáról. Ha a visszatérési kód NO\_ERROR (0), akkor a hívás         
+	sikeres volt. Ha nem NO\_ERROR (0) az érték a kód tájékoztat a sikertelenség    
+	okáról. A lehetséges értékek az adott hívás leírásában ismertetésre kerülnek.  
+	
 	A program azzal nyit, hogy felméri az USB-porton csatlakoztatott, egymással RJ11-csatlakozókkal sorba kötött eszközöket, őket a típusának megfelelő azonosítóval látja el. Az azonosító meghatározza, hogy egy eszköz milyen típusú. 
 	
 	\subsection{DLL megnyitása}
 	A program indulásakor elsőként lefutó \verb*|SLDLL_Open|-függvényt meghívásával elkezdhetjük az SLDLL további metódusainak használatát. Ezt érdemes automatikusan lefuttatni, ennek kezelését nem a felhasználóra bízni, mivel egyrészt elfelejtheti, másrészt felesleges, hogy a felhasználó tudjon a kötelező metódushívási sorrendről. 
+	\subsection{SLDLL\_Listelem}
+	Ez a függvény felelős a dev485 tömb és drb485 beállításáért
 	\subsection{Eszközök felmérése}
-	A \verb*|SLDLL_Felmeres| folyamán az elérhető, tehát csatlakoztatott eszközök felmérése elindul. Paraméter nélküli függvény, visszatérési értéke:
+	A \verb*|SLDLL_Felmeres| folyamán az elérhető, tehát csatlakoztatott eszközök felmérése elindul. Elméletem szerint ez következett volna az \verb*|SLDLL_Open| meghívása után közvetlenül, de kiderült, hogy az \verb*|SLDLL_Listelem| előbb  A függvény nem vár paramétert, visszatérési értéke egész szám, amely a lefutás sikerességéről tájékoztat:
 	\begin{itemize}
-		\item \verb*|NO_ERROR|
-		\item \verb*|ERROR_DLL_INIT_FAILED|
+		\item \verb*|NO_ERROR|: Nem történt hiba
+		\item \verb*|ERROR_DLL_INIT_FAILED|: Az SLDLL\_Open még nem lett meghívva
 		\item egyéb - Windows műveleti hibakódok
 	\end{itemize}
+	\subsection{title}
 	\section{Az általam készített DLL-függvények bemutatása}
 	\subsection{Hibakódok}
 	Az alábbi táblázatban látható hibakódokat C\#-ban a következő megfelelő, egyénileg definiált kivételekkel, és sokkal kifejezőbb üzenetekkel váltom fel:

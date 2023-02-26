@@ -28,3 +28,7 @@ SL_Intelligent_Room/Output/Debug/SLFormHelper.UnitTests.*
 *.cache
 
 SL_Intelligent_Room/Output/Debug/testcentric.engine.metadata.dll
+
+*.exe
+
+*.pdb
