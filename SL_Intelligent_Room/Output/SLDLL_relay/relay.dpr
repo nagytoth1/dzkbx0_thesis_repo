@@ -38,14 +38,14 @@ function fill_devices_list_with_devices(): byte; stdcall;
 begin
 	if drb485 > 0 then
 	begin
-		result := DEV485_ALREADY_FILLED; //a tomb mar fel van toltve
+		result := DEV485_ALREADY_FILLED; //array is already filled
 		exit;
 	end;
 	drb485 := 3;
 	SetLength(dev485, drb485);
-	dev485[0].azonos := $c004; //hangszoro
-	dev485[1].azonos := $8004; //nyil
-	dev485[2].azonos := $4004; //lampa
+	dev485[0].azonos := $c004; //speaker
+	dev485[1].azonos := $8004; //arrow
+	dev485[2].azonos := $4004; //light
 	result := EXIT_SUCCESS;
 end;
 function Open(wndhnd:DWord): word; stdcall;
@@ -53,7 +53,6 @@ var
 	nevlei, devusb: pchar;
 begin
 	result := SLDLL_Open(wndhnd, UZESAJ, @nevlei, @devusb);
-	showmessage(format('Open done, nevlei = %s devusb = %s', [nevlei, devusb]));
 end;
 
 function Felmeres(): word; stdcall;
@@ -67,7 +66,7 @@ function Listelem(var numberOfDevices: byte): word; stdcall;
 begin
 	result := SLDLL_Listelem(@dev485);
 	drb485 := numberOfDevices;
-	showmessage(Format('Listelem sikeres, eredmenye %d dev485 = %p &dev485[0] = %p &dev485[1] = %p', [Result, dev485, @dev485[0], @dev485[1]]));
+	writeln(Format('Listelem sikeres, eredmenye %d dev485 = %p &dev485[0] = %p &dev485[1] = %p', [Result, dev485, @dev485[0], @dev485[1]]));
 end;
 
 function SetTurnForEachDeviceJSON(var json_source: WideString):word; stdcall;
@@ -264,7 +263,7 @@ begin
 	//result = 0 from here on...
 	if actDeviceType = 'L' then
 	begin
-		showmessage(format('setting LEDLight to values red = %s green = %s blue = %s', [elements[0], elements[1], elements[2]]));
+		writeln(format('setting LEDLight to values red = %s green = %s blue = %s', [elements[0], elements[1], elements[2]]));
 		setLEDDevice( 	//LEDLight
 			i,
 			strToIntDef(elements[0], 0), 	//red
@@ -274,7 +273,7 @@ begin
 	end;
 	if actDeviceType = 'N' then
 	begin
-		showmessage(format('setting LEDArrow to values red = %s green = %s blue = %s direction = %s', [elements[0], elements[1], elements[2], elements[3]]));
+		writeln(format('setting LEDArrow to values red = %s green = %s blue = %s direction = %s', [elements[0], elements[1], elements[2], elements[3]]));
 		setLEDDevice( 	//LEDArrow
 			i,
 			strToIntDef(elements[0], 0), 	//red
@@ -344,7 +343,7 @@ begin
 		H[k].hangso := strToIntDef(elements[j], 0); //5 index
 		H[k].hanger := strToIntDef(elements[j+1], 0); //63 volume
 		H[k].hangho := strToIntDef(elements[j+2], 0); //1000 length
-		showmessage(format('setting %d. sound to index = %d volume = %d length = %d values...', [k, H[k].hangso, H[k].hanger, H[k].hangho]));
+		writeln(format('setting %d. sound to index = %d volume = %d length = %d values...', [k, H[k].hangso, H[k].hanger, H[k].hangho]));
 		inc(j, 3);
 		inc(k);
 	end;
