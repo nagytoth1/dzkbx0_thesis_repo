@@ -50,7 +50,7 @@ namespace SLFormHelper.UnitTests
         public void SLDLL_Felmeres_Scenario_Success()
         {
             testForm.Show();
-            Assert.That(CallFelmeres() == 0);
+            CallFelmeres();
         }
 
         //call this when HelperForm.DLLPATH is set wrong

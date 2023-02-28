@@ -17,9 +17,8 @@ namespace SLHelperTestForm
         {
             try
             {
-                //label1.Text = CallOpen(this.Handle).ToString();
-                CallFillDev485Static(true);
-                CallFillDev485Static(true);
+                CallOpen(this.Handle);
+                //CallFillDev485Static(true);
             }
             catch (DllNotFoundException ex)
             {
@@ -53,7 +52,6 @@ namespace SLHelperTestForm
             CallFelmeres();
             listBox1.DataSource = Devices;
         }
-
         private void btnKek_Click(object sender, EventArgs e)
         {
             LEDArrow arrow; LEDLight light; Speaker speaker;
@@ -68,13 +66,13 @@ namespace SLHelperTestForm
                 }
                 if (Devices[i] is LEDLight)
                 {
-                    light= (LEDLight)Devices[i];
+                    light = (LEDLight)Devices[i];
                     light.Color = Color.Blue;
                     continue;
                 }
                 speaker = (Speaker)Devices[i]; //itt baj van, mert egy hangtömböt kéne kiküldeni
-                speaker.AddSound(Pitch.G_OKTAV3, volume:64, length:300);
-                speaker.AddSound(Pitch.D, volume:63, length:11000);
+                speaker.AddSound(Pitch.G_OKTAV3, volume: 64, length: 300);
+                speaker.AddSound(Pitch.D, volume: 63, length: 11000);
             }
             string json_source = DevicesToJSON();
             Console.WriteLine(json_source);
@@ -149,6 +147,61 @@ namespace SLHelperTestForm
             {
                 UnloadDeviceSettings(sfd.FileName);
             }
+        }
+        private bool ledUP = true;
+        private ushort[] ticks = { 2000, 1000, 2000, 1000};
+        private byte i = 0;
+        private void btnNyil3_Click(object sender, EventArgs e)
+        {
+            turnTimer.Enabled = true;
+            btnNyil3.Enabled = false;
+            if (Devices[0] == null)
+            {
+                MessageBox.Show("Devices tömb üres!"); return;
+            }
+
+            if (!(Devices[0] is LEDArrow))
+            {
+                MessageBox.Show("Az eszköz nem nyíl!"); return;
+            }
+        }
+
+        private void turnTimer_Tick(object sender, EventArgs e)
+        {
+            if (i == 4)
+            {
+                i = 0;
+                turnTimer.Enabled = false;
+                btnNyil3.Enabled = true;
+                return;
+            }
+            turnTimer.Interval = ticks[i]; //tickenként változzon az ütem hossza
+            LEDArrow arrow = (LEDArrow)Devices[0];
+            if (ledUP)
+            {
+                arrow.Color = Color.Blue;
+                arrow.Direction = Direction.LEFT;
+                Console.WriteLine("tik");
+            }
+            else
+            {
+                arrow.Color = Color.Black;
+                arrow.Direction = Direction.BOTH;
+                Console.WriteLine("tok");
+            }
+            string json_source = DevicesToJSON();
+            Console.WriteLine(json_source);
+            try
+            {
+                CallSetTurnForEachDevice(ref json_source);
+                Console.WriteLine("Ütemek kiküldve!");
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(exc.Message);
+            }
+            ledUP = !ledUP;
+            i++;
         }
     }
 }

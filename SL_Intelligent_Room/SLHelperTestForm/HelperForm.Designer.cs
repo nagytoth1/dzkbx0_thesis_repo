@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.listBox1 = new System.Windows.Forms.ListBox();
@@ -37,6 +38,8 @@
             this.btnUres = new System.Windows.Forms.Button();
             this.kimentBtn = new System.Windows.Forms.Button();
             this.betoltBtn = new System.Windows.Forms.Button();
+            this.btnNyil3 = new System.Windows.Forms.Button();
+            this.turnTimer = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // label1
@@ -68,6 +71,7 @@
             // 
             // btnOpen
             // 
+            this.btnOpen.Font = new System.Drawing.Font("Consolas", 10F);
             this.btnOpen.Location = new System.Drawing.Point(16, 145);
             this.btnOpen.Name = "btnOpen";
             this.btnOpen.Size = new System.Drawing.Size(181, 82);
@@ -78,6 +82,7 @@
             // 
             // btnFelmeres
             // 
+            this.btnFelmeres.Font = new System.Drawing.Font("Consolas", 10F);
             this.btnFelmeres.Location = new System.Drawing.Point(220, 145);
             this.btnFelmeres.Name = "btnFelmeres";
             this.btnFelmeres.Size = new System.Drawing.Size(178, 82);
@@ -88,6 +93,7 @@
             // 
             // btnKek
             // 
+            this.btnKek.Font = new System.Drawing.Font("Consolas", 10F);
             this.btnKek.Location = new System.Drawing.Point(16, 244);
             this.btnKek.Name = "btnKek";
             this.btnKek.Size = new System.Drawing.Size(181, 63);
@@ -98,6 +104,7 @@
             // 
             // btnUres
             // 
+            this.btnUres.Font = new System.Drawing.Font("Consolas", 10F);
             this.btnUres.Location = new System.Drawing.Point(220, 244);
             this.btnUres.Name = "btnUres";
             this.btnUres.Size = new System.Drawing.Size(181, 63);
@@ -108,6 +115,7 @@
             // 
             // kimentBtn
             // 
+            this.kimentBtn.Font = new System.Drawing.Font("Consolas", 10F);
             this.kimentBtn.Location = new System.Drawing.Point(16, 331);
             this.kimentBtn.Name = "kimentBtn";
             this.kimentBtn.Size = new System.Drawing.Size(84, 41);
@@ -118,6 +126,7 @@
             // 
             // betoltBtn
             // 
+            this.betoltBtn.Font = new System.Drawing.Font("Consolas", 10F);
             this.betoltBtn.Location = new System.Drawing.Point(220, 331);
             this.betoltBtn.Name = "betoltBtn";
             this.betoltBtn.Size = new System.Drawing.Size(84, 41);
@@ -125,6 +134,21 @@
             this.betoltBtn.Text = "Betölt";
             this.betoltBtn.UseVisualStyleBackColor = true;
             this.betoltBtn.Click += new System.EventHandler(this.betoltBtn_Click);
+            // 
+            // btnNyil3
+            // 
+            this.btnNyil3.Font = new System.Drawing.Font("Consolas", 10F);
+            this.btnNyil3.Location = new System.Drawing.Point(416, 244);
+            this.btnNyil3.Name = "btnNyil3";
+            this.btnNyil3.Size = new System.Drawing.Size(181, 63);
+            this.btnNyil3.TabIndex = 5;
+            this.btnNyil3.Text = "Kék nyíl 3x";
+            this.btnNyil3.UseVisualStyleBackColor = true;
+            this.btnNyil3.Click += new System.EventHandler(this.btnNyil3_Click);
+            // 
+            // turnTimer
+            // 
+            this.turnTimer.Tick += new System.EventHandler(this.turnTimer_Tick);
             // 
             // HelperForm
             // 
@@ -134,6 +158,7 @@
             this.Controls.Add(this.betoltBtn);
             this.Controls.Add(this.kimentBtn);
             this.Controls.Add(this.btnUres);
+            this.Controls.Add(this.btnNyil3);
             this.Controls.Add(this.btnKek);
             this.Controls.Add(this.btnFelmeres);
             this.Controls.Add(this.btnOpen);
@@ -159,6 +184,8 @@
         private System.Windows.Forms.Button btnUres;
         private System.Windows.Forms.Button kimentBtn;
         private System.Windows.Forms.Button betoltBtn;
+        private System.Windows.Forms.Button btnNyil3;
+        private System.Windows.Forms.Timer turnTimer;
     }
 }
 
