@@ -153,7 +153,9 @@ namespace SLHelperTestForm
         private byte i = 0;
         private void btnNyil3_Click(object sender, EventArgs e)
         {
-            turnTimer.Enabled = true;
+            //a felhasználó azt tapasztalja, hogy a kattintásra kék 2 mp-ig, lekapcsol, újból kék 2 mp-ig, majd ismét lekapcsol
+            turnTimer.Interval = 1; //a kattintáskor állítsa be a legelső intervallumot 1-re (tehát szinte a kattintás pillanta azonnal aktiválja a Tick-et)
+            turnTimer.Enabled = true; //indul a stopwatch, ha letelik x idő (timer.Interval), akkor a Tick
             btnNyil3.Enabled = false;
             if (Devices[0] == null)
             {
@@ -166,42 +168,49 @@ namespace SLHelperTestForm
             }
         }
 
-        private void turnTimer_Tick(object sender, EventArgs e)
+        /// <summary>
+        /// timer.Enabled = true elindít egy Stopwatch-mérést, majd amikor a timer.Interval lejár, a Tick-event kódja lefut.<br></br>
+        /// Például ha a timer.Interval = 1000, akkor másodpercenként (1000 millisec időközönként) meghívódik a Tick-event kódja, tehát az alábbi függvény.<br></br>
+        /// timer.Enabled = false kikapcsolja a Tick-ek vizsgálatát
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void turnTimer_Tick(object sender, EventArgs e) 
         {
-            if (i == 4)
+            if (i == 4) //vége a tickelésnek, 3 tick már lezajlott, negyedikre nincs szükségünk
             {
+                //állítson vissza mindent eredeti, kezdeti állapotba
                 i = 0;
+                ledUP = true;
                 turnTimer.Enabled = false;
                 btnNyil3.Enabled = true;
                 return;
             }
             turnTimer.Interval = ticks[i]; //tickenként változzon az ütem hossza
             LEDArrow arrow = (LEDArrow)Devices[0];
-            if (ledUP)
+            if (ledUP) //ha ledUP értéke igaz, akkor villanjon fel a nyíl balra kék színnel
             {
                 arrow.Color = Color.Blue;
                 arrow.Direction = Direction.LEFT;
                 Console.WriteLine("tik");
             }
-            else
+            else //ha ledUP értéke hamis, akkor "kapcsolja ki" a nyilat (küldjön fekete színt mindkét irányba)
             {
                 arrow.Color = Color.Black;
                 arrow.Direction = Direction.BOTH;
                 Console.WriteLine("tok");
             }
             string json_source = DevicesToJSON();
-            Console.WriteLine(json_source);
             try
             {
                 CallSetTurnForEachDevice(ref json_source);
-                Console.WriteLine("Ütemek kiküldve!");
             }
             catch (Exception exc)
             {
                 MessageBox.Show(exc.Message);
             }
-            ledUP = !ledUP;
-            i++;
+            ledUP = !ledUP; //negálja a változót, fordítsa ellentettjére, így váltakozva fog fel-le kapcsolni a nyíl
+            i++; //növelje a "ciklusváltozót", amikor eléri a 4-et, akkor vége a tickelésnek
         }
     }
 }
