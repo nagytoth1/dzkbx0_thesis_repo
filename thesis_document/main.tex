@@ -485,20 +485,43 @@
 	sikeres volt. Ha nem NO\_ERROR (0) az érték a kód tájékoztat a sikertelenség    
 	okáról. A lehetséges értékek az adott hívás leírásában ismertetésre kerülnek.  
 	
-	A program azzal nyit, hogy felméri az USB-porton csatlakoztatott, egymással RJ11-csatlakozókkal sorba kötött eszközöket, őket a típusának megfelelő azonosítóval látja el. Az azonosító meghatározza, hogy egy eszköz milyen típusú. 
+	A program azzal nyit, hogy felméri az USB-porton csatlakoztatott, egymással telefonkábellel sorba kötött eszközöket, őket a típusának megfelelő azonosítóval látja el. A telefonkábel egy sajátos változatát használtuk, mivel a 4 érből pusztán a középső kettőt vettük igénybe, a két szélső eret ki kellett iktatnunk annak érdekében, hogy azok a soros kommunikációt ne zavarják. Az eszközök az RJ11 szabvány csatlakozók 4 pines változatával az erre szolgáló portokon keresztül lettek egymáshoz kapcsolva. Az azonosító meghatározza, hogy egy eszköz milyen típusú. 
 	
-	\subsection{DLL megnyitása}
-	A program indulásakor elsőként lefutó \verb*|SLDLL_Open|-függvényt meghívásával elkezdhetjük az SLDLL további metódusainak használatát. Ezt érdemes automatikusan lefuttatni, ennek kezelését nem a felhasználóra bízni, mivel egyrészt elfelejtheti, másrészt felesleges, hogy a felhasználó tudjon a kötelező metódushívási sorrendről. 
-	\subsection{SLDLL\_Listelem}
-	Ez a függvény felelős a dev485 tömb és drb485 beállításáért
-	\subsection{Eszközök felmérése}
-	A \verb*|SLDLL_Felmeres| folyamán az elérhető, tehát csatlakoztatott eszközök felmérése elindul. Elméletem szerint ez következett volna az \verb*|SLDLL_Open| meghívása után közvetlenül, de kiderült, hogy az \verb*|SLDLL_Listelem| előbb  A függvény nem vár paramétert, visszatérési értéke egész szám, amely a lefutás sikerességéről tájékoztat:
+	\subsection{Open -- DLL megnyitása}
+	A program indulásakor legelőször lefutó \verb*|SLDLL_Open|-függvényt meghívva elkezdhetjük az SLDLL további metódusainak használatát. A hívást érdemes kódból elvégezni, ennek kezelését nem kell a felhasználóra bíznunk, mivel egyrészt elfelejtheti, másrészt felesleges, hogy a felhasználó tudjon a kötelező metódushívási sorrend betartásáról. 
+	
+	A függvény továbbá elvégzi a Form felcsatlakoztatását a Win32 üzenetküldési láncra a paraméterben kapott Handle memóriacíme alapján, innentől a DLL üzenetküldésre is alkalmas az asztali alkalmazásunk részére. Tervben volt részünkről egy Delphiben írt konzolos alkalmazás elkészítése is, amely a .NET-ben készült grafikus felületünkkel kommunikált volna. Ebben az esetben kizárólag az asztali alkalmazás Handle-paraméterét tudtuk volna átadni, tehát akkor is a C\# üzeneteket feldolgozó függvényével (\verb*|WndProc| -- bővebben a metódus működéséről: \ref{wndproc}) lenne dolgunk.
+	\subsection{Listelem -- A tömb beállítása}
+	Ez a függvény felelős a dev485 tömb beállításáért. Mivel itt találkozunk először a dev485-tömbbel, ezért itt fejtem ki, hogy mi a tömb funkciója. Ez a tömb úgynevezett \verb*|DEVSEL| típusú elemeket vár, ez a felmért eszközeink adatait tartalmazó struktúra. A \verb*|DEVSEL| leírja egy eszköz: \begin{itemize}
+		\item azonosítóját: ez az eszköz legfontosabb attribútuma a vezérlés szempontjából, az azonosítón keresztül állíthatjuk be, és küldhetünk ki jelet egy bizonyos eszköz számára, amelyet vezérelni szeretnénk.
+		\item verzióleíróját: ez egy \verb*|VERTAR| típusú objektum, amely leírja az eszközön futó vezérlőszoftver verzióját, a fejlesztés dátumát 1.00 17/11/28 formátumban.
+		\item forgalmazóját: Ez számunkra egy konstans szövegérték (''Somodi László'') lesz.
+		\item gyártóját: Szintén egy konstans szövegérték (''Pluszs Kft.'') lesz.
+	\end{itemize}
+	Optimalizációs szempontból az utóbbi két  -- ha a verziószám minden eszköznél egyezik, akkor három -- attribútumot véleményem szerint nem is érdemes \verb*|DEVSEL|-példányonként letárolni, elegendő lenne pusztán azokat, amelyek eszközönként változó értékek. Az eszközök azonosítóinak ismeretével az eszközöket vezérelni tudjuk. Az \verb*|SLDLL_Listelem| függvény ezen adatok feltöltését végzi el számunkra.	Ennek a függvénynek mindenképpen később, az \verb*|SLDLL_Open| után kell lefutnia, különben működése hibakódot eredményez.
+	\subsection{Felmeres -- Eszközök felmérése}
+	A hívási sorrend (szekvencia) következő lépése az \verb*|SLDLL_Felmeres|-függvény meghívása, amely az USB-porton észlelt eszköz(ök) felmérését indítja el. A nyomtatókábel USB-B vége a számítógép bármely -- szintén -- USB-B portjára csatlakoztatható. Kifejezetten előnyös tulajdonsága a metódusnak, hogy képes eldönteni, pontosan melyik porton történt meg a csatlakoztatás, így nem kell egy-egy kijelölt portot megjelölni, amelyen kizárólag ezen eszközök detektálásával foglalkozik a program. Érdekes kérdés, hogy mi történne, ha több porton csatlakoztatnánk a nyomtatókábelt további eszközök bekapcsolásával. %todo: megvizsgálni
+	Elméletem szerint ezen függvény meghívása következett volna az \verb*|SLDLL_Open|-t követően, viszont az \verb*|SLDLL_Listelem| a gyakorlatban ezt megelőzi, mivel a vezérlés már a \verb*|WndProc|-függvényben erre kerül.  A függvény nem vár paramétert, visszatérési értéke egész szám, amely a lefutás sikerességéről tájékoztat, ezek a következők:
 	\begin{itemize}
 		\item \verb*|NO_ERROR|: Nem történt hiba
 		\item \verb*|ERROR_DLL_INIT_FAILED|: Az SLDLL\_Open még nem lett meghívva
 		\item egyéb - Windows műveleti hibakódok
 	\end{itemize}
-	\subsection{title}
+	\subsection{SetLista - Az eszközbeállítások végrehajtása}
+	Amennyiben a dev485 tömb elemeit hozzárendeljük egy másik, \verb*|LISELE|-típusú elemeket tartalmazó tömbhöz. A \verb*|LISELE|-struktúrában a következő attribútumok kerülnek tárolásra: 
+	\begin{enumerate}
+		\item Az eszköz lámpa vagy nyíl típusú:
+			\begin{itemize}
+				\item vilrgb: Az eszköz milyen színnel világítson?
+				\item nilmeg: Az eszköz milyen irányban világítson? - Háromféle értéket vehet fel: 0 -- Balra, 1 -- Jobbra, 2 -- Mindkét irányban. Amennyiben lámpáról van szó, ez az érték konstans 2 lesz.
+			\end{itemize}
+		\item Az eszköz hangszóró típusú:
+			\begin{itemize}
+				\item handrb: Hány hangot szeretnénk lejátszani a hangszóró segítségével.
+				\item hantbp: A hangbeállítások tömbjének mutatója. Egy lejátszható hangot leír a hangerő, a hang hossza, valamint a hanglistából kiválasztott elem indexe. \ref{hangszoro}
+			\end{itemize}
+	\end{enumerate}
+	Az eszköz azonosítójának ismeretével kiszámítható annak típusa, így ez származtatható attribútumnak\footnote{Származtatható attribútumnak számít adatbázisok esetében például egy személy életkora, amennyiben a születésének dátuma (év, hónap és nap) eltárolásra kerül. Ha egy adat egy vagy több másikból egyenesen következik, tehát kiszámítható, abban az esetben azt az adatot felesleges letárolni.} számít.
 	\section{Az általam készített DLL-függvények bemutatása}
 	\subsection{Hibakódok}
 	Az alábbi táblázatban látható hibakódokat C\#-ban a következő megfelelő, egyénileg definiált kivételekkel, és sokkal kifejezőbb üzenetekkel váltom fel:
@@ -532,14 +555,14 @@
 	\begin{enumerate}
 		\item Az operációs rendszer ráteszi a \verb*|WM_LBUTTONDOWN|-üzenetet az üzenetsorra.
 		\item A programunk meghívja a \verb*|GetMessage|-függvényt.
-		\item A \verb*|GetMessage| leveszi a \verb*|WM_LBUTTONDOWN|-üzenetet az üzenetsorról, és az érkező információkból feltölti a Message-adatszerkezetet.
-		\item A programunk meghívja a \verb*|TranslateMessage|- és \verb*|DispatchMessage|-függvényeket, utóbbiban az operációs rendszer meghívja az asztali alkalmazás WndProc-függvényét Ez minden esetben lezajlik, attól függetlenül, hogy az ki van-e fejtve vagy sem.
+		\item A \verb*|GetMessage| leveszi a \verb*|WM_LBUTTONDOWN|-üzenetet az üzenetsorról, és az érkező információkból feltölti a \verb*|Message|-adatszerkezetet.
+		\item A programunk meghívja a \verb*|TranslateMessage|- és \verb*|DispatchMessage|-függvényeket, utóbbiban az operációs rendszer meghívja az asztali alkalmazás \verb*|WndProc| függvényét. Ez minden esetben lezajlik, attól függetlenül, hogy a függvény ki van fejtve vagy sem.
 		\item Az ablakos alkalmazásban válaszolunk az I/O-kérésre (például egy gombra kattintva újabb ablakot nyitunk meg) vagy éppen figyelmen kívül is hagyhatjuk, ekkor a felhasználó belátja, hogy lényegében nem is történt semmi.
 	\end{enumerate}
 
 	Már az is Win32-üzenetet vált ki, ha szimplán mozgatjuk az egerünket, ekkor az egér új pozíciója is az üzenetben tárolásra kerül, innen és a Form előre meghatározott tulajdonságaiból (ablak pozíciója, szélessége és magassága) tudjuk detektálni például, hogy az egér az ablak területére érkezett\footnote{Erre vonatkozó esemény a MouseEnter-event Windows Forms esetében.}.
 
-	Ha erre a felhasználói bemenetre fel van készítve a programunk által üzenetküldésre használt metódus\footnote{Egy-egy Win32-üzenet feldolgozását Windows Form asztali alkalmazás esetében a WndProc-metódus szolgálja.}, akkor az érzékeli, hogy erre az eseményre reagálnia kell, így egy másik állapotba lép. Természetesen a készített programban lehetőségünk van arra is, hogy egyszerűen ignoráljuk az operációs rendszer felől érkező üzeneteket.
+	Ha erre a felhasználói bemenetre fel van készítve a programunk által üzenetküldésre használt metódus\footnote{Egy-egy Win32-üzenet feldolgozását Windows Form asztali alkalmazás esetében a \verb*|WndProc|-metódus szolgálja.}, akkor az érzékeli, hogy erre az eseményre reagálnia kell, így egy másik állapotba lép. Természetesen a készített programban lehetőségünk van arra is, hogy egyszerűen ignoráljuk az operációs rendszer felől érkező üzeneteket.
 	
 	A felhasználó ebből az egész folyamatból csak annyit érzékelhet, hogy a lenyomott gomb hatására valami esemény történt a programban, így ő azt gondolhatja, hogy közvetlenül a program érzékelte az interakciót. Lényegében ez is történik, csak az operációs rendszer végzi az I/O-eszközökről érkező jelek feldolgozását, és erről egy Win32-üzenet formájában tájékoztatja az éppen futó asztali alkalmazást is.
 	\section{Problémák és megoldások}
@@ -612,6 +635,7 @@
 	\subsection{uzfeld-metódus megfelelője C\#-ban}
 	\subsubsection{A probléma leírása:} Delphiben az ablakos alkalmazásnak volt egy úgynevezett \verb*|uzfeld| nevezetű metódusa, amely a DLL üzeneteinek kezelésére szolgált, ez hívódik meg az \verb*|SLDLL_Open| meghívása után\footnote{Ez a tény, hogy a Listelem-függvény tulajdonképpen a Felmeres előtt kell, hogy meghívódjon, a Delphi7-es fejlesztői környezetének debug és breakpoint funkcióinak segítségével derült ki. Ennek használatával sorról sorra tudtam követni a program végrehajtását.} (ezért került átadásra a formot azonosító Handle). Ez azért fontos, mert az \verb*|SLDLL_Listelem|-függvény ezen az uzfeld-metóduson keresztül kerül meghívásra, a drb485 és a dev485 a program ezen pontján kapnak ténylegesen értelmezhető értékeket.
 	\subsubsection{Megoldás:}
+	\label{wndproc}
 	Elméletem szerint létezik ennek egy szabványos megfelelője, C\#-ban ez \verb*|WndProc|-metódus, ami szintén Message-típusú változót vár referencia szerint átadva, ezzel tud az SLDLL futásidőben kommunikálni.
 	Innentől kezdve a következő lépések játszódnak le:
 	\begin{enumerate}
@@ -634,7 +658,19 @@
 	Szigorúan hexadecimálisan nézve: ha egy szám négyjegyű és C-számjeggyel kezdődik, akkor az azonosító hangszórót fog jelölni.
 
 	Ez az eljárás a gRPC megoldására hasonlít, amelyet a  \ref{grpc} alfejezetben ki is fejtettem, a C\# és a Delphi között akár az XML, akár a JSON közös nyelvként (hídként) funkcionál.
-
+	\subsection{Több csatlakoztatott eszköz felismerése, vezérlése}
+	\subsubsection{A probléma leírása:}
+	Az a probléma, hogy a rajzon látható módon kötöttük be az eszközöket, és háromból 2 eszközt érzékelt a dev485 tömbben, valamint csak 1, az USB portra közvetlenül csatlakozó (legelső) elemnek küldte ki a jeleket, a többi egyszerűen ,,elnyelődött''.
+	
+	Amikor 2 eszközt, egy lámpát és egy nyilat csatlakoztattam, akkor egyrészt a telefonkábel folyamatosan, érezhetően melegedett, másrészt 
+	\renewcommand{\labelenumi}{\alph{enumi})}
+	\begin{enumerate}
+		\item vagy állandóan piros színnel világított, 
+		\item vagy piros - zöld - kék jelzéseket követően kikapcsolt
+	\end{enumerate}
+	Az első esetben szimplán nem érzékelte az USB-porton lévő eszközöket (1626-os hiba), mígy az utóbbi esetben az alábbi hibakódot dobja az eszközök felméréskor.
+	\subsubsection{Megoldás:} Az általunk használt telefonkábel rosszul volt bekötve, a kábel két végén a középső erek bekötése egymással ellentétes volt.
+	
 	\begin{figure}[h!]
 		\centering
 		\includegraphics[scale=0.7]{frequencies}
@@ -660,7 +696,6 @@
 	\section{A hangszóró egy egész hanglistát kezel - kód}
 	\subsection{Megoldás}
 	A Speaker-osztályban az eszköz viselkedését leíró 3 mezőt (index, volume és length) egy külön objektumba szervezzük ki (Sound), és a Speaker -- azonosítóján kívül -- kizárólag Sound-típusú objektumok listáját tartalmazza, a listát JSON-ben \textit{"index|volume|length"} rendezett hármasok összefűzésével szerializálja, a listához kizárólag listakezelő függvényekkel lehet hozzáférni (törlés, módosítás, hozzáadás), majd az \verb*|SLDLL_Hangkuldes| számára kiküldött H-tömböt (hanglistát) Delphiben egy ciklussal a JSON-nel átadott adatok szerint a megfelelő sorrendben feltöltjük, az előző probléma megoldásában ennek mikéntjét kifejtettem.
-	%todo: ennek megoldása C#-ban
 	\begin{figure}[h!]
 		\centering
 		\includegraphics[scale=0.7]{speaker_csharp}
