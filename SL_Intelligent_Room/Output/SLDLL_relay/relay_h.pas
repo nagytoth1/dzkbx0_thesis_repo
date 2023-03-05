@@ -27,6 +27,7 @@ var
   dev485:DEVLIS;
   devList: LISTBL;
   H: HANGLA;
+  devListSet: boolean;
 
 //exported, public methods, these can be called from C#
 // start using DLL

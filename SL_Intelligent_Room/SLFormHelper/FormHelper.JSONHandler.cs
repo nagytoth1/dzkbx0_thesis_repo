@@ -108,6 +108,8 @@ namespace SLFormHelper
         /// <returns>Az eszközlista JSON-reprezentációja.</returns>
         public static string DevicesToJSON()
         {
+            if (devices.Count == 0) 
+                return "[]";
             StringBuilder sb = new StringBuilder("[");
             int i;
             for (i = 0; i < devices.Count - 1; i++)

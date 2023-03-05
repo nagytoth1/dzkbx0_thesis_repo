@@ -58,6 +58,7 @@ end;
 function Felmeres(): word; stdcall;
 begin
   result := SLDLL_Felmeres();
+  devListSet := false;
   writeln(Format('Felmeres eredmenye %d &dev485 = %p &dev485[0] = %p', [result, @dev485, @dev485[0]]));
 end;
 
@@ -66,6 +67,7 @@ function Listelem(var numberOfDevices: byte): word; stdcall;
 begin
 	result := SLDLL_Listelem(@dev485);
 	drb485 := numberOfDevices;
+	devListSet := false;
 	writeln(Format('Listelem sikeres, eredmenye %d dev485 = %p &dev485[0] = %p &dev485[1] = %p', [Result, dev485, @dev485[0], @dev485[1]]));
 end;
 
@@ -87,14 +89,17 @@ begin
     	//I want the first char of string 
 		actDeviceType := extractValueFromJSONField(json_element1, 'type'); //gets the type of the device
     	actDeviceSettings := extractValueFromJSONField(json_element2, 'settings'); //for example: 255|0|0|1
-		writeln(format('linking device with ID: %d type: %s and settings: %s to devList...', [dev485[j].azonos, actDeviceType, actDeviceSettings]));
-		devList[j].azonos := dev485[j].azonos; //link dev485 to devList using identifiers
+		if devListSet = false then //devList should be linked only once with dev485 elements
+		begin
+			devList[j].azonos := dev485[j].azonos; //link dev485 to devList using identifiers	
+		end;
 		result := setDeviceByType(j, actDeviceType, actDeviceSettings); //SEHException
 		//TODO: is there no such result that leads to end the loop?
 		printErrors(result);
 		inc(j);
 		inc(i, 2);
   end; //case
+  devListSet := true;
   result := SLDLL_SetLista(drb485, devList);
 end;
 
@@ -162,7 +167,6 @@ begin
   end;
   buffer[length(buffer)] := ']'; 
   //the comma (,) at the type of the last device is unnecessary and makes the JSON-invalid, so rather we just overwrite it with the 'end of array'-character
-  writeln('Array dev485 has been converted to JSON-string successfully!');
   showmessage(format('JSON-buffer = %s', [buffer]));
   outputStr := buffer;
   result := EXIT_SUCCESS;
@@ -196,7 +200,6 @@ begin
   for i := 0 to jsonArrayElements.Count - 1 do
   begin
     json_element := jsonArrayElements[i];
-    writeln('json_element ' + json_element);
     json_value := extractValueFromJSONField(json_element, 'azonos');
     if json_value = '' then
 		continue;
@@ -255,6 +258,7 @@ var
 	elements: TStringList;
 begin
 	elements := TStringList.Create;
+	writeln(format('setDeviceByType - actDeviceType = %s actDeviceSettings = %s', [actDeviceType, actDeviceSettings]));
 	//actDeviceSettings look like this: "255|0|0" -> split by delimiter '|' -> elements
 	split('|', actDeviceSettings, elements); 
 	result := validateExtractedDeviceValues(actDeviceType, elements);
@@ -265,7 +269,7 @@ begin
 	//result = 0 from here on...
 	if actDeviceType = 'L' then
 	begin
-		writeln(format('setting LEDLight to values red = %s green = %s blue = %s', [elements[0], elements[1], elements[2]]));
+		writeln('setDeviceByType - L');
 		setLEDDevice( 	//LEDLight
 			i,
 			strToIntDef(elements[0], 0), 	//red
@@ -275,6 +279,7 @@ begin
 	end;
 	if actDeviceType = 'N' then
 	begin
+		writeln('setDeviceByType - N');
 		setLEDDevice( 	//LEDArrow
 			i,
 			strToIntDef(elements[0], 0), 	//red
@@ -285,6 +290,7 @@ begin
 	end;
 	if actDeviceType = 'H' then
 	begin
+		writeln('setDeviceByType - H');
 		setSpeaker(i, elements); //actDeviceSettings for speakers: "settings" : "10|1|100|20|2|200"
 		exit;
 	end;
@@ -300,7 +306,7 @@ begin
 	end;
 	if elements.Count < 3 then
 	begin
-		showmessage('Eszkozbeallitasok ures vagy nem megfelelo formatumuak.');
+		showmessage('Eszkozbeallitasok uresek vagy nem megfelelo formatumuak.');
 		result := DEVSETTINGS_INVALID_FORMAT;
 		exit;
 	end;
@@ -325,12 +331,10 @@ end;
 procedure setLEDDevice(i, red, green, blue, direction:byte); overload;
 begin
 	try
-		writeln(format('LEDDevice BEFORE SET to values red = %d green = %d blue = %d direction = %d', [red, green, blue, direction]));
 		devList[i].vilrgb.rossze := red;
 		devList[i].vilrgb.gossze := green;
 		devList[i].vilrgb.bossze := blue;
 		devList[i].nilmeg := direction;
-		writeln(format('LEDDevice AFTER SET to values red = %d green = %d blue = %d direction = %d', [devList[i].vilrgb.rossze, devList[i].vilrgb.gossze, devList[i].vilrgb.bossze, devList[i].nilmeg]));
 	except
 		showmessage('LEDDevice setting failed.');
 	end;
@@ -351,7 +355,7 @@ begin
 		inc(k);
 	end;
 	try
-		//showmessage(format('%d db hang kikuldese...', [k]));
+		writeln(format('%d db hang kikuldese...', [k]));
 		SLLDLL_Hangkuldes(k, H, dev485[i].azonos);
 	except
 		showmessage('Speaker setting failed.');

@@ -84,12 +84,14 @@ namespace SLHelperTestForm
             {
                 if (d is LEDArrow arrow)
                 {
-                    arrow.Color = Color.Blue;
+                    arrow.Color = Color.Red;
                     arrow.Direction = Direction.LEFT;
+                    continue;
                 }
                 if (d is LEDLight light)
                 {
                     light.Color = Color.Blue;
+                    continue;
                 }
                 if (d is Speaker speaker)
                 {
@@ -111,10 +113,12 @@ namespace SLHelperTestForm
                 {
                     arrow.Color = Color.Black;
                     arrow.Direction = Direction.BOTH; //0|0|0|2
+                    continue;
                 }
                 if (d is LEDLight light)
                 {
                     light.Color = Color.Black; //0|0|0
+                    continue;
                 }
                 if (d is Speaker speaker)
                 {

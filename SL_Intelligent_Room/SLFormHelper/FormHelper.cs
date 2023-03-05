@@ -116,8 +116,10 @@ namespace SLFormHelper
             if (result == (ushort) Win32Error.ERROR_SUCCESS) 
                 return;
             if (result == (ushort) Win32Error.ERROR_DLL_INIT_FAILED) 
-                throw new SLDLLException("Hiba kiküldés közben: SLDLL_Open még nem került meghívásra.");
-            else throw new Exception("Hiba kiküldés közben: Egyéb hiba");
+                throw new SLDLLException("Hiba a beállítások kiküldése közben: SLDLL_Open még nem került meghívásra.");
+            if (result == (ushort) Win32Error.ERROR_REQ_NOT_ACCEP) 
+                throw new SLDLLException("Hiba a beállítások kiküldése közben: Jelenleg épp fut egy végrehajtás.");
+            else throw new Exception("Hiba a beállítások kiküldése közben: Egyéb hiba");
         }
         /// <summary>
         /// Ez lényegében a Delphiben található uzfeld-metódus C#-os változata
@@ -125,12 +127,12 @@ namespace SLFormHelper
         /// </summary>
         /// <param name="msg">A feldolgozandó Win32-szabványnak megfelelő üzenet.</param>
         /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="SLDLLException"></exception>
         public static void CallWndProc(ref Message msg)
         {
             if (msg.Msg != 0x0400 || msg.WParam.ToInt32() == 0) 
                 return;
             ErrorCodes responseCode = (ErrorCodes)msg.WParam.ToInt32();
-            Console.WriteLine(string.Format($"wndproc responseCode = {responseCode}"));
             switch (responseCode)
             {
                 //-------Pozitív válaszkódok (tájékoztatások) esetei--------
@@ -158,7 +160,8 @@ namespace SLFormHelper
                 // Az USB vezérlő eltávolításra került
                 case ErrorCodes.VALTIO: break;
                 // Válaszvárás time-out következett be
-                case ErrorCodes.FELMHK: break;
+                case ErrorCodes.FELMHK:
+                    throw new SLDLLException("Az eszközök felmérése meghiúsult. Kérlek, csatlakoztasd újra az eszközeidet!");
                 // Felmérés vége hibával
                 //s := Format(ENDHIK, [Msg.LParam]);
                 case ErrorCodes.FELMHD: break;
