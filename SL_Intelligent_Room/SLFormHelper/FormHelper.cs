@@ -130,6 +130,7 @@ namespace SLFormHelper
             if (msg.Msg != 0x0400 || msg.WParam.ToInt32() == 0) 
                 return;
             ErrorCodes responseCode = (ErrorCodes)msg.WParam.ToInt32();
+            Console.WriteLine(string.Format($"wndproc responseCode = {responseCode}"));
             switch (responseCode)
             {
                 //-------Pozitív válaszkódok (tájékoztatások) esetei--------

@@ -1,6 +1,7 @@
 ﻿using SLFormHelper;
 using System;
 using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 using static SLFormHelper.FormHelper;
 
@@ -18,7 +19,6 @@ namespace SLHelperTestForm
             try
             {
                 CallOpen(this.Handle);
-                //CallFillDev485Static(true);
             }
             catch (DllNotFoundException ex)
             {
@@ -41,6 +41,32 @@ namespace SLHelperTestForm
             CallWndProc(ref msg);
             base.WndProc(ref msg);
         }
+        private static byte drb485;
+        public static byte DRB485
+        {
+            get { return drb485; }
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentException("Eszközök darabszáma nem lehet negatív!");
+                drb485 = value;
+            }
+        }
+        private enum ErrorCodes : sbyte
+        {
+            FELMOK = 1,                       // A felmérés rendben lezajlott
+            AZOOKE = 2,                       // Az azonosító váltás rendben lezajlott
+            LEDRGB = 5,                       // A LED lámpa RGB értéke
+            NYIRGB = 6,                       // A nyíl RGB és irány értéke
+            HANGEL = 7,                       // A hangstring állapota
+            STATKV = 8,                       // A státusz értéke
+            LISVAL = 9,                       // A táblázat végének a válasza 
+            USBREM = -1,                      // Az USB vezérlő eltávolításra került
+            VALTIO = -2,                      // Felmérés közben válaszvárás time-out következett be
+            FELMHK = -3,                      // Felmérés vége hibával
+            FELMHD = -4,                      // Nincs egy darab sem hibakód (elvben sem lehet ilyen)
+            FELMDE = -5                       // A 16 és 64 bites darabszám nem egyforma (elvben sem lehet ilyen)
+        }
 
         private void btnOpen_Click(object sender, EventArgs e)
         {
@@ -54,25 +80,21 @@ namespace SLHelperTestForm
         }
         private void btnKek_Click(object sender, EventArgs e)
         {
-            LEDArrow arrow; LEDLight light; Speaker speaker;
-            for (int i = 0; i < DRB485; i++)
+            foreach (Device d in Devices)
             {
-                if (Devices[i] is LEDArrow)
+                if (d is LEDArrow arrow)
                 {
-                    arrow = (LEDArrow)Devices[i];
                     arrow.Color = Color.Blue;
-                    arrow.Direction = Direction.RIGHT;
-                    continue;
+                    arrow.Direction = Direction.LEFT;
                 }
-                if (Devices[i] is LEDLight)
+                if (d is LEDLight light)
                 {
-                    light = (LEDLight)Devices[i];
                     light.Color = Color.Blue;
-                    continue;
                 }
-                speaker = (Speaker)Devices[i]; //itt baj van, mert egy hangtömböt kéne kiküldeni
-                speaker.AddSound(Pitch.G_OKTAV3, volume: 64, length: 300);
-                speaker.AddSound(Pitch.D, volume: 63, length: 11000);
+                if (d is Speaker speaker)
+                {
+                    speaker.AddSound(Pitch.C_OKTAV4, 50, 300);
+                }
             }
             string json_source = DevicesToJSON();
             Console.WriteLine(json_source);
@@ -83,23 +105,20 @@ namespace SLHelperTestForm
         {
             //amikor ki van küldve neki a jel, akkor nem lehet meghívni a felmérést újra, mert mert másik állapotban van az eszköz
             //TODO: ezt még lekezelni
-            for (int i = 0; i < DRB485; i++)
+            foreach (Device d in Devices)
             {
-                if (Devices[i] is LEDArrow arrow)
+                if (d is LEDArrow arrow)
                 {
                     arrow.Color = Color.Black;
-                    arrow.Direction = Direction.RIGHT;
-                    continue;
+                    arrow.Direction = Direction.BOTH; //0|0|0|2
                 }
-                if (Devices[i] is LEDLight light)
+                if (d is LEDLight light)
                 {
-                    light.Color = Color.Black;
-                    continue;
+                    light.Color = Color.Black; //0|0|0
                 }
-                if (Devices[i] is Speaker speaker)
+                if (d is Speaker speaker)
                 {
-                    speaker.ClearSounds();
-                    continue;
+                    speaker.ClearSounds(); //""
                 }
             }
             string json_source = DevicesToJSON();

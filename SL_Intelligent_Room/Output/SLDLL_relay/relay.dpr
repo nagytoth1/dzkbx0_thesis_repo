@@ -58,7 +58,7 @@ end;
 function Felmeres(): word; stdcall;
 begin
   result := SLDLL_Felmeres();
-  showmessage(Format('Felmeres eredmenye %d &dev485 = %p &dev485[0] = %p', [result, @dev485, @dev485[0]]));
+  writeln(Format('Felmeres eredmenye %d &dev485 = %p &dev485[0] = %p', [result, @dev485, @dev485[0]]));
 end;
 
 //sets the pointer of dev485 - called in uzfeld-method
@@ -87,9 +87,10 @@ begin
     	//I want the first char of string 
 		actDeviceType := extractValueFromJSONField(json_element1, 'type'); //gets the type of the device
     	actDeviceSettings := extractValueFromJSONField(json_element2, 'settings'); //for example: 255|0|0|1
-		devList[j].azonos := dev485[j].azonos;
+		writeln(format('linking device with ID: %d type: %s and settings: %s to devList...', [dev485[j].azonos, actDeviceType, actDeviceSettings]));
+		devList[j].azonos := dev485[j].azonos; //link dev485 to devList using identifiers
 		result := setDeviceByType(j, actDeviceType, actDeviceSettings); //SEHException
-		//TODO: is there no such result that leads to ending the loop?
+		//TODO: is there no such result that leads to end the loop?
 		printErrors(result);
 		inc(j);
 		inc(i, 2);
@@ -162,6 +163,7 @@ begin
   buffer[length(buffer)] := ']'; 
   //the comma (,) at the type of the last device is unnecessary and makes the JSON-invalid, so rather we just overwrite it with the 'end of array'-character
   writeln('Array dev485 has been converted to JSON-string successfully!');
+  showmessage(format('JSON-buffer = %s', [buffer]));
   outputStr := buffer;
   result := EXIT_SUCCESS;
 end;
@@ -273,7 +275,6 @@ begin
 	end;
 	if actDeviceType = 'N' then
 	begin
-		writeln(format('setting LEDArrow to values red = %s green = %s blue = %s direction = %s', [elements[0], elements[1], elements[2], elements[3]]));
 		setLEDDevice( 	//LEDArrow
 			i,
 			strToIntDef(elements[0], 0), 	//red
@@ -324,10 +325,12 @@ end;
 procedure setLEDDevice(i, red, green, blue, direction:byte); overload;
 begin
 	try
+		writeln(format('LEDDevice BEFORE SET to values red = %d green = %d blue = %d direction = %d', [red, green, blue, direction]));
 		devList[i].vilrgb.rossze := red;
 		devList[i].vilrgb.gossze := green;
 		devList[i].vilrgb.bossze := blue;
 		devList[i].nilmeg := direction;
+		writeln(format('LEDDevice AFTER SET to values red = %d green = %d blue = %d direction = %d', [devList[i].vilrgb.rossze, devList[i].vilrgb.gossze, devList[i].vilrgb.bossze, devList[i].nilmeg]));
 	except
 		showmessage('LEDDevice setting failed.');
 	end;
