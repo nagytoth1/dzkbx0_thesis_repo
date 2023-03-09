@@ -40,6 +40,8 @@
             this.betoltBtn = new System.Windows.Forms.Button();
             this.btnNyil3 = new System.Windows.Forms.Button();
             this.turnTimer = new System.Windows.Forms.Timer(this.components);
+            this.button2Utem = new System.Windows.Forms.Button();
+            this.turnTimerKeteszkoz = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // label1
@@ -150,6 +152,21 @@
             // 
             this.turnTimer.Tick += new System.EventHandler(this.turnTimer_Tick);
             // 
+            // button2Utem
+            // 
+            this.button2Utem.Font = new System.Drawing.Font("Consolas", 10F);
+            this.button2Utem.Location = new System.Drawing.Point(416, 320);
+            this.button2Utem.Name = "button2Utem";
+            this.button2Utem.Size = new System.Drawing.Size(181, 63);
+            this.button2Utem.TabIndex = 5;
+            this.button2Utem.Text = "2 ütem kiküldése NL";
+            this.button2Utem.UseVisualStyleBackColor = true;
+            this.button2Utem.Click += new System.EventHandler(this.button2Utem_Click);
+            // 
+            // turnTimerKeteszkoz
+            // 
+            this.turnTimerKeteszkoz.Tick += new System.EventHandler(this.turnTimerKeteszkoz_Tick);
+            // 
             // HelperForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -159,6 +176,7 @@
             this.Controls.Add(this.kimentBtn);
             this.Controls.Add(this.btnUres);
             this.Controls.Add(this.btnNyil3);
+            this.Controls.Add(this.button2Utem);
             this.Controls.Add(this.btnKek);
             this.Controls.Add(this.btnFelmeres);
             this.Controls.Add(this.btnOpen);
@@ -186,6 +204,8 @@
         private System.Windows.Forms.Button betoltBtn;
         private System.Windows.Forms.Button btnNyil3;
         private System.Windows.Forms.Timer turnTimer;
+        private System.Windows.Forms.Button button2Utem;
+        private System.Windows.Forms.Timer turnTimerKeteszkoz;
     }
 }
 

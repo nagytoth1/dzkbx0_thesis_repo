@@ -28,11 +28,13 @@ function validateExtractedDeviceValues(const actDeviceType:string; const element
 //decides which type the given device belongs to (LED-arrow, LED-light or Speaker) and calls the corresponding set-method
 function setDeviceByType(const i: byte; var actDeviceType: string; var actDeviceSettings: string): byte; Forward;
 //sets a device of a LED-arrow and LED-light type
-procedure setLEDDevice(i, red, green, blue, direction: byte); Forward; overload;
-procedure setLEDDevice(i, red, green, blue: byte); Forward; overload;
+procedure setLEDDevice(i, red, green, blue, direction: byte); Forward;
 //sets a device of a Speaker type
-procedure setSpeaker(i: byte; elements:TStringList); Forward;
+procedure setSpeaker(i: byte; elements:TStringList); overload; Forward;
+procedure setSpeaker(i, hangso, hanger:byte; hangho: word); overload; Forward;
 procedure printErrors(result: word); Forward;
+//gets called in setTurnForeachDevice -> turning each device OFF
+procedure SwitchEachDeviceOFF(); Forward;
 
 function fill_devices_list_with_devices(): byte; stdcall;
 begin
@@ -71,6 +73,36 @@ begin
 	writeln(Format('Listelem sikeres, eredmenye %d dev485 = %p &dev485[0] = %p &dev485[1] = %p', [Result, dev485, @dev485[0], @dev485[1]]));
 end;
 
+//iterates through the list of devices and turns them Off
+procedure SwitchEachDeviceOFF();
+var
+	deviceType, i: word;
+begin
+	showmessage(format('ennyi eszkoz van = %d', [drb485]));
+	for i := 0 to drb485 - 1 do
+	begin
+		showmessage(format('%d. eszkoz %d azonositoval kikapcsolasa...', [i, devList[i].azonos]));
+		deviceType := devList[i].azonos and $c000; //deciding which type the device is
+		if deviceType = SLLELO then //if it is LEDLight
+		begin
+			showmessage('switching off: L');
+			setLEDDevice(i, 0, 0, 0, 2);
+			continue;
+		end;
+		if deviceType = SLNELO then //if it is LEDArrow
+		begin
+			showmessage('switching off: N');
+			setLEDDevice(i, 0, 0, 0, 2);
+			continue;
+		end;
+		if deviceType = SLHELO then //if it is Speaker
+		begin
+			writeln('switching off: H');
+			setSpeaker(i, 0, 0, 0);
+		end;
+	end; //for
+end;
+
 function SetTurnForEachDeviceJSON(var json_source: WideString):word; stdcall;
 var
 	i, j: byte;
@@ -82,6 +114,12 @@ begin
 	//decode the JSON of the current turn (type + settings fields)
 	jsonArrayElements := reduceJSONSourceToElements(json_source);
 	i := 0; j := 0;
+	//when devList is connected with dev485 then this must be called
+	if(devListSet = true) then //when it is the 2nd, 3rd, ... turn
+	begin
+		//SwitchEachDeviceOFF();
+		//SLDLL_SetLista(drb485, devList);
+	end;
 	while(j < drb485) do
 	begin
 		json_element1 := jsonArrayElements[i]; //loads the actual device
@@ -91,7 +129,7 @@ begin
     	actDeviceSettings := extractValueFromJSONField(json_element2, 'settings'); //for example: 255|0|0|1
 		if devListSet = false then //devList should be linked only once with dev485 elements
 		begin
-			devList[j].azonos := dev485[j].azonos; //link dev485 to devList using identifiers	
+			devList[j].azonos := dev485[j].azonos; //link dev485 to devList using identifiers
 		end;
 		result := setDeviceByType(j, actDeviceType, actDeviceSettings); //SEHException
 		//TODO: is there no such result that leads to end the loop?
@@ -99,7 +137,7 @@ begin
 		inc(j);
 		inc(i, 2);
   end; //case
-  devListSet := true;
+  devListSet := true; //it becomes true after the first iteration (first turn)
   result := SLDLL_SetLista(drb485, devList);
 end;
 
@@ -274,7 +312,8 @@ begin
 			i,
 			strToIntDef(elements[0], 0), 	//red
 			strToIntDef(elements[1], 0), 	//green
-			strToIntDef(elements[2], 0));  	//blue
+			strToIntDef(elements[2], 0), 	//blue
+			2);  							//direction: constant 2 when it is a LEDLight device
 		exit;
 	end;
 	if actDeviceType = 'N' then
@@ -324,10 +363,6 @@ begin
 	end;
 	result := EXIT_SUCCESS;
 end;
-procedure setLEDDevice(i, red, green, blue:byte); overload;
-begin
-	setLEDDevice(i, red, green, blue, 2);
-end;
 procedure setLEDDevice(i, red, green, blue, direction:byte); overload;
 begin
 	try
@@ -339,7 +374,15 @@ begin
 		showmessage('LEDDevice setting failed.');
 	end;
 end;
-procedure setSpeaker(i: byte; elements: TStringList);
+procedure setSpeaker(i, hangso, hanger:byte; hangho: word); overload;
+begin
+	H[0].hangso := hangso;
+	H[0].hanger := hanger;
+	H[0].hangho := hangho;
+	writeln(format('setting 1 sound to index = %d volume = %d length = %d values...', [H[0].hangso, H[0].hanger, H[0].hangho]));
+	SLLDLL_Hangkuldes(1, H, dev485[i].azonos);
+end;
+procedure setSpeaker(i: byte; elements: TStringList); overload;
 var
 	j, k: byte;
 begin

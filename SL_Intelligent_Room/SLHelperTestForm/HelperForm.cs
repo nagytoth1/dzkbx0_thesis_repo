@@ -235,5 +235,62 @@ namespace SLHelperTestForm
             ledUP = !ledUP; //negálja a változót, fordítsa ellentettjére, így váltakozva fog fel-le kapcsolni a nyíl
             i++; //növelje a "ciklusváltozót", amikor eléri a 4-et, akkor vége a tickelésnek
         }
+
+        private void button2Utem_Click(object sender, EventArgs e)
+        {
+            //a felhasználó azt tapasztalja, hogy a kattintásra kék 2 mp-ig, lekapcsol, újból kék 2 mp-ig, majd ismét lekapcsol
+            turnTimerKeteszkoz.Interval = 1; //a kattintáskor állítsa be a legelső intervallumot 1-re (tehát szinte a kattintás pillanta azonnal aktiválja a Tick-et)
+            turnTimerKeteszkoz.Enabled = true; //indul a stopwatch, ha letelik x idő (timer.Interval), akkor a Tick
+            button2Utem.Enabled = false;
+            if (Devices.Count < 2)
+            {
+                MessageBox.Show("Devices tömb nem 2 eszközt tartalmaz!"); return;
+            }
+
+            if (!(Devices[0] is LEDLight))
+            {
+                MessageBox.Show("Az első eszköz nem lámpa!"); return;
+            }
+            if (!(Devices[1] is LEDArrow))
+            {
+                MessageBox.Show("A második eszköz nem nyíl!"); return;
+            }
+        }
+
+        private void turnTimerKeteszkoz_Tick(object sender, EventArgs e)
+        {
+            if (i == 2) //vége a tickelésnek, 2 tick már lezajlott, negyedikre nincs szükségünk
+            {
+                //állítson vissza mindent eredeti, kezdeti állapotba
+                i = 0;
+                ledUP = true;
+                turnTimerKeteszkoz.Enabled = false;
+                button2Utem.Enabled = true;
+                return;
+            }
+            turnTimerKeteszkoz.Interval = ticks[i]; //tickenként változzon az ütem hossza
+            LEDLight light = (LEDLight)Devices[0];
+            if (ledUP) //ha ledUP értéke igaz, akkor villanjon fel a nyíl balra kék színnel
+            {
+                light.Color = Color.Blue;
+                Console.WriteLine("tik");
+            }
+            else //ha ledUP értéke hamis, akkor "kapcsolja ki" a nyilat (küldjön fekete színt mindkét irányba)
+            {
+                light.Color = Color.Black;
+                Console.WriteLine("tok");
+            }
+            string json_source = DevicesToJSON();
+            try
+            {
+                CallSetTurnForEachDevice(ref json_source);
+                ledUP = !ledUP; //negálja a változót, fordítsa ellentettjére, így váltakozva fog fel-le kapcsolni a nyíl
+                i++; //növelje a "ciklusváltozót", amikor eléri a 4-et, akkor vége a tickelésnek
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(exc.Message);
+            }
+        }
     }
 }
