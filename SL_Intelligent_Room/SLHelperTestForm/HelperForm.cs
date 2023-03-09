@@ -172,7 +172,7 @@ namespace SLHelperTestForm
             }
         }
         private bool ledUP = true;
-        private ushort[] ticks = { 2000, 1000, 2000, 1000};
+        private ushort[] ticks = { 2000, 1000, 2000, 1000, 2000, 1000};
         private byte i = 0;
         private void btnNyil3_Click(object sender, EventArgs e)
         {
@@ -259,7 +259,7 @@ namespace SLHelperTestForm
 
         private void turnTimerKeteszkoz_Tick(object sender, EventArgs e)
         {
-            if (i == 2) //vége a tickelésnek, 2 tick már lezajlott, negyedikre nincs szükségünk
+            if (i == 6) //vége a tickelésnek, 2 tick már lezajlott, negyedikre nincs szükségünk
             {
                 //állítson vissza mindent eredeti, kezdeti állapotba
                 i = 0;
@@ -270,15 +270,18 @@ namespace SLHelperTestForm
             }
             turnTimerKeteszkoz.Interval = ticks[i]; //tickenként változzon az ütem hossza
             LEDLight light = (LEDLight)Devices[0];
-            if (ledUP) //ha ledUP értéke igaz, akkor villanjon fel a nyíl balra kék színnel
+            LEDArrow arrow = (LEDArrow)Devices[1];
+            if (ledUP)
             {
-                light.Color = Color.Blue;
-                Console.WriteLine("tik");
+                light.Color = Color.Blue; //felvillan kéken
+                arrow.Color = Color.Green;
+                arrow.Direction = Direction.RIGHT; //jobbra nyíl
             }
-            else //ha ledUP értéke hamis, akkor "kapcsolja ki" a nyilat (küldjön fekete színt mindkét irányba)
+            else
             {
-                light.Color = Color.Black;
-                Console.WriteLine("tok");
+                light.Color = Color.Red; //lekapcsol
+                arrow.Color = Color.Black;
+                arrow.Direction = Direction.BOTH;
             }
             string json_source = DevicesToJSON();
             try

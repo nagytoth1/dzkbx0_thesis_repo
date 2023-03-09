@@ -114,12 +114,14 @@ begin
 	//decode the JSON of the current turn (type + settings fields)
 	jsonArrayElements := reduceJSONSourceToElements(json_source);
 	i := 0; j := 0;
+	
 	//when devList is connected with dev485 then this must be called
 	if(devListSet = true) then //when it is the 2nd, 3rd, ... turn
 	begin
 		//SwitchEachDeviceOFF();
 		//SLDLL_SetLista(drb485, devList);
 	end;
+	
 	while(j < drb485) do
 	begin
 		json_element1 := jsonArrayElements[i]; //loads the actual device
