@@ -702,6 +702,7 @@
 		\caption{Megoldás a problémára - RelayDLL}
 		\label{speaker_solved}
 	\end{figure}
+<<<<<<< HEAD
 
 	\begin{figure}[h!]
 	\centering
@@ -712,6 +713,10 @@
 	\end{figure}
 
 	\subsubsection{Megoldás - kódban}
+=======
+	\section{A hangszóró egy egész hanglistát kezel - kód}
+	\subsection{Megoldás}
+>>>>>>> parent of e024f0e... Thesis: refactoring
 	A Speaker-osztályban az eszköz viselkedését leíró 3 mezőt (index, volume és length) egy külön objektumba szervezzük ki (Sound), és a Speaker -- azonosítóján kívül -- kizárólag Sound-típusú objektumok listáját tartalmazza, a listát JSON-ben \textit{"index|volume|length"} rendezett hármasok összefűzésével szerializálja, a listához kizárólag listakezelő függvényekkel lehet hozzáférni (törlés, módosítás, hozzáadás), majd az \verb*|SLDLL_Hangkuldes| számára kiküldött H-tömböt (hanglistát) Delphiben egy ciklussal a JSON-nel átadott adatok szerint a megfelelő sorrendben feltöltjük, az előző probléma megoldásában ennek mikéntjét kifejtettem.
 	\begin{figure}[h!]
 		\centering
