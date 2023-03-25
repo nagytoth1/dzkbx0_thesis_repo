@@ -4,7 +4,7 @@
 \usepackage[magyar]{babel}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage{mathtools,amssymb,amsthm,pdfpages, subcaption, comment, enumitem, booktabs, graphicx, fancyvrb}
+\usepackage{mathtools,amssymb,amsthm,pdfpages, subcaption, comment, enumitem, booktabs, graphicx, fancyvrb, algorithm, algpseudocode}
 \footnotestyle{rule=fourth}
 \captionsetup[subfigure]{labelformat=empty} % subcaptionre ne tegyen számozást
 \graphicspath{{./images/}} % képeket innen importálom be
@@ -344,6 +344,7 @@
 	Szintaktikailag\footnote{\textbf{Szintaxis :} A szavak és mondatok helyességét vizsgáló tudományág. Programozásban az elgépelt kulcsszavak, azonosítók, az idézőjelek és zárójelek helytelen használata, és így tovább. A Chomsky 2-es típusú (kontextustól független) nyelvtanok leírják a legtöbb programozási nyelv szintaxisát.} ugyan helyes parancsot adott ki a felhasználó -- azaz az általa futtatott kliensprogram --, de már a parancs meghívása ebben a kontextusban (ebben a párhuzamban kontextusnak számíthatjuk a sessiont)\footnote{Egy többfelhasználós rendszerben munkamenetnek (session) nevezzük azt az időszakot, ami eltelik a felhasználó be- és kijelentkeztetése között, ekkor az szabadon végezheti a dolgát, nem kell minden egyes funkció használatához bejelentkeznie.} már egyszer megtörtént, így a megkapott hibaüzenetben tulajdonképpen egy \textit{szemantikai hibáról}\footnote{\textbf{Szemantika (jelentéstan)}: A mondatok jelentésének vizsgálata egy kontextuson belül. A programozási nyelvek terén ez azt jelenti, hogy kifejezéseket vizsgálhatunk, hogy annak az van-e értelme az adott kontextuson belül. Például amikor egy 'i' nevű változónak növeljük az értékét (\textit{i = i + 1} vagy \textit{i++}), viszont 'i' korábban nem volt definiálva, akkor \textit{szemantikai hibáról} beszélünk. A Chomsky 1-es típusú (kontextusfüggő) nyelvtanok képesek leírni a legtöbb programozási nyelv szemantikáját.} kap tájékoztatást a felhasználó. \cite{formnyelvek}
 	
 	\section{RESTful alkalmazások}
+	\label{rest}
 	A szerver-kliens-architektúrák megvalósításának egyik legnépszerűbb módja egy RESTful alkalmazás készítése. A szerver különféle erőforrásai (adatbázisban lévő táblák, az ezeket módosító függvények) különböző Unified Resource Identifiers (URI) címeken keresztül érhetőek el. A kliensnek elegendő ezen URI-címek valamelyikét meghívni, a hívással egy kérést intéz a szerver felé, majd az valamilyen szabványos szöveges formátummal -- ilyen például a JSON is -- képes visszaküldeni a kérés eredményét a kliensprogram számára.
 	
 	\section{Google RPC és a Proto-nyelv}
@@ -597,8 +598,8 @@
 	\section{Problémák és megoldások}
 	Ebben az alfejezetben a következő, munkánkat időnként meg-megakasztó, kutatómunkát igénylő tényezőkről kívánok szót ejteni.
 	\subsection{Egyénileg definiált típusok és struktúrák}
-	A Delphis projekt erősen függ az SLDLL-ben megkívánt típusoktól, ezért a teljes kódot nem tudjuk C\#-ra átültetni.
-	\subsubsection{Megoldás} 
+	\subsubsection{A probléma leírása:} A Delphis projekt erősen függ az SLDLL-ben megkívánt típusoktól, ezért a teljes kódot nem tudjuk C\#-ra átültetni.
+	\subsubsection{Megoldás:} 
 	Erre a problémára megoldást nyújthat akár a marshalling, akár a szerializáció, mi a projektben utóbbi módszert választottuk az előző problémából levont következtetés miatt: ha stringet át tudunk adni, akkor bármilyen típust képesek vagyunk leírni szöveges formában, ezt átadva újból fel tudjuk építeni a másik nyelvben. A C\#-os objektumok példányai egy erre dedikált forrásból (JSON-formátumú szövegből) fognak értékeket kapni.
 	
 	A lényege a megoldásnak, hogy szerializálással küszöböljük ki a két nyelv közötti kompatibilitási hiányosságokat, ezért csak olyan adatokkal kommunikálunk, amelyek ismertek, feldolgozhatóak mindkét nyelv számára. Ilyenek a primitívek, az egész, lebegőpontos, logikai és szöveges típusok).
@@ -609,55 +610,33 @@
 		\label{json_azonositok}
 	\end{figure}
 	\subsection{JSON-formátumra konvertáló függvények hívása .NET keretrendszerből}
+	\subsubsection{A probléma leírása:} Az SLDLL funkcióit szeretnénk kibővíteni az XML- és JSON-szerializációt végző függvényekkel egy külön állományban. Ebben a felmért eszközök tömbjének ugyanúgy elérhetőnek kell lennie (dev485).
 	\subsubsection{Megoldás:} A korábbi SLDLL-hez fűzzük őket, vagy tegyük egy új DLL-állományba őket, és ezeket is meg kell hirdetnünk a C\#-os futtatókörnyezet számára is. A választott megoldásom az új DLL-re esett, egy úgynevezett \verb*|relayDLL| nevezetű állomány forráskódját megírtam Delphiben, amelyen keresztül az SLDLL-függvényeket meg tudjuk hívni.
 	
-	Ennek legfőbb indoka az volt, ami eldöntötte, hogy érdemes a hívó (.NETben készült \verb*|FormHelperDLL|) és hívott (\verb*|SLDLL|) felek között egy köztes réteget elkészíteni, hogy Delphiben különböző globális változók kapnak értéket, amelyeket nem tudunk máshol definiálni, csakis Delphiben, tehát a hívás környezetét így tudjuk megteremteni, hogy az értékadások ténylegesen működjenek, ne fussunk \verb*|NullReferenceException|-hibákra.\\
+	Ennek legfőbb indoka az volt, ami eldöntötte, hogy érdemes a hívó (.NETben készült \verb*|FormHelperDLL|) és hívott (\verb*|SLDLL|) felek között egy köztes réteget elkészíteni, hogy Delphiben különböző globális változók kapnak értéket, amelyeket nem tudunk máshol definiálni, csakis Delphiben, tehát a hívás környezetét így tudjuk megteremteni, hogy az értékadások ténylegesen működjenek, ne fussunk \verb*|NullReferenceException|-hibákra.
 	
 	A \verb*|relayDLL| használatával ellenőrzöttebb módon tudom meghívni az \verb*|SLDLL|-ben meghirdetett függvényeket, ebből nem is kell mindent meghirdetni, csak annyit, amennyit ténylegesen a vezérléshez használnunk szükséges. Ezenkívül több, általam definiált hibakódot is vissza tudok adni, amelyek kiváltó okáról C\#-ban megfelelő kivételek segítségével tájékoztatni tudjuk a felhasználókat.
 	\subsection{Az SLDLL\_Open-függvény paraméterezése}
 	\subsubsection{A probléma leírása:} Az \verb*|SLDLL_Open|-függvény várja az ablakos alkalmazástól egy úgynevezett Handle-t, amely az üzenetküldést engedélyezi az SLDLL-függvények részéről.
 	\subsubsection{Megoldás: } C\#-ban a Formnak (a függvényeket meghívó félnek) létezik egy Handle nevezetű pointere, amit átadhatunk az SLDLL-nek.
 	\subsection{Stringek átadása két nyelv között}
-	\subsubsection{A probléma leírása:} Különösen fontos, hogy Delphiből át tudjunk adni a Delphis relayDLL-ből a C\# részére stringeket, mivel ha ezt sikerül elérnénk, akkor bármit le tudunk írni stringként.
+	\subsubsection{A probléma leírása:} Különösen fontos, hogy Delphiből valamilyen formában át tudjunk adni a C\# részére szöveg típusú változókat, mivel ha ez működik, akkor lényegében segítségükkel bármilyen más típus formátuma is -- így a rekordoké is -- leírható és feldolgozható.
 	
-	Korábban szakdolgozati témánkat előkészítendő egy példaprojekt keretein belül kísérleteztem bizonyos Delphiből érkező típusok C\#-nak való átadásával. Ez természetesen kiterjedt a karakterláncokkal való kommunikációra is, mivel ha szöveget képesek vagyunk átadni, akkor lényegében segítségükkel bármilyen más típus formátuma is -- így a rekordoké is -- leírható és feldolgozható.
-	
-	Az alábbi példában vizsgáltam a referencia szerinti paraméterátadás működőképességét is, ez abban nyilvánult meg, hogy mind Delphi, mind C\# oldalon meghirdettem egy kimenő (out) paramétert, ami azt jelzi a fordító számára, hogy ez a változó az eljárás futtatásakor fog beállítódni, ennek értékét -- mivel memóriacímet adtunk át -- a függvényt hívó környezetből is el tudjuk érni. Ez különösen akkor hasznos, amikor egy függvényhívással több változó értékét is viszont szeretnénk látni.
-	
-	Alternatív megoldásként mindenképp érdemes megemlítenünk, hogy a visszatérési értékeket egyetlen, valami egységes karakterrel (például pontosvesszővel) elválasztva stringbe is fűzhetjük, vagy éppen egy rekordba csomagolhatjuk, ezekben az esetekben elérhetjük, hogy a ténylegesen egy -- összetett -- értékkel térhessen vissza.
-	
-	Kényelmesebb azonban a paraméterekben megadott referenciákba tölteni a visszatérési értékeket, amely referenciákat a hívás helyéről könnyen el tudunk érni a függvényhívás után (mivel eleve onnan kerültek átadásra)\footnote{A kimenő paraméterezés ebből a megközelítésből szintaktikai cukorkának (syntactic sugar) számíthat, mivel használata megkönnyíti a fejlesztők munkáját, nem feltétlenül szükséges.}.
-	
-	Példának okáért elkészült függvényünk a lefutás sikerességet jelző kóddal tér vissza, emellett beállít egy string változót is, amely értékét szintén szeretnénk a hívás kontextusában elérni. A következő Delphi-eljárás kínálkozott működő megoldásként:
-	\begin{figure}[h!]
-		\centering
-		\includegraphics[scale=0.9]{hibas_string_delphi}
-		\caption{Delphiben írt eljárás, amely paraméterében egy kimenő string paramétert vár.}
-		\label{hibas_string_delphi}
-	\end{figure}
-	A C\#-ban ily módon végeztem el az eljárás deklarációját, ebben a példaprogramban ez le is futott, azonban a szakdolgozati projektünkhöz ez a megoldás nem volt megfelelő.
-	\begin{figure}[h!]
-		\centering
-		\includegraphics[scale=0.75]{hibas_string_csharp}
-		\caption{Az eljárás hibás szignatúrája C\#-ban}
-		\label{hibas_string_csharp}
-	\end{figure}
-	\subsubsection{Megoldás}
+	\subsubsection{Megoldás:}
 	\begin{figure}[h!]
 		\centering
 		\includegraphics[scale=0.75]{string_delphi}
 		\caption{A függvény helyes Delphi-deklarációja}
 		\label{string_delphi}
 	\end{figure}
-	Stringek formájában alapértelmezetten a C\# marshalling komponense Delphiből \verb*|PWideChar| típusú változókat vár. Amennyiben Delphiben a metódus WideStringet kér paraméterben, akkor azt a C\#-oldali marshallerrel a \verb*|[MarshalAs(UnmanagedType.BStr)]| attribútum segítségével tudjuk közölni.
+
+	Stringek formájában alapértelmezetten a C\# marshalling komponense Delphiből \verb*|PWideChar| típusú változókat vár. Amennyiben Delphiben a metódus WideStringet kér paraméterben, akkor azt a C\#-oldali marshallerrel a \verb*|[MarshalAs(UnmanagedType.BStr)]| attribútum segítségével tudjuk közölni.\cite{sof_strhandling}
 	\begin{figure}[h!]
 		\centering
 		\includegraphics[scale=0.64]{string_csharp}
 		\caption{A függvény helyes szignatúrája C\#-ban}
 		\label{string_csharp}
 	\end{figure}
-	
-	\cite{sof_strhandling}
 	\subsection{A Delphiben eldobott kivételek nem kezelhetőek}
 	\subsubsection{A probléma leírása:} Delphiben dobott kivételeket a C\# úgy érzékeli, mint hiba a külső komponensben, a tényleges kiváltó okát nem tudjuk meg.
 	\subsubsection{Megoldás:} Hibakódokkal jelezzük a C\# felé, ha esetleg hibára futott valamelyik függvény, ebből a hibakódból a C\# tudni fogja, hogy milyen típusú kivételt dobjon az asztali alkalmazás számára, amelyek már lehetnek egyénileg elkészített Exception-objektumok.
@@ -684,33 +663,55 @@
 	\end{itemize}
 	
 	Az eszköz típusának meghatározásában nem játszik szerepet az utolsó 3 bitnégyes, tulajdonképpen a legfelső hex\footnote{4 bit azonosít egy hexadecimális számjegyet -- 0-tól F-ig terjedően --, így a bitnégyest hexnek is szokás nevezni.} azonosítja a típust.
-	Szigorúan hexadecimálisan nézve: ha egy szám négyjegyű és C-számjeggyel kezdődik, akkor az azonosító hangszórót fog jelölni.
+	Ha szigorúan hexadecimálisan nézzük, akkor például ha egy szám négyjegyű és balról tekintve a legelső számjegye C, akkor az azonosító hangszórót fog jelölni.
 	
-	Ez az eljárás a gRPC megoldására hasonlít, amelyet a  \ref{grpc} alfejezetben ki is fejtettem, a C\# és a Delphi között akár az XML, akár a JSON közös nyelvként (hídként) funkcionál.
-	\begin{figure}[h!]
-		\centering
-		\includegraphics[scale=0.7]{frequencies}
-		\caption{Hangszóróval lejátszható hangok listája}
-		\subcaption{Forrás: SLDLL-állomány és saját szerkesztés}
-		\label{fig:frequencies}
-	\end{figure}
-	\subsection{A hangszóró egy egész hanglistát kezel - JSON}
+	Mivel az azonosítóból egy számítással kikövetkeztethető eszköz típusa, ezért elegendő a C\# DLL-nek ezt az értéket átadni, amely értékből le tudja gyártani a maga példányait.
+	\begin{algorithm}
+		\caption{Eszköz típusának meghatározása}
+		\label{algo:createdevice}
+		\begin{algorithmic}[0]
+		\Function{CreateDevice}{azonos: int}
+			\State $deviceType:int\,\gets\,azonos\ \mathbin{\&}\ 0xc000$; \Comment{\&: bitenkénti AND-művelet}
+			\If{deviceType == $0x4000$}
+				\State $CreateDevice \gets new\ LEDLight(azonos)$;
+			\ElsIf{deviceType == $0x8000$}
+				\State $CreateDevice \gets new\ LEDArrow(azonos)$;
+			\ElsIf{deviceType == $0xc000$}
+				\State $CreateDevice \gets new\ Speaker(azonos)$;
+			\Else
+				\State $CreateDevice \gets null$;
+			\EndIf
+		\EndFunction
+		\end{algorithmic}
+	\end{algorithm}
+
+	A megoldás a RESTful alkalmazások működéséből inspirálódik, amelyről a(z) \ref{rest} alfejezetben ejtettem szót, a C\# és a Delphi között akár az XML, akár a JSON közös nyelvként (hídként) funkcionál. Ebben az analógiában a RelayDLL számít a szervernek, ennek függvényeit az SLFormHelper kliensként hívogatja.
+	\subsection{A hangszóró egy egész hanglistát kezel}
 	\subsubsection{A probléma leírása:} A hangszórók nem feltétlenül csak egy bizonyos hang, hanem egy egész hangsorozat lejátszására is képesek. Egy hang lejátszásához 3 értéket kell tudnunk:
 	\begin{enumerate}
 		\item index -- sorszám: Ez egy egész szám, amely egy elemre hivatkozik a frekvenciákat tartalmazó tömbből, tehát az értéke $[0;n-1]$ intervallumból kerülhet ki, ahol $n: $ a tömb hossza, esetünkben $n=50$. \ref{fig:frequencies} Ennek segítségével megadhatjuk, hogy milyen magas hangot szeretnénk a hangszóró részére lejátszásra kiküldeni.
 		\item volume -- hangerő: Ez egy egész szám, amely 0 és 63 között vehet fel értéket.
 		\item length -- időtartam: Szintén egész szám, amely 0 és 10000 között enged értéket beállítani az általam készített SLFormHelper DLL-ben. Ezzel megadhatjuk, hogy a hangszóró a lejátszáshoz mennyi időt vegyen igénybe, ez milliszekundumban, azaz ezredmásodperc egységben értendő.
 	\end{enumerate}
-	\subsubsection{Megoldás}
+	\subsubsection{Megoldás - JSON-formátumban}
 	Egy hanglistát több \textit{index|volume|length}-hármas ír le, a pipe, azaz '|'-karakter mentén széttördelt szövegen 3 lépésközzel iterálhatunk végig.
+	
 	\begin{figure}[h!]
 		\centering
 		\includegraphics{speaker_solved}
-		\caption{Megoldás a problémára}
+		\caption{Megoldás a problémára - RelayDLL}
 		\label{speaker_solved}
 	\end{figure}
-	\section{A hangszóró egy egész hanglistát kezel - kód}
-	\subsection{Megoldás}
+
+	\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{frequencies}
+	\caption{Hangszóróval lejátszható hangok listája frekvenciákra bontva}
+	\subcaption{Forrás: \\táblázat: saját szerkesztés, \\adatok: SLDLL-állomány}
+	\label{fig:frequencies}
+	\end{figure}
+
+	\subsubsection{Megoldás - kódban}
 	A Speaker-osztályban az eszköz viselkedését leíró 3 mezőt (index, volume és length) egy külön objektumba szervezzük ki (Sound), és a Speaker -- azonosítóján kívül -- kizárólag Sound-típusú objektumok listáját tartalmazza, a listát JSON-ben \textit{"index|volume|length"} rendezett hármasok összefűzésével szerializálja, a listához kizárólag listakezelő függvényekkel lehet hozzáférni (törlés, módosítás, hozzáadás), majd az \verb*|SLDLL_Hangkuldes| számára kiküldött H-tömböt (hanglistát) Delphiben egy ciklussal a JSON-nel átadott adatok szerint a megfelelő sorrendben feltöltjük, az előző probléma megoldásában ennek mikéntjét kifejtettem.
 	\begin{figure}[h!]
 		\centering
@@ -720,7 +721,13 @@
 	\end{figure}
 	\subsection{Több csatlakoztatott eszköz felismerése, vezérlése}
 	\subsubsection{A probléma leírása:}
-	Az a probléma, hogy a rajzon látható módon kötöttük be az eszközöket, és háromból 2 eszközt érzékelt a dev485 tömbben, valamint csak 1, az USB portra közvetlenül csatlakozó (legelső) elemnek küldte ki a jeleket, a többi egyszerűen ,,elnyelődött''.
+	A rajzon látható módon kötöttük be az eszközöket, és háromból 2 eszközt érzékelt a dev485 tömbben, valamint csak 1, az USB portra közvetlenül csatlakozó (legelső) elemnek küldte ki a jeleket, a többi egyszerűen ,,elnyelődött''.		\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.4]{images/kezi1.jpg}
+		\caption{Két eszköz csatlakoztatásának módja.}
+		\subcaption{Forrás: saját kézi rajzom.}
+		\label{fig:kezi1}
+	\end{figure}	
 	
 	Amikor 2 eszközt, egy lámpát és egy nyilat csatlakoztattam, akkor egyrészt a telefonkábel folyamatosan, érezhetően melegedett, másrészt 
 	\renewcommand{\labelenumi}{\alph{enumi})}
@@ -729,7 +736,10 @@
 		\item vagy piros - zöld - kék jelzéseket követően kikapcsolt
 	\end{enumerate}
 	Az első esetben szimplán nem érzékelte az USB-porton lévő eszközöket -- ez az 1626-os hiba az \verb*|SLDLL_Open| függvény lefutásakor --, az alábbi hibakódot dobja az eszközök felmérésekor.
+
+
 	\subsubsection{Megoldás:} Az általunk használt telefonkábelek két végén a középső erek bekötése egymással ellentétes volt, továbbá a két szélső, a sárga és fekete ereken átfolyó stabil egyenáram zajként szolgált, egyúttal ez okozta a kábel folyamatos melegedését is. Elegendő volt csupán a két középső, a piros és zöld ereket rendre -- balról jobbra --  bekötni, majd egy krimpelő fogó segítségével az RJ10-es csatlakozóhoz erősíteni. Az ily módon elkészült kábel alkalmassá teszi az eszközöket a soros kommunikációra.
+	
 	\chapter*{Összegzés és kitekintés}
 	Két ismert programozási nyelv között megteremthető kommunikáció kiaknázásával elértem, hogy egy olyan szoftver készülhessen el, amelynek segítségével szakemberek képessé válhatnak emberek mentális egészségének fejlesztésére. 
 	
@@ -743,6 +753,15 @@
 	
 	Mint minden szoftverre és emberi termékre jellemző, a megoldásaink természetesen nem mondhatóak tökéletesnek, programunk épp annyira időnként karbantartásra és további fejlesztésekre szorulhat. Érdekes volt felfedezni a gRPC és a Proto-nyelv kapcsán a \ref{grpc} fejezetben, hogy ötször-hatszor jobb teljesítmény érhető el az adatok bináris módon történő szerializációjával a szöveges formátumokhoz képest -- jelen állás szerint mégis az utóbbi megoldás számít elterjedtebbnek --, én azt gondolom, hogy mindenképp érdemes lenne munkánkat esetleg egy másik szakdolgozat keretein belül a gRPC irányába elmozdítani.
 	\chapter*{Köszönetnyilvánítás}
+	Szeretném ezúton is megköszönni konzulensemnek, Dr. Király Roland Tanár Úrnak a tanulmányaim során nyújtott támogatását és szakmai útmutatását. Szakértelme és tapasztaltsága segített engem abban, hogy munkámat megérthessem, elkezdhessem, folytathassam, végül sikeresen lezárhassam.
+	
+	Külön köszönet illeti a barátnőmet, aki ezt a dolgozatot gondosan elolvasta, valamint a dokumentumban fellelhető hibákról tájékoztatott engem hozzájárulva ahhoz, hogy szakdolgozatom időről időre minél jobb lehessen.
+	
+	Szeretnék köszönetet mondani barátaimnak és családomnak is a szeretetükért, türelmükért és támogatásukért.
+	
+	Köszönöm a tanulmányomban részt vállaló valamennyi oktatónak az idejüket és igyekezetüket, hogy megosszák tudásukat velünk.
+	
+	Végezetül szeretnék hálát adni a jó Istennek, hogy vigyázott rám, így testi, szellemi és lelki épségben el tudtam végezni ezt a munkát is. Belé vetett hitem segített abban, hogy szakdolgozatomat minden akadályozó tényező ellenére is folytatni tudjam.
 	\addcontentsline{toc}{chapter}{Összegzés}
 	\bibliographystyle{plain}
 	\bibliography{references}
