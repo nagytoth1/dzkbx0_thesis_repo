@@ -191,7 +191,7 @@
 	\end{enumerate}
 	
 	\section{Algoritmusok}
-	Adatokat tárolunk, és ezt tesszük azért, mert tervünk van velük, azaz valamit szeretnénk velük kezdeni. Az adatszerkezeteken végzett véges számú elemi lépéssorozatot algoritmusnak nevezzük. Az adatszerkezetek algoritmusok nélkül lényegében olyanok, mint a matematikai műveletek operátorok nélkül, végül -- ha már a természetes nyelveket is említettem -- mint a főnevek igék nélkül.
+	Adatokat tárolunk, és ezt azért tesszük, mert tervünk van velük, azaz valamit szeretnénk velük kezdeni. Az adatszerkezeteken végzett véges számú elemi lépéssorozatot algoritmusnak nevezzük. Az adatszerkezetek algoritmusok nélkül lényegében olyanok, mint a matematikai műveletek operátorok nélkül, végül -- ha már a természetes nyelveket is említettem -- mint a főnevek igék nélkül.
 	
 	\chapter{Marshalling}
 	\section{Kommunikáció adatszerkezeteken keresztül}
@@ -567,7 +567,9 @@
 	\subsection{fill\_devices\_list\_with\_devices} Statikusan feltölti 3 eszközzel a dev485 tömböt attól függetlenül, hogy van-e csatlakoztatva egyáltalán bármi eszköz a számítógéphez. Ezt csupán a többi függvény működésének tesztelésére használtuk.
 	
 	\section{Az általam készített SLFormHelperDLL bemutatása}
-	Az állomány a RelayDLL-en keresztül meghívható SLDLL-függvényekre épült, nagyon eltúlozva egy keretrendszert biztosít Levente grafikus felületéhez támogatólag. Az eszközök JSON (vagy XML)-formátumban érkeznek, ezek beállításai szintén J távoznak
+	Az állomány a RelayDLL-en keresztül meghívható SLDLL-függvényekre épült, nagyon eltúlozva egy keretrendszert biztosít Levente grafikus felületéhez támogatólag. Az eszközök JSON- (vagy XML-) formátumban érkeznek, ezek beállításai szintén JSON-ben kerülnek átadásra a RelayDLL számára.
+	
+	
 
 	\subsection{A WinForm bemutatása}
 	A \textit{WinForm}, teljes nevén a \textit{Windows Forms} a .NET GUI-fejlesztést\footnote{A GUI a \textbf{Graphical User Interface} (grafikus felhasználói interfész) kifejezés rövidítése, asztali alkalmazásokat értünk alatta, amely átlagfelhasználók számára kényelmesebb megközelítés a konzolos alkalmazásokkal szemben} támogató keretrendszere, amelynek segítségével egy asztali alkalmazást egyszerűbb módon el tudunk készíteni. 
@@ -703,6 +705,7 @@
 		\label{speaker_solved}
 	\end{figure}
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 	\begin{figure}[h!]
 	\centering
@@ -717,6 +720,10 @@
 	\section{A hangszóró egy egész hanglistát kezel - kód}
 	\subsection{Megoldás}
 >>>>>>> parent of e024f0e... Thesis: refactoring
+=======
+	\subsection{A hangszóró egy egész hanglistát kezel - kód}
+	\subsubsection{Megoldás}
+>>>>>>> main
 	A Speaker-osztályban az eszköz viselkedését leíró 3 mezőt (index, volume és length) egy külön objektumba szervezzük ki (Sound), és a Speaker -- azonosítóján kívül -- kizárólag Sound-típusú objektumok listáját tartalmazza, a listát JSON-ben \textit{"index|volume|length"} rendezett hármasok összefűzésével szerializálja, a listához kizárólag listakezelő függvényekkel lehet hozzáférni (törlés, módosítás, hozzáadás), majd az \verb*|SLDLL_Hangkuldes| számára kiküldött H-tömböt (hanglistát) Delphiben egy ciklussal a JSON-nel átadott adatok szerint a megfelelő sorrendben feltöltjük, az előző probléma megoldásában ennek mikéntjét kifejtettem.
 	\begin{figure}[h!]
 		\centering
@@ -724,7 +731,7 @@
 		\caption{A hangszóró hanglistát kezel - megoldás C\# nyelven}
 		\label{speaker_csharp}
 	\end{figure}
-	\subsection{Több csatlakoztatott eszköz felismerése, vezérlése}
+	\subsection{\, Több csatlakoztatott eszköz felismerése, vezérlése}
 	\subsubsection{A probléma leírása:}
 	A rajzon látható módon kötöttük be az eszközöket, és háromból 2 eszközt érzékelt a dev485 tömbben, valamint csak 1, az USB portra közvetlenül csatlakozó (legelső) elemnek küldte ki a jeleket, a többi egyszerűen ,,elnyelődött''.		\begin{figure}[h!]
 		\centering
