@@ -185,9 +185,9 @@ namespace SLHelperTestForm
                 MessageBox.Show("Devices tömb üres!"); return;
             }
 
-            if (!(Devices[0] is LEDArrow))
+            if (!(Devices[0] is LEDLight))
             {
-                MessageBox.Show("Az eszköz nem nyíl!"); return;
+                MessageBox.Show("Az eszköz nem lámpa!"); return;
             }
         }
 
@@ -210,17 +210,15 @@ namespace SLHelperTestForm
                 return;
             }
             turnTimer.Interval = ticks[i]; //tickenként változzon az ütem hossza
-            LEDArrow arrow = (LEDArrow)Devices[0];
+            LEDLight light = (LEDLight)Devices[0];
             if (ledUP) //ha ledUP értéke igaz, akkor villanjon fel a nyíl balra kék színnel
             {
-                arrow.Color = Color.Blue;
-                arrow.Direction = Direction.LEFT;
+                light.Color = Color.Blue;
                 Console.WriteLine("tik");
             }
             else //ha ledUP értéke hamis, akkor "kapcsolja ki" a nyilat (küldjön fekete színt mindkét irányba)
             {
-                arrow.Color = Color.Black;
-                arrow.Direction = Direction.BOTH;
+                light.Color = Color.Black;
                 Console.WriteLine("tok");
             }
             string json_source = DevicesToJSON();
@@ -236,6 +234,9 @@ namespace SLHelperTestForm
             i++; //növelje a "ciklusváltozót", amikor eléri a 4-et, akkor vége a tickelésnek
         }
 
+        private Color[] arrowColors = { Color.Green, Color.Red, Color.Blue, Color.Green, Color.Black };
+        private Direction[] arrowDirections = { Direction.LEFT, Direction.RIGHT, Direction.LEFT, Direction.RIGHT, Direction.BOTH };
+        private Color[] lightColors = { Color.Green, Color.Blue, Color.Black, Color.Blue, Color.Black };
         private void button2Utem_Click(object sender, EventArgs e)
         {
             //a felhasználó azt tapasztalja, hogy a kattintásra kék 2 mp-ig, lekapcsol, újból kék 2 mp-ig, majd ismét lekapcsol
@@ -259,35 +260,43 @@ namespace SLHelperTestForm
 
         private void turnTimerKeteszkoz_Tick(object sender, EventArgs e)
         {
-            if (i == 6) //vége a tickelésnek, 2 tick már lezajlott, negyedikre nincs szükségünk
+            if (Devices.Count != 2)
+            {
+                MessageBox.Show("Két eszköznek kell lennie!");
+                return;
+            }if (!(Devices[0] is LEDLight))
+            {
+                MessageBox.Show("Első eszköz nem lámpa!");
+                return;
+            }
+            if (!(Devices[1] is LEDArrow))
+            {
+                MessageBox.Show("Második eszköz nem nyíl!");
+                return;
+            }
+            LEDLight light = (LEDLight)Devices[0];
+            LEDArrow arrow = (LEDArrow)Devices[1];
+            if (i == 4) //vége a tickelésnek, 2 tick már lezajlott, negyedikre nincs szükségünk
             {
                 //állítson vissza mindent eredeti, kezdeti állapotba
                 i = 0;
-                ledUP = true;
                 turnTimerKeteszkoz.Enabled = false;
                 button2Utem.Enabled = true;
+                //ha vége, akkor kikapcsolhatná őket
+                light.Color = Color.Black;
+                arrow.Color = Color.Black;
+                string json_s = DevicesToJSON();
+                CallSetTurnForEachDevice(ref json_s);
                 return;
             }
             turnTimerKeteszkoz.Interval = ticks[i]; //tickenként változzon az ütem hossza
-            LEDLight light = (LEDLight)Devices[0];
-            LEDArrow arrow = (LEDArrow)Devices[1];
-            if (ledUP)
-            {
-                light.Color = Color.Blue; //felvillan kéken
-                arrow.Color = Color.Green;
-                arrow.Direction = Direction.RIGHT; //jobbra nyíl
-            }
-            else
-            {
-                light.Color = Color.Red; //lekapcsol
-                arrow.Color = Color.Black;
-                arrow.Direction = Direction.BOTH;
-            }
+            light.Color = lightColors[i]; //felvillan kéken
+            arrow.Color = arrowColors[i];
+            arrow.Direction = arrowDirections[i]; //jobbra nyíl
             string json_source = DevicesToJSON();
             try
             {
                 CallSetTurnForEachDevice(ref json_source);
-                ledUP = !ledUP; //negálja a változót, fordítsa ellentettjére, így váltakozva fog fel-le kapcsolni a nyíl
                 i++; //növelje a "ciklusváltozót", amikor eléri a 4-et, akkor vége a tickelésnek
             }
             catch (Exception exc)

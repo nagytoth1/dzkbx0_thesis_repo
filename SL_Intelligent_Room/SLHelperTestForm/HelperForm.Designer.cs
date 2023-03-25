@@ -144,7 +144,7 @@
             this.btnNyil3.Name = "btnNyil3";
             this.btnNyil3.Size = new System.Drawing.Size(181, 63);
             this.btnNyil3.TabIndex = 5;
-            this.btnNyil3.Text = "Kék nyíl 3x";
+            this.btnNyil3.Text = "Kék lámpa 3x";
             this.btnNyil3.UseVisualStyleBackColor = true;
             this.btnNyil3.Click += new System.EventHandler(this.btnNyil3_Click);
             // 
@@ -157,9 +157,9 @@
             this.button2Utem.Font = new System.Drawing.Font("Consolas", 10F);
             this.button2Utem.Location = new System.Drawing.Point(416, 320);
             this.button2Utem.Name = "button2Utem";
-            this.button2Utem.Size = new System.Drawing.Size(181, 63);
+            this.button2Utem.Size = new System.Drawing.Size(227, 96);
             this.button2Utem.TabIndex = 5;
-            this.button2Utem.Text = "2 ütem kiküldése NL";
+            this.button2Utem.Text = "4 ütem kiküldése NL";
             this.button2Utem.UseVisualStyleBackColor = true;
             this.button2Utem.Click += new System.EventHandler(this.button2Utem_Click);
             // 

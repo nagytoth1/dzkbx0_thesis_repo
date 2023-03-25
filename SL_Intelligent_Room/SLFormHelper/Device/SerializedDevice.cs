@@ -26,11 +26,11 @@ namespace SLFormHelper
             switch (azonos & 0xc000)
             {
                 case SLLELO:
-                    return new LEDLight(azonos);
+                    return Device.Factory.CreateLight(azonos);
                 case SLNELO:
-                    return new LEDArrow(azonos);
+                    return Device.Factory.CreateArrow(azonos);
                 case SLHELO:
-                    return new Speaker(azonos);
+                    return Device.Factory.CreateSpeaker(azonos);
                 default:
                     return null;
             }
