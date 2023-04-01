@@ -27,7 +27,7 @@
 	\maketitle
 	\tableofcontents
 	\begin{abstract}
-		Szakdolgozatomban kifejtem az \textit{interlingvális}\footnote{Az interlingua kifejezés a latin \textit{inter} (között) és \textit{lingua} (nyelv) szavak összetételéből adódik. Jelentése ,,nyelvek között''.} kommunikáció lehetséges megvalósítási módjait, amelynek legfontosabb mérföldköve a szöveges adatok valamilyen szabvány szerinti közlése, tehát a szerializáció lesz, mivel a folyamat segítségével képessé válhatunk bármilyen típusú adatot -- legyen az szám, logikai változó, esetleg egy teljes objektum -- ilyen formában a másik program részére közölni. Innentől csak annyi a dolgunk, hogy a másik oldalt is felkészítsük ezen szabványos formátumú közlések fogadására és feldolgozására. Ennek gyakorlati haszna bemutatásra kerül szakdolgozatunkhoz készített szoftver keretein belül, amelynek célja, hogy különböző típusú eszközöket vezéreljünk a C\# nyelvi adottságaival az általam készített C\# nyelvű SLFormHelper, valamint Keresztes Péter tanár úr által létrehozott Delphi-Assembly-kódból készült SLDLL DLL-ek munkájának összehangolásával. Ez a két DLL, mint később látni fogjuk, nem lesz elegendő, szükség volt egy harmadik, úgynevezett RelayDLL-re, amely áthidalja a két nyelv sajátosságait, és ténylegesen olyan elemeket használ, amelyet mindkét nyelv hasznosítani tud a maga számára. Ezt én készítettem abból a célból, hogy a kommunikáció tulajdonképpen ezen a ,,hídon'' keresztül, szabályozott módon teremtődjön a Delphi és a C\# programozási nyelvek között.
+		Szakdolgozatomban kifejtem az \textit{interlingvális}\footnote{Az interlingua kifejezés a latin \textit{inter} (között) és \textit{lingua} (nyelv) szavak összetételéből adódik. Jelentése ,,nyelvek között''.} kommunikáció lehetséges megvalósítási módjait, amelynek legfontosabb mérföldköve a szöveges adatok valamilyen szabvány szerinti közlése, tehát a szerializáció lesz, mivel a folyamat segítségével képessé válhatunk bármilyen típusú adatot -- legyen az szám, logikai változó, esetleg egy teljes objektum -- ilyen formában a másik program részére közölni. Innentől csak annyi a dolgunk, hogy a másik oldalt is felkészítsük ezen szabványos formátumú közlések fogadására és feldolgozására. Ennek gyakorlati haszna bemutatásra kerül szakdolgozatunkhoz készített szoftver keretein belül, amelynek célja, hogy különböző típusú eszközöket vezéreljünk a C\# nyelvi adottságaival SLFormHelper, valamint Delphi-Assembly-kódból készült SLDLL állományok munkájának összehangolásával. Ez a két DLL\footnote{A DLL-ek -- ez a \textit{Dynamically Linked Library} kifejezés rövidítése -- csak Windows operációs rendszerben hasznosítható fájlok, amelyek segédkönyvtárként használhatóak, lefordított, gépi kódú állapotban vannak, ezeket a valódi futtatható programok használhatják. Mivel ezek már lefordított ál}, mint később látni fogjuk, nem lesz elegendő, szükség volt egy harmadik, úgynevezett RelayDLL-re, amely áthidalja a két nyelv sajátosságait, és ténylegesen olyan elemeket használ, amelyet mindkét nyelv hasznosítani tud a maga számára. Ezt én készítettem abból a célból, hogy a kommunikáció tulajdonképpen ezen a ,,hídon'' keresztül, szabályozott módon teremtődjön a Delphi és a C\# programozási nyelvek között.
 	\end{abstract}
 	\chapter*{Bevezetés}
 	\addcontentsline{toc}{chapter}{Bevezetés}
@@ -66,134 +66,7 @@
 	\\
 	Az objektum-orientált programozási paradigma igyekszik a világot lemodellezni olyan formában, hogy a modellt objektumok használatával írja le. Az OOP egyik alaptézise, hogy az adatszerkezet és a rajtuk végzett műveletek egy egységben, az osztályban összpontosulnak. Az osztály a belőle készíthető objektumok ,,tervrajzának'' nevezhető. Ennek megfelelően egy osztályba tartoznak a változók és a rajtuk végrehajtható metódusok. Változóinkat és metódusainkat védettségi szintekkel láthatjuk el, hogy a hozzáférést bizonyos erőforrásokhoz korlátozzuk, ellenőrzött módon végezzük. Az osztályok között kapcsolatokat teremthetünk: öröklődést vagy birtoklást. Azon nyelvet, amelyek ezt a paradigmát támogatják, objektum-orientáltnak minősítjük.
 	A fentebb említett nyelvek ezt a paradigmát is támogatják a C nyelv kivételével.
-	\chapter{Programozási nyelvekről általában}
-	\section{A programozási nyelvek formális nyelvek?}
-	\begin{definicio}
-		Legyen $\mathbb{A} = \{a_1, a_2, ... a_n\}$ véges, nemüres ($ \mathbb{A} \neq \emptyset$) halmaz, ezt a nyelv ábécéjének, elemeit betűknek vagy jeleknek nevezzük. $\mathbb{A}$ halmaz elemeiből képezzük annak hatványait, ekkor 
-		\begin{enumerate}
-			\item $\mathbb{A} ^ {0}$ az üres szó ($\epsilon$) egyelemű halmazát, 
-			\item $\mathbb{A} ^ {1} $ az egybetűs szavak (\,$\mathbb{A}^{1}\subseteq\mathbb{A}\wedge\mathbb{A}\subseteq\mathbb{A}^{1} \iff \mathbb{A}^{1}=\mathbb{A}$\,), 
-			\item $\mathbb{A}^{2}$ a kétbetűs szavak, 
-			\item $\mathbb{A}^{n}$ az $n$ hosszú szavak halmazát jelenti és így tovább.
-		\end{enumerate}
-		Jelölje $A^{*}=A^{0}\ \cup\ A^{1}\ \cup\ A^{2}\ \cup\ \dots\ \cup\  A^{n}$ az ábécé elemeiből képzett véges szavak vagy más néven jelsorozatok halmazát (ezt az $\mathbb{A}$ ábécé feletti univerzumnak hívjuk). Ekkor  $\mathbb{A}$-ból kirakható szavak $\mathbb{A}^{*}$ halmazának egy részhalmazát \textbf{formális nyelvnek} nevezzük. Szokásos még az $\mathbb{A}$ ábécé feletti formális nyelv megnevezés is. A hatványok a halmaz önmagával vett \emph{Descartes-szorzatait} jelentik.
-		\cite{formnyelvek}
-	\end{definicio}
 	
-	Fő különbségek formális és természetes nyelvek között:
-	\begin{itemize}
-		\item A formális nyelveket egy dedikált célra hozzuk létre, ezeket általában nem használjuk interperszonális (emberek közötti) kommunikációra. Ezzel szemben egy természetes nyelv (például az angol) egy emberi közösség aktuális és a múltban használt jelkészletét rendszerezi.\\
-		A C++ programozási nyelv például azért jöhetett létre \textit{Bjarne Stroustrup} dán szoftverfejlesztő jóvoltából, mert a C - procedurális paradigmájú nyelv lévén - nem tette lehetővé többek között a tisztább objektum-orientált programozást, a memóriacímek helyett a biztonságosabb referenciák használatát. \cite{cpplang1}
-		\item A formális nyelvek kulcsszavakból állnak. A természetes nyelvek több építőelemből tevődnek össze: fonémák (hangok, betűk), morfémák (szótövek, toldalékok), szavak, mondatok, bekezdések, szövegek.
-		\item A természetes nyelvek fejlődhetnek spontán, emberi generációról generációra valamint tudatos módon (például nyelvújítás) egyaránt. A formális nyelvek alakulását egy tervezési fázis előzi meg, ekkor a nyelv szabályrendszerét lefektetik, tehát csak és kizárólag tudatos, mesterséges beavatkozással lehet megreformálni őket.
-		\item Az ember által is beszélt természetes nyelvek esetén a használt szavak hangsúlyozásának, hanglejtésének, valamint a beszéd hangerejének is jelentésmódosító ereje lehet, a formális nyelvek esetében hangsúlyról egyáltalán nem beszélhetünk.
-	\end{itemize} \cite{langvid1} \cite{langvid2}
-	Ezekből következően minden programozási nyelv formális nyelvnek számít.
-	\section{Jelenleg népszerű programozási nyelvek}
-	2022-ben a legnépszerűbb programozási nyelveknek számítanak (a teljesség igénye nélkül):\cite{proglanguages1}\cite{proglanguages2}
-	\begin{enumerate}
-		\item \textbf{JavaScript}
-		\begin{itemize}
-			\item 1995, \textit{Brendan Eich} fejlesztette a webböngészési funkcionalitások kibővítése végett.
-			\item web-, játék-, valamint mobilfejlesztésre egyaránt használják
-			\item webszerverként is tud funkcionálni (Node.js)
-		\end{itemize}
-		\item \textbf{Python}
-		\begin{itemize}
-			\item 1991, \textit{Guido Van Rossum} tervezte annak érdekében, hogy olvashatóbb és nagyobb kifejezőerővel rendelkező kódok készülhessenek, a szintaktikai szabályok helyett a kód működésére tudjanak a programozók koncentrálni
-			\item backend-fejlesztés
-			\item automatizálás
-			\item web scraping\footnote{Információgyűjtés eszköze, amely lehetővé teszi, hogy automatizált módon (kód segítségével) bizonyos weboldalakról tetszőleges adatokat (például posztokat, közelgő eseményeket) letölteni.}
-			\item Data Science\footnote{Az informatika, a matematikai statisztika és az üzleti elemzés metszetében álló tudományág, amely adatok összegyűjtésével, ezek elemzésével foglalkozik annak érdekében, hogy a vállalatok jobb üzleti döntéseket tudjanak meghozni ezek segítségével. Forrás: \cite{q_datascience}}
-		\end{itemize}
-		\item \textbf{HTML}
-		\begin{itemize}
-			\item webdokumentumok kezelése: JSON, XML, SVG
-			\item weboldalak statikus (állandó) részeinek fejlesztése
-		\end{itemize}
-		\item \textbf{CSS} 
-		\begin{itemize}
-			\item weboldalak formatervét, kinézetét, stílusát alakítja ki
-			\item HTML mellett hívják segítségül
-		\end{itemize}
-		\item \textbf{Java}
-		\begin{itemize}
-			\item 1995, Sun Microsystems fejlesztése, alapötlet: olyan eszközök vezérlése, amelyek elférnek egy kézben
-			\item E-kereskedelem
-			\item Financial Technology: pénzintézetekkel, tőzsdékkel, számlázással kapcsolatos szoftvereket jellemzően ezen a nyelven fejlesztik
-			\item a megírt kódok futtathatóak különösebb átalakítás nélkül az elterjedtebb operációs rendszereken (a kód hordozható, platformfüggetlen)\footnote{Ez azért lehetséges, mivel .exe fájl helyett egy átmeneti .class állomány (bytecode) készül, amit egy virtuális gép (Java Virtual Machine) tolmácsolja (interpretálja) gépi kódként a számítógépünknek
-				Forrás: \cite{jvm}}
-		\end{itemize}
-		\item \textbf{SQL}
-		\begin{itemize}
-			\item 1972, \textit{Donald D. Chamberlin} és \textit{Raymond F. Boyce} az IBM alkalmazásában, adattáblák egyszerűbb kezelésének érdekében hozták létre
-			\item adatbázisok kezelése, karbantartása
-			\item Data Science
-		\end{itemize}
-		\item \textbf{Go}
-		\begin{itemize}
-			\item 2009, a Google fejlesztői alakították ki, hogy megoldják a hatalmas szoftverrendszerekkel kapcsolatos problémákat
-			\item rendszerek, hálózatok programozása
-			\item hang- és videószerkesztés
-			\item Big Data\footnote{Az informatika egyik tudományága, amely tömérdek mennyiségű, hagyományos számítógéppel nehezen kezelhető adatok tárolásával és feldolgozásával, ezek elemzésével foglalkozik.
-				Forrás: \cite{bigdata}}
-		\end{itemize}
-		\item \textbf{C}
-		\begin{itemize}
-			\item 1970-es években Ken Thompson és Dennis Ritchie jóvoltából, Assembly-nél magasabb szintű (természetes nyelvezethez közelebb álló) nyelv kialakítása volt a célja
-			\item hardverelemek illesztőprogramjai, vezérlőkódjai
-			\item operációs rendszerek fejlesztése
-			\item 3D videók szerkesztése
-			\item alacsonyabb szintű a fentebb felsoroltaknál, ezért könnyebb optimalizálni memória és futásidő szempontjából
-			\cite{clang1}
-		\end{itemize}
-	\end{enumerate}
-	Összességében elmondható, hogy a programozási nyelvek eszközökként szolgálnak a fejlesztők kezében. Véleményem szerint minél több eszközt ismerünk, annál jobban meg tudjuk határozni, hogy az előttünk álló problémához az eszköztárunkból melyik lenne a legalkalmasabb, amellyel kényelmesen és hatékonyan tudunk dolgozni.
-	\section{Milyen adatszerkezeteink vannak?}
-	A programozási nyelvek szintaktikában ugyan eltérnek egymástól, amikor viszont adatok tárolásáról van szó, egy dologban egyetértenek: típusokra szükség van. Mit jelent az, hogy egy változót például \verb*|bool| típusúként definiálunk? Az adat típusa meghatározza, hogy
-	\begin{itemize}
-		\item mekkora memóriaterületet\footnote{A memóriaterület mértékegysége alapértelmezetten bájtban értendő, mivel 1 bájt számít a legkisebb megcímezhető memóriaegységnek.} kell számára lefoglalni
-		\item a számítások folyamán hogyan kell őt értelmezni\\(például ha másik változónak értékül adjuk, hány bitet kell másolni)
-		\item továbbá milyen műveletek végezhetőek vele\\(például egész típusú változókon értelmezhetjük a szorzás műveletét, szövegeknél ezt már nem tehetjük meg).\cite{adatszerkezetek_88}
-	\end{itemize}
-	\section{Használt adatszerkezetek}
-	Ahogy említettem, a programozási nyelvek döntő része típusos, ezenfelül kisebb-nagyobb különbséggel hasonló adatszerkezeteket értelmez.
-	\begin{enumerate}[label=\alph*)]
-		\item \emph{elemi adattípusok}: Elemi/primitív típusokat nem tudunk további részekre bontani, csak egyben értelmezhetjük őket. Ilyen például a \verb*|double| lebegőpontos típus, amely 8 bájton képes lebegőpontos számot ábrázolni. Igaz, hogy csak az első bájtra van mutatónk, de nincs értelme további bájtokra darabolni, és megnézni az értékeket, mivel egyben értelmezendő, a műveleteket 4 byte-on fogjuk tudni vele végezni. Primitív adattípusoknak is nevezzük őket.\\
-		Vegyük például a C\# programozási nyelvet, milyen elemi típusai vannak?
-		\begin{enumerate}
-			\item egész:
-			\begin{tabular}{ccc}
-				Előjeles típus & Előjel nélküli típus & Méret (bájt) \\
-				sbyte & byte & 1 \\
-				short & ushort & 2 \\
-				int & uint & 4 \\
-				long & ulong & 8 \\
-			\end{tabular}
-			\item lebegőpontos:
-			\begin{tabular}{cc}
-				Típus neve & Típus mérete (Bájt) \\
-				float & 4 \\
-				double & 8
-			\end{tabular}
-			\item logikai: 
-			\begin{tabular}{cc}
-				bool & 1 Bájt
-			\end{tabular}
-			\item karakteres: 
-			\begin{tabular}{cc}
-				char & karakterkódolástól függ\footnote{ASCII-kódolás esetén egyetlen karakter 7, míg UTF-8 kódolás esetében 8 biten tárolódik. Mivel a legkisebb megcímezhető egység az 1 bájt, ezért ezek 1 bájt területet foglalnak karakterenként, ASCII-kód esetében a 8. bit értékét nem veszik figyelembe. 
-					Ezzel szemben az újabb UTF-16- és UTF-32-szabványok esetében az előbbiben 2 bájt, utóbbiban 4 bájt memóriaterület szimbolizál egyetlen karaktert. Forrás:\cite{gfg_charcoding}}
-			\end{tabular}
-		\end{enumerate}
-		\item \emph{összetett adattípusok}: Az összetett adattípusok elemi típusokra szedhetők szét, vagyis primitív és/vagy további összetett típusú változókból épülnek fel. Ami a adattagok vagy mezőnek nevezzük. Az összetett adattípusú változók tárolásához szükséges memóriaterület kiszámítható az adattagjainak összegével.\\
-		C\#-ban a \verb*|struct| és a \verb*|class| kulcsszavakkal tudunk összetett típusokat definiálni.
-	\end{enumerate}
-	
-	\section{Algoritmusok}
-	Adatokat tárolunk, és ezt azért tesszük, mert tervünk van velük, azaz valamit szeretnénk velük kezdeni. Az adatszerkezeteken végzett véges számú elemi lépéssorozatot algoritmusnak nevezzük. Az adatszerkezetek algoritmusok nélkül lényegében olyanok, mint a matematikai műveletek operátorok nélkül, végül -- ha már a természetes nyelveket is említettem -- mint a főnevek igék nélkül.
-	
-	\chapter{Marshalling}
 	\section{Kommunikáció adatszerkezeteken keresztül}
 	A \emph{Marshalling} egy olyan folyamat, amely összetett típusok átalakítására szolgál, hogy egy nyelv adatszerkezetét a másikkal megértessük. Magyar fordításával nem találkoztam ennek a kifejezésnek, de leginkább talán az 'átalakítás' szóval tudjuk leírni, ami adatszerkezetek esetében annyit tesz, hogy más nyelv által is értelmezhetővé tesszük, kevésbé hagyatkozunk az adott nyelv különlegességeire.\cite{sof_marshalling}
 	\par
@@ -399,16 +272,52 @@
 	\cite{grpc_performance}
 	\begin{figure}[h!]
 		\centering
-		\includegraphics[scale=0.35]{grpc_json}
+		\includegraphics[scale=0.3]{grpc_json}
 		\caption{Szerializáció teljesítményének összehasonlítása JSON és Proto esetében}
 		\subcaption{Forrás: \cite{grpc_performance}}
 		\label{fig:grpc_json}
 	\end{figure}
-	\chapter{Szakdolgozati projektünkről}
-	Eme dokumentum mellé készített szakdolgozati szoftverprojektemet Sipos Levente hallgatótársam részére, az ő feladatának megkönnyítésének céljából készítem. 
-	Munkánk arról szól, hogy Keresztes Péter tanár úr által Delphiben implementált metódusokat hívunk meg .NETes környezetből. A C\# és Delphi programozási nyelvek összehangolása az én feladatom, az elkészült termék terveim szerint úgynevezett Helper-metódusok implementációit tartalmazó, lefordított\footnote{Lévén a C\# fordított nyelvnek számít, ezért az alkalmazások futtatásához/használatához az elkészült forráskódokat első lépésben futtatható állományra (gépi kódra) kell fordítani egy fordítóprogram segítségével. Ezt a folyamatot szakszóval \textit{compilingnak} vagy \textit{buildelésnek} is nevezzük.} DLL-projekt lesz, amelyeket Levente az ő Windows Forms keretrendszerrel készített grafikus alkalmazásában tud meghívni. A projekt jelen állása szerint szükség volt továbbá egy úgynevezett relayDLL-re, amelyet én állítottam össze.
+	\subsection{Szakdolgozati munkánkról}
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.1]{images/foto_lampa.jpg}
+		\caption{Lámpa eszköz}
+		\label{fig:foto_lampa}
+	\end{figure}
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.1]{images/foto_nyil.jpg}
+		\caption{Nyíl eszköz}
+		\label{fig:foto_nyil}
+	\end{figure}
+	% todo: fotó a hangszóróról - Levente
+	\subsection{Csatlakozók, átviteli eszközök}
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.075]{images/foto_rj9.jpg}
+		\caption{RJ9-es csatlakozó vezetékes telefonkábel végén. Csak a középső 2 ér van csatlakoztatva.}
+		\label{fig:foto_rj9}
 	
-	\section{Miről is szól a projektünk?}
+	\end{figure}	
+	
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.075]{images/foto_usbab.jpg}
+		\caption{nyomatókábel USB-A és USB-B végekkel, előbbi a számítógéphez, míg utóbbi az elsőnek szánt eszközhöz csatlakoztatandó.}
+		\label{fig:foto_usbab}
+	\end{figure}		
+	
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.075]{images/foto_tapkabel.jpg}
+		\caption{Tápkábelt használunk a további, számítógéphez közvetlenül nem csatlakozó eszközök feszültségre kapcsolásához.}
+		\label{fig:foto_tapkabel}
+	\end{figure}	
+	
+	Eme dokumentum mellé készített szakdolgozati szoftverprojektemet Sipos Levente hallgatótársam részére, az ő feladatának megkönnyítésének céljából készítem. 
+	Munkám arról szól, hogy Delphiben implementált metódusokat lehessen meghívni a .NET-keretrendszerből, ennek lehetséges módját kutassam. A C\# és Delphi programozási nyelvek összehangolása az én feladatom, az elkészült termék úgynevezett segítő, azaz helper metódusok implementációit tartalmazó, lefordított\footnote{Lévén a C\# fordított nyelvnek számít, ezért az alkalmazások futtatásához/használatához az elkészült forráskódokat első lépésben futtatható állományra (gépi kódra) kell fordítani egy fordítóprogram segítségével. Ezt a folyamatot szakszóval \textit{compilingnak} vagy \textit{buildelésnek} is nevezzük.} DLL-projekt lesz, amelyeket Levente az ő Windows Forms keretrendszerrel készített grafikus alkalmazásában tud meghívni. Jelen állás szerint szükség volt továbbá egy úgynevezett relayDLL-re, amelyet én állítottam össze.
+	
+	\section{Miről is szól munkánk?}
 	Egy mentális egészségfejlesztésre használatos alkalmazást fejlesztésére vállalkoztunk 2022 szeptemberében, amely elméleti alapjait Somodi László futballedző munkásságának köszönhetjük, ezek gondolati vonulatairól titoktartási szerződésünk lévén csak nagyon érintőlegesen fogok beszámolni a későbbiekben. 
 	
 	A készített alkalmazásunk gyakorlatilag különböző fény- és hangjelzések kibocsátására alkalmas eszközök (lámpák, nyilak és hangszórók) vezérléséből áll, egy úgynevezett \emph{intelligens szobában} az eredeti tervek szerint 8 eszköz (a készített program azonban tetszőleges, $n$ darabszámú eszköz vezérlésére lett felkészítve) együttes vezérlését kell kezelnünk megadott időközönként, amely időközöket egyszerűen ütemnek fogjuk nevezni.
@@ -434,12 +343,11 @@
 	Az elkészült kódok teljesítménye alapján is érdemes összehasonlítani a két nyelvet. Ehhez először is külön kell választanunk a fordításhoz és a futtatáshoz szükséges időt, lévén ezek fordított (nem interpretált) nyelvek, ezért ezek nem szimultán módon\footnote{nem egyidőben, nem egyszerre} történnek. A Delphi fordítóprogramja azonnal gépi kódot\footnote{A gépi kódban már az utasításokat is számok jelzik, ezen nyelv utasításkészlete már a számítógépben működő processzor típusától is erősen függ. Gépi kód az esetek nagy részében fordítóprogram eredménye, a hardverközeli vezérlőprogramok elkészítéséhez is inkább a magasabb szinten álló Assembly nyelvet használják.} készít, míg a C\# esetében első lépésben egy köztes nyelvű\footnote{A(z) (Common) Intermediate Language a .NET-keretrendszerben a magasabb absztrakciós szintű C\# és a legalacsonyabb gépi kód között ,,félúton'' helyezkedik el, ami még processzortól és operációs rendszertől független. A .NET Runtime futtatókörnyezete képes futtatni.} kód készül, amelyet a .NET virtuális gép képes futtatni. Bár fordítási időben a Delphi-kód abszolút győztesnek tekinthető -- mivel fordítóprogramja közvetlenül futtatható állományt készít --, a két nyelv segítségével készített programok futásideje közel azonos. Így megállapítható, hogy mérvadó teljesítménybeli különbséget kizárólag a fordítás folyamatában észlelhetünk.
 	
 	Ha ennél is tovább megyünk, akkor a C\#-nak nagy előnye származik abból a Delphivel való összevetésben, hogy aszinkron\footnote{ Az aszinkron programozás lehetővé teszi, hogy az alkalmazás egy időigényes folyamat futtatását háttérbe helyezze, így a programot futtató szál, lévén nem várakozik a válaszra, addig ugyanúgy képes a felhasználói interakciókat kiszolgálni. \cite{async}} kódolási lehetőséget is biztosít, amely felgyorsítja a végrehajtást, jobban ki tudja használni a rendelkezésre álló CPU teljesítményét. A LINQ\footnote{A \textbf{Language Integrated Query} (magyarul: nyelvbe ágyazott lekérdezés) egy gyűjtőfogalom a C\# nyelvbe épített szintaktikai elemekre, amely elemek lehetővé teszik, hogy akár lambda kifejezésként, akár SQL-szintaxishoz hasonló módon meg tudjunk fogalmazni lekérdezéseket bizonyos - iterálható, vagyis bejárható, az IEnumerable-interfészt megvalósító - szerkezetekre. Ilyen szerkezetnek minősül például a \textit{List} is.} használata \verb|yield| kulcsszóval az iterációkban biztosítja, hogy csak akkor van végrehajtva a kód, amikor ténylegesen szükség van rá (lusta kiértékelés). A delegate-ek használata szintén növelheti a C\#-kódok teljesítményét, bár a Delphi is rendelkezik ehhez hasonló funkciókkal.
-	%todo: esetleg ide jöhetne egy C\# és Delphi futásidő-összehasonlítási ábra (benchmark)
 	\cite{perf_comp}
 	
 	A fejlesztés folyamán elkészített \textbf{modulokat} a különböző programozási nyelvek eltérő megnevezéseket használnak.\footnote{Az említett példákon kívül a Java-nyelvben \textit{package}-ként, míg a Pythonban \textit{module}-ként hivatkoznak az osztályokat összegyűjtő egységre.} A vizsgált két nyelv tekintetében is ez áll fenn: a C\# \verb|namespace|, míg a Delphi \verb|unit| kifejezéssel illeti, a lényegük ugyanaz lesz: 
 	\begin{enumerate}
-		\item \textbf{Elnevezések}: Mivel nagy projekteknél előfordulhat, hogy két, funkciójában eltérő osztálynak ugyanazt a nevet kellene adnunk, nem tehetnénk meg, mivel a fordítóprogram nem tudná eldönteni, hogy a két változat közül éppen melyiket kívánjuk érvényesíteni. Ezt a problémát orvosoljuk például a kódok modulokra való felosztásával.
+		\item \textbf{Elnevezések}: Mivel előfordulhat, hogy két, funkciójában eltérő osztálynak ugyanazt a nevet kellene adnunk\footnote{Ilyenre példa, hogy }, nem tehetnénk meg, mivel a fordítóprogram nem tudná eldönteni, hogy a két változat közül éppen melyiket kívánjuk érvényesíteni. Ezt a problémát orvosoljuk például a kódok modulokra való felosztásával.
 		
 		\item \textbf{Egységbe zárás}: A modulok lehetővé teszik a programozók számára, hogy egy funkcionalitás végrehajtási részleteit kapszulázzák és elrejtsék. Ez azt jelenti, hogy a modulok tiszta felületet biztosítanak a funkcionalitással való interakcióhoz, miközben a mögöttes kódot elrejtik és védik a véletlen változásoktól.
 		
@@ -496,6 +404,7 @@
 	A program indulásakor legelőször lefutó \verb*|SLDLL_Open|-függvényt meghívva elkezdhetjük az SLDLL további metódusainak használatát. A hívást érdemes kódból elvégezni, ennek kezelését nem kell a felhasználóra bíznunk, mivel egyrészt elfelejtheti, másrészt felesleges, hogy a felhasználó tudjon a kötelező metódushívási sorrend betartásáról. 
 	
 	A függvény továbbá elvégzi a Form felcsatlakoztatását a Win32 üzenetküldési láncra a paraméterben kapott Handle memóriacíme alapján, innentől a DLL üzenetküldésre is alkalmas az asztali alkalmazásunk részére. Tervben volt részünkről egy Delphiben írt konzolos alkalmazás elkészítése is, amely a .NET-ben készült grafikus felületünkkel kommunikált volna. Ebben az esetben kizárólag az asztali alkalmazás Handle-paraméterét tudtuk volna átadni, tehát akkor is a C\# üzeneteket feldolgozó függvényével (\verb*|WndProc| -- bővebben a metódus működéséről: \ref{wndproc}) lenne dolgunk.
+	
 	\subsection{Listelem -- A tömb beállítása}
 	Ez a függvény felelős a dev485 tömb beállításáért. Mivel itt találkozunk először a dev485-tömbbel, ezért itt fejtem ki, hogy mi a tömb funkciója. Ez a tömb úgynevezett \verb*|DEVSEL| típusú elemeket vár, ez a felmért eszközeink adatait tartalmazó struktúra. A \verb*|DEVSEL| leírja egy eszköz: \begin{itemize}
 		\item azonosítóját: ez az eszköz legfontosabb attribútuma a vezérlés szempontjából, az azonosítón keresztül állíthatjuk be, és küldhetünk ki jelet egy bizonyos eszköz számára, amelyet vezérelni szeretnénk.
@@ -553,24 +462,166 @@
 	A RelayDLL állomány elkészülését Dr. Király Roland tanár úr javasolta, majd én készítettem el abból a célból, hogy az SLDLL hívható függvényeinek listáját bővítsük, a hívások módját egyszerűsítsük.
 	
 	\subsection{Open} Az \verb*|SLDLL_Open| függvény meghívásáért felelős, a híváshoz szükséges paraméterek számát egyre redukáltam, elegendő csupán az elkészült asztali alkalmazás Handle-címét átadni, hogy a Win32-üzenetküldés elkezdődhessen.
+	
+	\begin{verbatim}
+		function Open(wndhnd:DWord): word; stdcall;
+		var
+		nevlei, devusb: pchar;
+		begin
+		result := SLDLL_Open(wndhnd, UZESAJ, @nevlei, @devusb); //result: a visszatérési értéknek lefoglalt hivatkozási név Delphi-függvények esetében
+		end;
+	\end{verbatim}
 
 	\subsection{Listelem és Felmeres} A \verb*|SLDLL_Listelem| és \verb*|SLDLL_Felmeres|-függvények meghívása a feladatuk. Fontos, hogy a Listelem-függvényt is C\#-ból hívhassuk, mivel a Win32-üzenetek a Form részére kerülnek elküldésre, és a hívást egy beépített üzenetfeldolgozó metódus, a WndProc folyamán kell elvégeznünk.
+	
+	\begin{verbatim}
+		function Listelem(var numberOfDevices: byte): word; stdcall;
+		begin
+		result := SLDLL_Listelem(@dev485);
+		drb485 := numberOfDevices;
+		devListSet := false;
+		writeln(Format('Listelem sikeres, eredmenye %d dev485 = %p &dev485[0] = %p &dev485[1] = %p', [Result, dev485, @dev485[0], @dev485[1]]));
+		end;
+		
+		function Felmeres(): word; stdcall;
+		begin
+		result := SLDLL_Felmeres();
+		devListSet := false;
+		writeln(Format('Felmeres eredmenye %d &dev485 = %p &dev485[0] = %p', [result, @dev485, @dev485[0]]));
+		end;
+	\end{verbatim}
 
 	\subsection{ConvertDEV485ToJSON}
 	A metódus az SLDLL dev485-tömbjét C\# által is értelmezhető JSON formátumú szöveggé alakítja (szerializálja). Ezt úgy végzi el, hogy végigiterál Delphiben a detektált eszközök listáján, és azok azonosítóit írja be egy JSON-tömbbe. Az eredmény egy referenciaként átadott string paraméterből olvasható ki a függvény hívása után. Ezzel a függvénnyel közli a Delphi a C\# számára, hogy milyen eszközök kerültek eltárolásra a \verb*|SLDLL_Listelem| folyamán.
+	
+	\begin{verbatim}
+		function ConvertDEV485ToJSON(out outputStr: WideString): byte; stdcall;
+		var
+		buffer: WideString;
+		i: byte;
+		begin
+		if (drb485 = 0) or (not Assigned(dev485)) then
+		begin
+			showmessage(
+				format('Dev485 is empty drb485 = %d dev485 = %p', 
+				[drb485, @dev485]));
+			outputStr := '[]';
+			result := DEV485_EMPTY;
+		exit;
+		end;
+		buffer := '[';  //JSON-array is going to be created
+		i := 0;
+		while i < drb485 do
+		begin
+		buffer := buffer + Format('{"azonos":%d},', [dev485[i].azonos]);
+		inc(i);
+		end;
+		buffer[length(buffer)] := ']'; 
+		//a végére tett vessző a valid
+		JSON-formátumot elrontja, ezt kicserélem tömbvége-jelre
+		showmessage(format('JSON-buffer = %s', [buffer]));
+		outputStr := buffer;
+		result := EXIT_SUCCESS;
+		end;
+	\end{verbatim}
 
 	\subsection{ConvertDEV485ToXML} 
 	A dev485 tömbből egy XML formátumú szöveget készít, amelyet egy úgynevezett \verb*|devices.xml| állományban ment ki a háttértárra.
+	
+	\begin{verbatim}
+		function ConvertDEV485ToXML(var outPath:WideString): byte; stdcall;
+		var
+		xmlDocument : IXMLDOCUMENT;
+		rootNode, node : IXMLNODE;
+		i : byte;
+		begin
+		if(drb485 = 0) or (not Assigned(dev485)) then
+		begin
+		result := DEV485_EMPTY;
+		exit;
+		end;
+		xmlDocument := NewXMLDocument();
+		xmlDocument.Encoding := 'utf-8';
+		xmlDocument.Options := [doNodeAutoIndent];
+		rootNode := xmlDocument.AddChild('devices');
+		for i := 0 to drb485 - 1 do //that's the way of iterating through dev485 array (or using the drb485 variable)
+		begin
+		node := rootNode.AddChild('device');
+		node.Attributes['azonos'] := dev485[i].azonos; //we don't need the type of the device
+		end;
+		xmlDocument.SaveToFile(outPath);
+		showmessage('saved XML to location: ' + outPath);
+		result := EXIT_SUCCESS;
+		end;
+	\end{verbatim}
 
 	\subsection{SetTurnForEachDeviceJSON} 
 	Az USB-portról felmért eszközöket összerendeli a \verb*|devList| elemeivel azonosítójuk szerint, majd ennek a \verb*|devList| tömböt beállítja az eszközök beállításait leíró JSON-szerint. Ezt a függvényt meghívva, ha a JSON-formátum helyes, lényegében ,,távoli hívással'' vezérelhetjük C\# nyelvből az eszközökre kiküldött információkat: ilyen például lámpák esetében a színkód.
+	
+	\begin{verbatim}
+		function SetTurnForEachDeviceJSON(var json_source: WideString):word; stdcall;
+		var
+		i, j: byte;
+		jsonArrayElements: TStringList;
+		json_element1, json_element2: string;
+		actDeviceType: string;
+		actDeviceSettings: string;
+		begin
+		//decode the JSON of the current turn (type + settings fields)
+		jsonArrayElements := reduceJSONSourceToElements(json_source);
+		i := 0; j := 0;
+		
+		//when devList is connected with dev485 then this must be called
+		if(devListSet = true) then //when it is the 2nd, 3rd, ... turn
+		begin
+		//SwitchEachDeviceOFF();
+		//SLDLL_SetLista(drb485, devList);
+		end;
+		
+		while(j < drb485) do
+		begin
+		json_element1 := jsonArrayElements[i]; //loads the actual device
+		json_element2 := jsonArrayElements[i+1]; //loads the actual device
+		//I want the first char of string 
+		actDeviceType := extractValueFromJSONField(json_element1, 'type'); //gets the type of the device
+		actDeviceSettings := extractValueFromJSONField(json_element2, 'settings'); //for example: 255|0|0|1
+		if devListSet = false then //devList should be linked only once with dev485 elements
+		begin
+		devList[j].azonos := dev485[j].azonos; //link dev485 to devList using identifiers
+		end;
+		result := setDeviceByType(j, actDeviceType, actDeviceSettings); //SEHException
+		//TODO: is there no such result that leads to end the loop?
+		printErrors(result);
+		inc(j);
+		inc(i, 2);
+		end; //case
+		devListSet := true; //it becomes true after the first iteration (first turn)
+		result := SLDLL_SetLista(drb485, devList);
+		end;
+	\end{verbatim}
+	
 	\subsection{fill\_devices\_list\_with\_devices} Statikusan feltölti 3 eszközzel a dev485 tömböt attól függetlenül, hogy van-e csatlakoztatva egyáltalán bármi eszköz a számítógéphez. Ezt csupán a többi függvény működésének tesztelésére használtuk.
+	
+	\begin{verbatim}
+		function fill_devices_list_with_devices(): byte; stdcall;
+		begin
+		if drb485 > 0 then
+		begin
+		result := DEV485_ALREADY_FILLED; //array is already filled
+		exit;
+		end;
+		drb485 := 3;
+		SetLength(dev485, drb485);
+		dev485[0].azonos := $c004; //hangszóró típusú eszköz
+		dev485[1].azonos := $8004; //nyíl típusú eszköz
+		dev485[2].azonos := $4004; //lámpa típusú eszköz
+		result := EXIT_SUCCESS;
+		end;
+	\end{verbatim}
 	
 	\section{Az általam készített SLFormHelperDLL bemutatása}
 	Az állomány a RelayDLL-en keresztül meghívható SLDLL-függvényekre épült, nagyon eltúlozva egy keretrendszert biztosít Levente grafikus felületéhez támogatólag. Az eszközök JSON- (vagy XML-) formátumban érkeznek, ezek beállításai szintén JSON-ben kerülnek átadásra a RelayDLL számára.
 	
-	
-
 	\subsection{A WinForm bemutatása}
 	A \textit{WinForm}, teljes nevén a \textit{Windows Forms} a .NET GUI-fejlesztést\footnote{A GUI a \textbf{Graphical User Interface} (grafikus felhasználói interfész) kifejezés rövidítése, asztali alkalmazásokat értünk alatta, amely átlagfelhasználók számára kényelmesebb megközelítés a konzolos alkalmazásokkal szemben} támogató keretrendszere, amelynek segítségével egy asztali alkalmazást egyszerűbb módon el tudunk készíteni. 
 	
@@ -704,8 +755,6 @@
 		\caption{Megoldás a problémára - RelayDLL}
 		\label{speaker_solved}
 	\end{figure}
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 	\begin{figure}[h!]
 	\centering
@@ -716,14 +765,10 @@
 	\end{figure}
 
 	\subsubsection{Megoldás - kódban}
-=======
 	\section{A hangszóró egy egész hanglistát kezel - kód}
 	\subsection{Megoldás}
->>>>>>> parent of e024f0e... Thesis: refactoring
-=======
 	\subsection{A hangszóró egy egész hanglistát kezel - kód}
 	\subsubsection{Megoldás}
->>>>>>> main
 	A Speaker-osztályban az eszköz viselkedését leíró 3 mezőt (index, volume és length) egy külön objektumba szervezzük ki (Sound), és a Speaker -- azonosítóján kívül -- kizárólag Sound-típusú objektumok listáját tartalmazza, a listát JSON-ben \textit{"index|volume|length"} rendezett hármasok összefűzésével szerializálja, a listához kizárólag listakezelő függvényekkel lehet hozzáférni (törlés, módosítás, hozzáadás), majd az \verb*|SLDLL_Hangkuldes| számára kiküldött H-tömböt (hanglistát) Delphiben egy ciklussal a JSON-nel átadott adatok szerint a megfelelő sorrendben feltöltjük, az előző probléma megoldásában ennek mikéntjét kifejtettem.
 	\begin{figure}[h!]
 		\centering
@@ -733,12 +778,13 @@
 	\end{figure}
 	\subsection{\, Több csatlakoztatott eszköz felismerése, vezérlése}
 	\subsubsection{A probléma leírása:}
-	A rajzon látható módon kötöttük be az eszközöket, és háromból 2 eszközt érzékelt a dev485 tömbben, valamint csak 1, az USB portra közvetlenül csatlakozó (legelső) elemnek küldte ki a jeleket, a többi egyszerűen ,,elnyelődött''.		\begin{figure}[h!]
+	A rajzon látható módon kötöttük be az eszközöket, és háromból 2 eszközt érzékelt a dev485 tömbben, valamint csak 1, az USB portra közvetlenül csatlakozó (legelső) elemnek küldte ki a jeleket, a többi egyszerűen ,,elnyelődött''.
+	\begin{figure}[h!]
 		\centering
-		\includegraphics[scale=0.4]{images/kezi1.jpg}
+		\includegraphics[scale=0.4]{images/foto_sorbakotes.jpg}
 		\caption{Két eszköz csatlakoztatásának módja.}
 		\subcaption{Forrás: saját kézi rajzom.}
-		\label{fig:kezi1}
+		\label{fig:foto_sorbakotes}
 	\end{figure}	
 	
 	Amikor 2 eszközt, egy lámpát és egy nyilat csatlakoztattam, akkor egyrészt a telefonkábel folyamatosan, érezhetően melegedett, másrészt 
