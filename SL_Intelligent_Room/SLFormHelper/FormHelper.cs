@@ -10,15 +10,18 @@ namespace SLFormHelper
     {
         #region Hívó függvények - meghívják a DLL-ből hívható metódusokat
         /// <summary>
-        /// Delphi-metódust hív (Open), amely elindítja az SLDLL használatát.
+        /// A relayDLL egy metódusát hívja (Open), amely elindítja az SLDLL használatát.
+        /// Az ablakos alkalmazás Handle-jét várja, ami ahhoz szükséges, hogy az SLDLL_Open és a többi függvény üzeneteket küldözgethessen az alkalmazásunk számára.
+        /// <br></br>---------------------------------------<br></br>
+        /// Calls a method in relayDLL (Open) which starts the SLDLL.
+        /// It expects the Handle of the windowed application to be passed, this is needed to allow SLDLL_Open and other functions to send messages to our application.
         /// </summary>
-        /// <param name="handle">Az ablakos alkalmazás Handle-je, ez ahhoz kell, hogy az SLDLL_Open és a többi függvény üzeneteket küldözgethessen az alkalmazásunk számára.</param>
+        /// <param name="handle">Az ablakos alkalmazás Handle-mezője.</param>
         /// <exception cref="SLDLLException"></exception>
         /// <exception cref="USBDisconnectedException"></exception>
         /// <exception cref="DllNotFoundException"></exception>
         public static void CallOpen(IntPtr handle)
         {
-            //TODO: DelphiDLL-t hív, ennek milyen visszatérési értékei vannak? - ennek megfelelő Exception-öket dobni
             ushort result = OpenSLDLL(handle);
             if (result == (ushort) Win32Error.ERROR_SUCCESS)
                 return;
@@ -28,14 +31,15 @@ namespace SLFormHelper
                 throw new USBDisconnectedException("Hiba az SLDLL megnyitásakor: Nincs csatlakoztatott USB-eszköz.");
         }
         /// <summary>
-        /// Delphi-metódust hív (Felmeres), amely az USB-portra csatlakoztatott eszközöket (lámpákat, nyilakat, valamint hangszórókat) felméri
+        /// A relayDLL egy metódusát hívja (Felmeres), amely az USB-portra csatlakoztatott eszközöket (lámpákat, nyilakat, valamint hangszórókat) felméri
+        /// <br></br>---------------------------------------<br></br>
+        /// Calls a method in relayDLL (Felmeres), which detects devices (lights, arrows and speakers) connected to the USB port
         /// </summary>
         /// <exception cref="DllNotFoundException"></exception>
         /// <exception cref="Dev485Exception"></exception>
         /// <exception cref="SLDLLException"></exception>
         public static void CallFelmeres()
         {
-            //TODO: DelphiDLL-t hív, ennek milyen visszatérési értékei vannak? - ennek megfelelő Exception-öket dobni
             ushort result = Felmeres();
 
             if (result == (ushort)Win32Error.ERROR_SUCCESS)
@@ -48,34 +52,39 @@ namespace SLFormHelper
                 throw new Exception("Hiba felmérés közben: Egyéb műveleti hiba.");
         }
         /// <summary>
-        /// Delphi-metódust hív (Listelem), amely a Delphiben tárolt eszközök tömbjét és számát beállítja.
+        /// A relayDLL egy metódusát hívja (Listelem), amely a Delphiben tárolt eszközök tömbjét és számát beállítja.
+        /// <br></br>---------------------------------------<br></br>
+        /// Calls a method in relayDLL (Listelem) that sets the array and number of devices stored in Delphi.
         /// </summary>
-        /// <exception cref="DllNotFoundException"></exception>
-        /// <exception cref="Dev485Exception"></exception>
-        /// <exception cref="SLDLLException"></exception>
+        /// <exception cref="DllNotFoundException">Nem találja a DLL-fájlt, az SLDLL_relay mappába helyezett relay.dll állományt.</exception>
+        /// <exception cref="Dev485Exception">Nem került beállításra a dev485-tömb (Delphi-oldalon felbukkanó probléma).</exception>
+        /// <exception cref="SLDLLException">Az SLDLL_Open nem került még meghívásra.</exception>
         public static void CallListelem(ref byte drb485, bool useJSON = true)
         {
-            //TODO: DelphiDLL-t hív, ennek milyen visszatérési értékei vannak? - ennek megfelelő Exception-öket dobni
             ushort result = Listelem(ref drb485);
             if (result == 254)
                 throw new Dev485Exception("Az eszközöket tartalmazó dev485 tömb üres!");
             if (result == (ushort)Win32Error.ERROR_DLL_INIT_FAILED)
                 throw new SLDLLException("Hiba az eszközök beállítása közben: SLDLL_Open még nem került meghívásra.");
-            if (result == (ushort)Win32Error.ERROR_SUCCESS)
+            if (result == (ushort)Win32Error.ERROR_SUCCESS) //sikeres lefutás esetén
             {
                 devices.Clear();
                 turnDurations.Clear();
                 if (useJSON)
-                    JSONToDeviceList(); //ez fogja feltölteni a C#-os listát*/
+                    JSONToDeviceList(); //ez fogja feltölteni a C#-os Devices-listát
                 else
                     XMLToDeviceList();
-                turnDurations.Add(2000); //alapból beállítjuk egy ütem hosszát
+                turnDurations.Add(2000); //alapból beállítjuk egy ütem hosszát - 2 másodpercre
             }
         }
         /// <summary>
-        /// Delphi-metódust hív, amely a dev485-öt 3 eszközzel tölti fel attól függetlenül, hogy milyen eszközök vannak ténylegesen csatlakoztatva.
+        /// A relayDLL egy metódusát hívja (fill_device_list_with_devices), amely a dev485-öt 3 eszközzel tölti fel attól függetlenül, hogy milyen eszközök vannak ténylegesen csatlakoztatva.
         /// <br></br>Csak és kizárólag tesztelésre használjuk.
-        /// <para/>1 db LED-lámpa, 1 db Hangszóró és 1 db LED-nyíl eszköz
+        /// <para/>1 db LED-lámpa, 1 db Hangszóró és 1 db LED-nyíl eszköz kerül hozzáadásra a devices-listához
+        /// <br></br>---------------------------------------<br></br>
+        /// Calls a method in relayDLL, which loads dev485 with 3 devices regardless of what devices are actually connected.
+        /// <br></br>It is used only for testing purposes.
+        /// <para/>1 piece LEDLight, 1 piece Speaker, and 1 piece LEDArrow gets added to device list.
         /// </summary>
         public static void CallFillDev485Static(bool useJSON = true)
         {
@@ -107,11 +116,11 @@ namespace SLFormHelper
         /// <summary>
         /// Delphi-függvényt hív, amelyben minden egyes csatlakoztatott (tehát felmért) eszköznek kiküld egy ütemnyi jelet az adott ütemre vonatkozó beállításainak megfelelően. 
         /// A LED-lámpa és LED-nyíl típusú eszközökre az SLDLL_SetLista-függvény, addig Hangszóró típusú eszközök esetében az SLDLL_Hangkuldes-függvény kerül meghívásra.
+        /// <br></br>---------------------------------------<br></br>
         /// </summary>
         /// <param name="json_source">DEV485 eszközbeállításainak JSON-formátumú reprezentációja. <br></br> Ezt a Helperosztály "DevicesToJSON"-függvénye el is készíti számunkra a devices-lista elemei alapján.</param>
         public static void CallSetTurnForEachDevice(ref string json_source)
         {
-            //TODO: DelphiDLL-t hív, ennek milyen visszatérési értékei vannak? - ennek megfelelő Exception-öket dobni
             ushort result = SetTurnForEachDevice(ref json_source);
             if (result == (ushort) Win32Error.ERROR_SUCCESS) 
                 return;
@@ -124,6 +133,9 @@ namespace SLFormHelper
         /// <summary>
         /// Ez lényegében a Delphiben található uzfeld-metódus C#-os változata
         /// Feldolgozza a Win32-es üzeneteket a Form és a rendszer/DLL között.
+        /// <br></br>---------------------------------------<br></br>
+        /// This is essentially the C# version of the uzfeld method in Delphi
+        /// Processes Win32 messages between the Form and the opsystem or DLL.
         /// </summary>
         /// <param name="msg">A feldolgozandó Win32-szabványnak megfelelő üzenet.</param>
         /// <exception cref="ArgumentException"></exception>
@@ -174,6 +186,11 @@ namespace SLFormHelper
                     break;
             }
         }
+        /// <summary>
+        /// Eszközök darabszáma, a Listelem-függvény állítja be.
+        /// <br></br>---------------------------------------<br></br>
+        /// Number of devices, set by the Listelem function.
+        /// </summary>
         private static byte drb485;
         public static byte DRB485 { 
             get { return drb485; } 
@@ -183,6 +200,11 @@ namespace SLFormHelper
                 drb485 = value;
             } 
         }
+        /// <summary>
+        /// Hibakódok listája, CallWndProc-függvényhez készítve olvashatóság növelése céljából.
+        /// <br></br>---------------------------------------<br></br>
+        /// Error code list, created for CallWndProc function in order to increase readability.
+        /// </summary>
         private enum ErrorCodes:sbyte
         {
             FELMOK = 1,                       // A felmérés rendben lezajlott
@@ -198,6 +220,11 @@ namespace SLFormHelper
             FELMHD = -4,                      // Nincs egy darab sem hibakód (elvben sem lehet ilyen)
             FELMDE = -5                       // A 16 és 64 bites darabszám nem egyforma (elvben sem lehet ilyen)
         }
+        /// <summary>
+        /// Szabványos Win32-hibakódok listája, amelyeket az relayDLL-en keresztül az SLDLL dobhat.
+        /// <br></br>---------------------------------------<br></br>
+        /// List of standard Win32 error codes that can be thrown by SLDLL via relayDLL.
+        /// </summary>
         private enum Win32Error:ushort
         {
             ERROR_SUCCESS = 0,
@@ -214,14 +241,21 @@ namespace SLFormHelper
         #endregion
         #region RelayDLL által exportált (publikus) függvények C#-os átirata
         /// <summary>
-        /// A DLL használatának megkezdése.
-        /// </summary>
-        /// <param name="hwnd">A HWND a Win32 API része. A HWND-ek lényegében olyan értékekkel rendelkező mutatók (IntPtr), amelyek egy Form adataira mutatnak.
+        /// SLDLL használatának megkezdése.
+        /// <br></br>A HWND a Win32 API része. A HWND-ek lényegében olyan értékekkel rendelkező mutatók (IntPtr), amelyek egy Form adataira mutatnak.
         /// <br></br>Ha egy Control HWND-jét szeretnéd látni, használd a Control.Handle mezőt! Ez egy IntPtr típusú változó (egy pointer), amelynek értéke egy HWND-cím.
         /// <br></br>Mivel a HWND-k nem a .NET részei, ezért őket manuálisan kell felszabadítani, a Garbage Collector itt nem lesz a segítségünkre.
         /// <br></br>A felszabadítást a Control.DestroyHandle() paranccsal lehet megtenni a Control életciklusának végén.
         /// <br></br>Az objektumok megsemmisítésének felelőssége szokatlan a .NETben, ebből fakadóan könnyen hibák és memóriaszivárgás forrása lehet.
-        /// </param>
+        /// <br></br>---------------------------------------<br></br>
+        /// <br></br>HWND is a part of the Win32 API. HWNDs are essentially pointers(IntPtr) with values that point to data in a Form.
+        /// <br></br>To see the HWND of a Control, use the Control.Handle field. This is an IntPtr variable (a pointer) whose value is a HWND address.
+        /// <br></br>Mivel a HWND-k nem a.NET részei, ezért őket manuálisan kell felszabadítani, a Garbage Collector itt nem lesz a segítségünkre.
+        /// <br></br>A felszabadítást a Control.DestroyHandle() paranccsal lehet megtenni a Control életciklusának végén.
+        /// <br></br>The responsibility of destroying objects is unusual in .NET, hence it can easily be a source of errors and memory leaks.
+        /// A method to start using SLDLL.
+        /// </summary>
+        /// <param name="hwnd">Window Handle of the WinForm application</param>
         /// <returns>Numerikus érték, amely a végrehajtás sikerességéről tájékoztat.</returns>
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi, EntryPoint = "Open")]
         extern private static ushort OpenSLDLL(IntPtr hwnd);
@@ -248,10 +282,23 @@ namespace SLFormHelper
         
         #endregion
         #region Mezők
+        /// <summary>
+        /// The path of relayDLL.
+        /// </summary>
         private const string DLLPATH = "..\\SLDLL_relay\\relay.dll";
         private static readonly List<Device> devices = new List<Device>();
         private static List<ushort> turnDurations = new List<ushort>();
+        /// <summary>
+        /// Eszközbeállítások ütemezésére használt lista. Egy programban tetszőleges számú ütemet küldhetünk ki az eszközök részére, ezért lista adatszerkezetet választottam.
+        /// <br></br>---------------------------------------<br></br>
+        /// List used to schedule device settings. In the program, you can send out any number of turns to devices, this is why I have chosen the list data structure.
+        /// </summary>
         public static List<ushort> Durations { get { return turnDurations; } set { turnDurations = value; } }
+        /// <summary>
+        /// SLDLL-eszközök (LED-lámpák, LED-nyilak és hangszórók) listája, ez a relayDLL dev485-tömbjének C#-megfelelője. CallListelem-függvény meghívásakor kerül átadásra és feltöltésre.
+        /// <br></br>---------------------------------------<br></br>
+        /// List of SLDLL-devices (LED lights, LED arrows and speakers), this is basically the C# equivalent of the dev485 block of relayDLL. It is passed and populated when the CallListelem function is called.
+        /// </summary>
         public static List<Device> Devices { get { return devices; } }
         #endregion
     }

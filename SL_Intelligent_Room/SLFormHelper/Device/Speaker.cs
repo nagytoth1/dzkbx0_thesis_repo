@@ -6,42 +6,40 @@ namespace SLFormHelper
 {
     public partial class Speaker : Device
     {
-        private readonly List<Sound> soundList;
+        private const byte SOUNDLIST_MAX = 30; //hanglista hossza maximum
+        private readonly List<Sound> soundList; //readonly = nem engedi átírni a memóriacímet
         public Speaker(uint azonos) : base(azonos) {
             this.soundList = new List<Sound>();
         }
+        /// <summary>
+        /// Listakezelő metódus, hozzáad egy hangot a lejátszandó hangok listájához.
+        /// <br></br>---------------------------------------<br></br>
+        /// List handler method, it adds a single sound-element to the list of sounds to be played.
+        /// </summary>
+        /// <param name="pitch">Hangmagasság</param>
+        /// <param name="volume">Hangerő</param>
+        /// <param name="length">Adott hang lejátszásának időtartama (hanghossz).</param>
         public void AddSound(Pitch pitch, byte volume, ushort length)
         {
-            if (soundList.Count > 30)
-                throw new Exception("A lejátszható hangok listája megtelt.");
-            Sound soundToAdd;
+            if (soundList.Count == SOUNDLIST_MAX)
+                throw new Exception("A lejátszható hangok listája megtelt. Maximum 30 db hang játszható le összesen.");
             try
             {
-                soundToAdd = new Sound((byte)pitch, volume, length);
+                Sound soundToAdd = new Sound((byte)pitch, volume, length);
                 this.soundList.Add(soundToAdd);
             }
             catch(ArgumentOutOfRangeException ex) {
                 Console.WriteLine($"Nem adom hozzá a hanglistához a következő miatt: {ex.Message}.");
             }
         }
+        /// <summary>
+        /// Kiüríti a lejátszható hangok listáját.
+        /// <br></br>---------------------------------------<br></br>
+        /// It makes the soundList empty.
+        /// </summary>
         public void ClearSounds()
         {
             soundList.Clear();
-        }
-        public override string ToString()
-        {
-            StringBuilder sb = new StringBuilder("{");
-            sb.Append(string.Format("\"type\":\"H\",\"settings\":\""));
-            if (soundList.Count == 0)
-                return sb.Append("\"}").ToString();
-            int i;
-            for (i = 0; i < soundList.Count - 1; i++)
-            {
-                sb.Append(soundList[i].ToString()).Append('|');
-            }
-            sb.Append(soundList[i].ToString())
-                .Append("\"}");
-            return sb.ToString();
         }
         public override void LoadDeviceSettings(string[] splitSettings)
         {
@@ -65,7 +63,10 @@ namespace SLFormHelper
         {
             StringBuilder sb = new StringBuilder();
             if (soundList.Count == 0) 
-                return "";
+                //üres beállítások - ha üres lenne a string, akkor a relayDLL küldhet olyan üzenetet,
+                //hogy "eszközbeállítások üresek vagy nem megfelelő formátumúak"
+                //ha üres a lista, lényegében olyan, mintha üres jelet küldenénk ki neki
+                return "0|0|0"; 
             int i;
             for (i = 0; i < soundList.Count - 1; i++)
             {

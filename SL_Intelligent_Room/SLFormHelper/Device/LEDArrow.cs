@@ -12,24 +12,13 @@ namespace SLFormHelper
     {
         private Direction direction;
 
-        public LEDArrow(uint azonos) : this(azonos, Color.Red, Direction.LEFT) { }
-        public LEDArrow(uint azonos, Direction irany) : this(azonos, Color.Red, irany) { }
-        public LEDArrow(uint azonos, Color c, Direction direction) : base(azonos)
+        public LEDArrow(uint azonos) : this(azonos, Color.Black, Direction.BOTH) { }
+        public LEDArrow(uint azonos, Color c, Direction direction) : base(azonos, c)
         {
-            this.color = c;
             this.direction = direction;
         }
 
         public Direction Direction { get => direction; set => direction = value; }
-
-        public override string ToString()
-        {
-            StringBuilder sb = new StringBuilder("{");
-            sb.Append(string.Format("\"type\":\"N\",\"settings\":\"{0}|{1}|{2}|{3}\"", color.R, color.G, color.B, (byte)direction));
-            sb.Append("}");
-            return sb.ToString();
-        }
-
         public override void LoadDeviceSettings(string[] splitSettings)
         {
             if (splitSettings.Length != 4)

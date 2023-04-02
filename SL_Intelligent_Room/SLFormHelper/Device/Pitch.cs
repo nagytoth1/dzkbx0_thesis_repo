@@ -2,6 +2,10 @@
 {
 
     /// <summary>
+    /// Levente hozzáadhatja a lejátszandó hangokat az itt definiált hangmagasságok szerint a hangszóró hanglistájához
+    /// anélkül, hogy tudná, hogyan működnek az indexek hangso esetén.
+    /// Ez egy intuitívabb, leíróbb módja a hangszórók vezérlésének, valamint nem lehet tartományon kívülre eső indexet megadni.
+    /// <br></br>---------------------------------------<br></br>
     /// Levente can add sounds to speaker's soundList - he doesn't have to know how indices work in case of hangso<br></br>
     /// This is a more intuitive way to control speakers and he can't give an index out of range (chance of getting error reduced)
     /// </summary>
