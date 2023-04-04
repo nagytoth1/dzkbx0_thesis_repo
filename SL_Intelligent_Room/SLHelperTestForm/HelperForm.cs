@@ -18,7 +18,10 @@ namespace SLHelperTestForm
         {
             try
             {
-                CallOpen(this.Handle);
+                //CallOpen(this.Handle);
+                CallFillDev485Static();
+                string json = DevicesToJSON();
+                Console.WriteLine(json);
             }
             catch (DllNotFoundException ex)
             {

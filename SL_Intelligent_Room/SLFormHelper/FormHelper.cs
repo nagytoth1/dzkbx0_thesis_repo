@@ -108,10 +108,6 @@ namespace SLFormHelper
             //lámpa
             LEDLight light = (LEDLight)devices[2];
             light.Color = Color.Green;
-
-            Console.WriteLine(speaker);
-            Console.WriteLine(arrow);
-            Console.WriteLine(light);
         }
         /// <summary>
         /// Delphi-függvényt hív, amelyben minden egyes csatlakoztatott (tehát felmért) eszköznek kiküld egy ütemnyi jelet az adott ütemre vonatkozó beállításainak megfelelően. 
@@ -128,7 +124,7 @@ namespace SLFormHelper
                 throw new SLDLLException("Hiba a beállítások kiküldése közben: SLDLL_Open még nem került meghívásra.");
             if (result == (ushort) Win32Error.ERROR_REQ_NOT_ACCEP) 
                 throw new SLDLLException("Hiba a beállítások kiküldése közben: Jelenleg épp fut egy végrehajtás.");
-            else throw new Exception("Hiba a beállítások kiküldése közben: Egyéb hiba");
+            else throw new Exception($"Egyéb hiba a beállítások kiküldése közben. Hibakód: {result}");
         }
         /// <summary>
         /// Ez lényegében a Delphiben található uzfeld-metódus C#-os változata

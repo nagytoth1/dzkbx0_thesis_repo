@@ -84,11 +84,6 @@ begin
 	i := 0; j := 0;
 	
 	//when devList is connected with dev485 then this must be called
-	if(devListSet = true) then //when it is the 2nd, 3rd, ... turn
-	begin
-		//SwitchEachDeviceOFF();
-		//SLDLL_SetLista(drb485, devList);
-	end;
 	
 	while(j < drb485) do
 	begin

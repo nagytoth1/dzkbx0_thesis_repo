@@ -127,15 +127,16 @@ namespace SLFormHelper
         {
             if (devices.Count == 0) 
                 return "[]";
-            StringBuilder sb = new StringBuilder("[");
-            int i;
-            for (i = 0; i < devices.Count - 1; i++)
+            StringBuilder sBuilder = new StringBuilder("[");
+            foreach (Device device in devices)
             {
-                sb.Append(devices[i].ToString()).Append(",");
+                //{"type":"L",\"settings\":\"255|0|0\"}
+                sBuilder.Append("{\"type\":\"").Append(device.GetJSONType()).Append("\","). //{"type":"L"
+                        Append("\"settings\":\"").Append(device.GetJSONSettings()).Append("\"},"); //,"settings":"255|0|0"}
             }
-            sb.Append(devices[i].ToString()).Append(']');
-
-            return sb.ToString();
+            sBuilder.Remove(sBuilder.Length - 1, 1);
+            sBuilder.Append(']');
+            return sBuilder.ToString();
         }
 
         /// <summary>
