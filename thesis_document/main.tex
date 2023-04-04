@@ -9,7 +9,6 @@
 \captionsetup[subfigure]{labelformat=empty} % subcaptionre ne tegyen számozást
 \graphicspath{{./images/}} % képeket innen importálom be
 \DeclareGraphicsExtensions{.png,.PNG,.jpg,.JPG,.pdf,.PDF} %ezeken a kiterjesztéseken keresse a képeket
-
 \newtheorem{tetel}{Tétel}[chapter]
 \theoremstyle{definition}
 \newtheorem{definicio}[tetel]{Definíció}
@@ -490,16 +489,49 @@
 	\end{verbatim}
 
 	\subsection{ConvertDEV485ToJSON}
-	A metódus az SLDLL dev485-tömbjét C\# által is értelmezhető JSON formátumú szöveggé alakítja (szerializálja). Ehhez a relayDLL egy újabb, C nyelvű kódból lefordított \textit{converter32.dll} állományt hívja segítségül. Ezt szintén én készítettem el, viszont az abban használt JSON-keretrendszert Michael Grieco szoftverfejlesztőtől vettem át.\cite{mgrieco}
-	%todo: erről a függvényről írni egy bekezdést- create_json_from_azonositok()
-	Mivel a Delphi 7-hez nem találtam beépített JSON-kezelő függvényeket, ezért megírtam egy olyan függvényt, ami azt a JSON-formátumot készíti el, amire nekünk szükségünk van: 
+	A metódus az SLDLL dev485-tömbjét C\# által is értelmezhető JSON formátumú szöveggé alakítja (szerializálja). 
+	
+	Az eredmény egy referenciaként átadott string paraméterből olvasható ki a függvény hívása után. Ezzel a függvénnyel közli a Delphi a C\# számára, hogy milyen eszközök kerültek eltárolásra a \verb*|SLDLL_Listelem| folyamán.
+	\begin{verbatim}
+		function ConvertDEV485ToJSON(out outputStr: WideString): byte; stdcall;
+		var
+			buffer: WideString;
+			i: byte;
+		begin
+			if (drb485 = 0) or (not Assigned(dev485)) then
+			begin
+				showmessage(format('Dev485 is empty drb485 = %d  dev485 = %p', [drb485, @dev485]));
+				outputStr := '[]';
+				result := DEV485_EMPTY;
+				exit;
+			end;
+			buffer := '[';
+			i := 0;
+			while i < drb485 do
+			begin
+				buffer := buffer + Format('{"azonos":%d},', [dev485[i].azonos]);
+				inc(i);
+			end;
+			buffer[length(buffer)] := ']'; 
+			showmessage(format('JSON-buffer = %s', [buffer]));
+			outputStr := buffer;
+			result := EXIT_SUCCESS;
+		end;
+	\end{verbatim}
+	\subsection{ConvertDEV485ToJSON\_C}
+	A metódus nevéből is kitalálható, hogy ez pontosan azt a műveletet végzi el, amit az imént említett függvény: JSON-szerializációt. A szemléltetés kedvéért megcsináltam egy JSONParser hívásának másik lehetséges módját, hogy elismerjük, a Delphi és a C nyelv között is tudunk kapcsolatot teremteni DLL segítségével, mint azt alapvetően a Delphi és a C\# között tettük.
+	
+	Ehhez a relayDLL egy C nyelvű komponenst, az általam készített és lefordított \verb*|converter32.dll| állományt hívja segítségül. Az ebben használt JSON-keretrendszert Michael Grieco szoftverfejlesztőtől építette fel, én kizárólag ehhez egyetlen, külső hívást megengedő (exportált) függvényt készítettem úgy, hogy az hibamentesen hívható lehessen Delphiből.\cite{mgrieco}
+	
+	Természetesen a JSON-formátum kialakításához használhattam volna külső könyvtárakat is, mint például a \verb*|SuperObject| \cite{json_superobject}
+	vagy az \verb*|LKJSON| \cite{json_lkjson} de fontosabbnak tartottam, hogy egyrészt kitaláljam ennek működését, másrészt megteremtsek esetlegesen egy újabb nyelvi kapcsolatot a C programozási nyelvvel.
+
+	\subsubsection{Hívott függvény: create\_json}
+	Mivel a Delphi 7-es verziójába alapból nem lett beépítve a JSON-formátum kezelése, ezért segítségül hívunk C-ből egy olyan függvényt, ami azt a JSON-formátumot készíti el, amire nekünk szükségünk van: 
 	\begin{verbatim} 
 		[{"azonos":16385}, {"azonos":32770}, {"azonos":49153}, ...]
 	\end{verbatim}
-	A C-nyelvű implementáció azonban hatékonyabban elvégzi ugyanezt a JSON-szerializációt, mint korábban a manuális, összefűzögetős módszerrel.
-	Az eredmény egy referenciaként átadott string paraméterből olvasható ki a függvény hívása után. Ezzel a függvénnyel közli a Delphi a C\# számára, hogy milyen eszközök kerültek eltárolásra a \verb*|SLDLL_Listelem| folyamán.
-	%todo: verbatimként iderakni az új Delphi-kódot
-
+	A C-nyelvű implementáció azonban hatékonyabban elvégzi ugyanezt a JSON-szerializációt.
 	\subsection{ConvertDEV485ToXML} 
 	A dev485 tömbből egy XML formátumú szöveget készít, amelyet egy úgynevezett \verb*|devices.xml| állományban ment ki a háttértárra.
 	
@@ -727,25 +759,21 @@
 	\subcaption{Forrás: \\táblázat: saját szerkesztés, \\adatok: SLDLL-állomány}
 	\label{fig:frequencies}
 	\end{figure}
-
 	\subsubsection{Megoldás - kódban}
-	\section{A hangszóró egy egész hanglistát kezel - kód}
-	\subsection{Megoldás}
-	\subsection{A hangszóró egy egész hanglistát kezel - kód}
-	\subsubsection{Megoldás}
 	A Speaker-osztályban az eszköz viselkedését leíró 3 mezőt (index, volume és length) egy külön objektumba szervezzük ki (Sound), és a Speaker -- azonosítóján kívül -- kizárólag Sound-típusú objektumok listáját tartalmazza, a listát JSON-ben \textit{"index|volume|length"} rendezett hármasok összefűzésével szerializálja, a listához kizárólag listakezelő függvényekkel lehet hozzáférni (törlés, módosítás, hozzáadás), majd az \verb*|SLDLL_Hangkuldes| számára kiküldött H-tömböt (hanglistát) Delphiben egy ciklussal a JSON-nel átadott adatok szerint a megfelelő sorrendben feltöltjük, az előző probléma megoldásában ennek mikéntjét kifejtettem.
 	\begin{figure}[h!]
 		\centering
-		\includegraphics[scale=0.7]{speaker_csharp}
+		\includegraphics[scale=0.53]{speaker_csharp}
 		\caption{A hangszóró hanglistát kezel - megoldás C\# nyelven}
 		\label{speaker_csharp}
 	\end{figure}
-	\subsection{\, Több csatlakoztatott eszköz felismerése, vezérlése}
+
+	\subsection{\ Több csatlakoztatott eszköz felismerése, vezérlése}
 	\subsubsection{A probléma leírása:}
-	A rajzon látható módon kötöttük be az eszközöket, és háromból 2 eszközt érzékelt a dev485 tömbben, valamint csak 1, az USB portra közvetlenül csatlakozó (legelső) elemnek küldte ki a jeleket, a többi egyszerűen ,,elnyelődött''.
+	A rajzon látható módon kötöttük be az eszközöket, és háromból 2 eszközt érzékelt a \verb*|dev485| tömbben, valamint csak egy, az USB portra közvetlenül csatlakozó (legelső) elemnek küldte ki a jeleket, a többi egyszerűen ,,elnyelődött''.
 	\begin{figure}[h!]
 		\centering
-		\includegraphics[scale=0.4]{images/foto_sorbakotes.jpg}
+		\includegraphics[scale=0.07]{images/foto_sorbakotes.jpg}
 		\caption{Két eszköz csatlakoztatásának módja.}
 		\subcaption{Forrás: saját kézi rajzom.}
 		\label{fig:foto_sorbakotes}

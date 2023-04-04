@@ -55,10 +55,9 @@ namespace SLFormHelper
         {
             return 'L';
         }
-        internal override string GetJSONSettings()
+        public override string GetJSONSettings()
         {
             return string.Format($"{color.R}|{color.G}|{color.B}"); //255|0|0
         }
-
     }
 }

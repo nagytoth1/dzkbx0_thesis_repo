@@ -59,7 +59,7 @@ namespace SLFormHelper
         {
             return 'H';
         }
-        internal override string GetJSONSettings()
+        public override string GetJSONSettings()
         {
             StringBuilder sb = new StringBuilder();
             if (soundList.Count == 0) 

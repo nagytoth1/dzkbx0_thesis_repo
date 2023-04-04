@@ -34,7 +34,7 @@ namespace SLFormHelper
             return 'N';
         }
 
-        internal override string GetJSONSettings()
+        public override string GetJSONSettings()
         {
             return string.Format("{0}|{1}", base.GetJSONSettings(), (byte) direction); //255|0|0|1
         }
