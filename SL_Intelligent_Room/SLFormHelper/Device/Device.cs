@@ -18,7 +18,7 @@
         /// <param name="splitSettings">Settings in an array format. Each type of device requires different type/amount of data.</param>
         public abstract void LoadDeviceSettings(string[] splitSettings);
         public abstract char GetJSONType();
-        internal abstract string GetJSONSettings();
+        public abstract string GetJSONSettings();
         
         //inner factory solution
         public static class Factory
