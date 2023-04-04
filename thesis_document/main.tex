@@ -468,7 +468,7 @@
 		var
 		nevlei, devusb: pchar;
 		begin
-		result := SLDLL_Open(wndhnd, UZESAJ, @nevlei, @devusb); //result: a visszatérési értéknek lefoglalt hivatkozási név Delphi-függvények esetében
+		result := SLDLL_Open(wndhnd, UZESAJ, @nevlei, @devusb); 
 		end;
 	\end{verbatim}
 
@@ -480,50 +480,25 @@
 		result := SLDLL_Listelem(@dev485);
 		drb485 := numberOfDevices;
 		devListSet := false;
-		writeln(Format('Listelem sikeres, eredmenye %d dev485 = %p &dev485[0] = %p &dev485[1] = %p', [Result, dev485, @dev485[0], @dev485[1]]));
 		end;
 		
 		function Felmeres(): word; stdcall;
 		begin
 		result := SLDLL_Felmeres();
 		devListSet := false;
-		writeln(Format('Felmeres eredmenye %d &dev485 = %p &dev485[0] = %p', [result, @dev485, @dev485[0]]));
 		end;
 	\end{verbatim}
 
 	\subsection{ConvertDEV485ToJSON}
-	A metódus az SLDLL dev485-tömbjét C\# által is értelmezhető JSON formátumú szöveggé alakítja (szerializálja). Ezt úgy végzi el, hogy végigiterál Delphiben a detektált eszközök listáján, és azok azonosítóit írja be egy JSON-tömbbe. Az eredmény egy referenciaként átadott string paraméterből olvasható ki a függvény hívása után. Ezzel a függvénnyel közli a Delphi a C\# számára, hogy milyen eszközök kerültek eltárolásra a \verb*|SLDLL_Listelem| folyamán.
-	
-	\begin{verbatim}
-		function ConvertDEV485ToJSON(out outputStr: WideString): byte; stdcall;
-		var
-		buffer: WideString;
-		i: byte;
-		begin
-		if (drb485 = 0) or (not Assigned(dev485)) then
-		begin
-			showmessage(
-				format('Dev485 is empty drb485 = %d dev485 = %p', 
-				[drb485, @dev485]));
-			outputStr := '[]';
-			result := DEV485_EMPTY;
-		exit;
-		end;
-		buffer := '[';  //JSON-array is going to be created
-		i := 0;
-		while i < drb485 do
-		begin
-		buffer := buffer + Format('{"azonos":%d},', [dev485[i].azonos]);
-		inc(i);
-		end;
-		buffer[length(buffer)] := ']'; 
-		//a végére tett vessző a valid
-		JSON-formátumot elrontja, ezt kicserélem tömbvége-jelre
-		showmessage(format('JSON-buffer = %s', [buffer]));
-		outputStr := buffer;
-		result := EXIT_SUCCESS;
-		end;
+	A metódus az SLDLL dev485-tömbjét C\# által is értelmezhető JSON formátumú szöveggé alakítja (szerializálja). Ehhez a relayDLL egy újabb, C nyelvű kódból lefordított \textit{converter32.dll} állományt hívja segítségül. Ezt szintén én készítettem el, viszont az abban használt JSON-keretrendszert Michael Grieco szoftverfejlesztőtől vettem át.\cite{mgrieco}
+	%todo: erről a függvényről írni egy bekezdést- create_json_from_azonositok()
+	Mivel a Delphi 7-hez nem találtam beépített JSON-kezelő függvényeket, ezért megírtam egy olyan függvényt, ami azt a JSON-formátumot készíti el, amire nekünk szükségünk van: 
+	\begin{verbatim} 
+		[{"azonos":16385}, {"azonos":32770}, {"azonos":49153}, ...]
 	\end{verbatim}
+	A C-nyelvű implementáció azonban hatékonyabban elvégzi ugyanezt a JSON-szerializációt, mint korábban a manuális, összefűzögetős módszerrel.
+	Az eredmény egy referenciaként átadott string paraméterből olvasható ki a függvény hívása után. Ezzel a függvénnyel közli a Delphi a C\# számára, hogy milyen eszközök kerültek eltárolásra a \verb*|SLDLL_Listelem| folyamán.
+	%todo: verbatimként iderakni az új Delphi-kódot
 
 	\subsection{ConvertDEV485ToXML} 
 	A dev485 tömbből egy XML formátumú szöveget készít, amelyet egy úgynevezett \verb*|devices.xml| állományban ment ki a háttértárra.
@@ -544,10 +519,10 @@
 		xmlDocument.Encoding := 'utf-8';
 		xmlDocument.Options := [doNodeAutoIndent];
 		rootNode := xmlDocument.AddChild('devices');
-		for i := 0 to drb485 - 1 do //that's the way of iterating through dev485 array (or using the drb485 variable)
+		for i := 0 to drb485 - 1 do 
 		begin
 		node := rootNode.AddChild('device');
-		node.Attributes['azonos'] := dev485[i].azonos; //we don't need the type of the device
+		node.Attributes['azonos'] := dev485[i].azonos;
 		end;
 		xmlDocument.SaveToFile(outPath);
 		showmessage('saved XML to location: ' + outPath);
@@ -567,35 +542,24 @@
 		actDeviceType: string;
 		actDeviceSettings: string;
 		begin
-		//decode the JSON of the current turn (type + settings fields)
 		jsonArrayElements := reduceJSONSourceToElements(json_source);
 		i := 0; j := 0;
-		
-		//when devList is connected with dev485 then this must be called
-		if(devListSet = true) then //when it is the 2nd, 3rd, ... turn
-		begin
-		//SwitchEachDeviceOFF();
-		//SLDLL_SetLista(drb485, devList);
-		end;
-		
 		while(j < drb485) do
 		begin
-		json_element1 := jsonArrayElements[i]; //loads the actual device
-		json_element2 := jsonArrayElements[i+1]; //loads the actual device
-		//I want the first char of string 
-		actDeviceType := extractValueFromJSONField(json_element1, 'type'); //gets the type of the device
-		actDeviceSettings := extractValueFromJSONField(json_element2, 'settings'); //for example: 255|0|0|1
-		if devListSet = false then //devList should be linked only once with dev485 elements
+		json_element1 := jsonArrayElements[i];
+		json_element2 := jsonArrayElements[i+1];
+		actDeviceType := extractValueFromJSONField(json_element1, 'type'); 
+		actDeviceSettings := extractValueFromJSONField(json_element2, 'settings');
+		if devListSet = false then 
 		begin
-		devList[j].azonos := dev485[j].azonos; //link dev485 to devList using identifiers
+		devList[j].azonos := dev485[j].azonos; 
 		end;
-		result := setDeviceByType(j, actDeviceType, actDeviceSettings); //SEHException
-		//TODO: is there no such result that leads to end the loop?
+		result := setDeviceByType(j, actDeviceType, actDeviceSettings);
 		printErrors(result);
 		inc(j);
 		inc(i, 2);
 		end; //case
-		devListSet := true; //it becomes true after the first iteration (first turn)
+		devListSet := true;
 		result := SLDLL_SetLista(drb485, devList);
 		end;
 	\end{verbatim}

@@ -14,9 +14,9 @@
 \select@language {magyar} \contentsline {figure}{\numberline {1.8.}{\ignorespaces Tápkábelt használunk a további, számítógéphez közvetlenül nem csatlakozó eszközök feszültségre kapcsolásához.\relax }}{19}{figure.caption.15}%
 \select@language {magyar} \contentsline {figure}{\numberline {1.9.}{\ignorespaces Hibakódok és magyarázataik}}{27}{figure.caption.16}%
 \select@language {magyar} \contentsline {figure}{\numberline {1.10.}{\ignorespaces Eszközök azonosítóinak átadása JSON-formátumon keresztül\relax }}{34}{figure.caption.19}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.11.}{\ignorespaces A függvény helyes Delphi-deklarációja\relax }}{36}{figure.caption.26}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.12.}{\ignorespaces A függvény helyes szignatúrája C\#-ban\relax }}{36}{figure.caption.27}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.13.}{\ignorespaces Megoldás a problémára - RelayDLL\relax }}{39}{figure.caption.36}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.14.}{\ignorespaces Hangszóróval lejátszható hangok listája frekvenciákra bontva\relax }}{40}{figure.caption.37}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.15.}{\ignorespaces A hangszóró hanglistát kezel - megoldás C\# nyelven\relax }}{40}{figure.caption.40}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.16.}{\ignorespaces Két eszköz csatlakoztatásának módja.\relax }}{42}{figure.caption.42}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.11.}{\ignorespaces A függvény helyes Delphi-deklarációja\relax }}{35}{figure.caption.26}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.12.}{\ignorespaces A függvény helyes szignatúrája C\#-ban\relax }}{35}{figure.caption.27}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.13.}{\ignorespaces Megoldás a problémára - RelayDLL\relax }}{38}{figure.caption.36}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.14.}{\ignorespaces Hangszóróval lejátszható hangok listája frekvenciákra bontva\relax }}{39}{figure.caption.37}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.15.}{\ignorespaces A hangszóró hanglistát kezel - megoldás C\# nyelven\relax }}{39}{figure.caption.40}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.16.}{\ignorespaces Két eszköz csatlakoztatásának módja.\relax }}{41}{figure.caption.42}%
