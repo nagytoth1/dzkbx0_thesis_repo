@@ -22,9 +22,9 @@ Az eszközökkel megtámogatott egészségfejlesztést szolgáló projekt részt
 
 ## Fejlesztéshez használt eszközök
  - PlantUML - UML-ábrák elkészítése
- - Visual Studio - C# DLL, egységtesztek, teszteléshez használt asztali alkalmazás elkészítése
+ - Microsoft Visual Studio Community 2019 - C# DLL, egységtesztek, teszteléshez használt asztali alkalmazás elkészítése
  - Visual Studio Code - RelayDLL fejlesztése
- - Borland Delphi 7 IDE - korábbi Delphi-projekt futtatása
+ - Borland Delphi 7 Enterprise Edition - korábbi Delphi-projekt futtatása
  - Git, GitKraken - a projekt verziókezelése grafikus felületen keresztül
  - Trello - feladatkövetés
  
