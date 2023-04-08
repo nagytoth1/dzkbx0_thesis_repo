@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -150,6 +151,7 @@ namespace SLFormHelper
         /// On this device list you can make settings, which you can eventually send out to the appropriate devices.
         /// The list is accessible via the FormHelper.Devices property.
         /// </summary>
+        /// <param name="use_c">Használjuk-e a converter32.dll-jében található C-függvényt</param>
         /// <exception cref="JsonException"></exception>
         private static void JSONToDeviceList()
         {
@@ -157,8 +159,8 @@ namespace SLFormHelper
             //[{"azonos":16388}, {"azonos": 36543}, ...] JSON-formátumú dev485 betöltése a C# környezete számára
             if (!jsonFormat.IsValidJSON())
                 throw new JsonException($"Az eszközök leírása helytelen JSON-formátumban történt: {jsonFormat}");
+           List<SerializedDevice> deserializedDeviceList = JsonConvert.DeserializeObject<List<SerializedDevice>>(jsonFormat);
             
-            List<SerializedDevice> deserializedDeviceList = JsonConvert.DeserializeObject<List<SerializedDevice>>(jsonFormat);
             
             if (deserializedDeviceList == null)
                 throw new JsonException($"Eszközlista létrehozása sikertelen: {jsonFormat}");
@@ -166,6 +168,19 @@ namespace SLFormHelper
             for (int i = 0; i < deserializedDeviceList.Count; i++)
                 devices.Add(deserializedDeviceList[i].CreateDevice());
         }
+
+        private static void JSONToDeviceList_C()
+        {
+            ConvertDeviceListToJSON_C(out string jsonFormat);
+            List<SerializedDevice> deserializedDeviceList = JsonConvert.DeserializeObject<List<SerializedDevice>>(jsonFormat);
+
+            if (deserializedDeviceList == null)
+                throw new JsonException($"Eszközlista létrehozása sikertelen: {jsonFormat}");
+
+            for (int i = 0; i < deserializedDeviceList.Count; i++)
+                devices.Add(deserializedDeviceList[i].CreateDevice());
+        }
+        
         /// <summary>
         /// Szöveg-típusú változóra meghívható kiegészítő (extension) függvény. <br></br>
         /// Eldönti a bemenő JSON-forrásszövegről, hogy az helyes JSON-formátumban van-e.
@@ -177,12 +192,14 @@ namespace SLFormHelper
         /// <returns>true, ha JSON-formátumban van, különben false.</returns>
         private static bool IsValidJSON(this string source) //extension method for string
         {
+            if (source == null || source == "")
+                return false;
             try
             {
                 JToken.Parse(source);
                 return true;
             }
-            catch (JsonReaderException) //ha bármi hiba van a JSON-parse közben, akkor nem lehet valid a JSON-formátum
+            catch (JsonException) //ha bármi hiba van a JSON-parse közben, akkor nem lehet valid a JSON-formátum
             {
                 return false;
             }

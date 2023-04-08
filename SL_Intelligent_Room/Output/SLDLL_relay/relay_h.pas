@@ -8,7 +8,7 @@ uses SLDLL, Classes, XMLIntf, XMLDoc, Sysutils, Types, Messages, Dialogs;
 const
   MAX_DEVICECOUNT = 100;
   UZESAJ = WM_USER + 0;
-  PRODUCER = 'Somodi László';
+  PRODUCER = 'Somodi Lï¿½szlï¿½';
   MANUFACTURER = 'Pluszs Kft.';
   RELAY_PATH = 'relay.dll';
   //error codes instead of exceptions - the cause thrown exceptions cannot be detected by C# PInvoke
@@ -38,6 +38,8 @@ function Listelem(var numberOfDevices: byte): word; stdcall; external RELAY_PATH
 function Felmeres(): word; stdcall; external RELAY_PATH;
 //converting dev485 to JSON-format - JSON-serializing
 function ConvertDEV485ToJSON(out outputStr: WideString): byte; stdcall; external RELAY_PATH;
+//converting dev485 to JSON-format - using JSONParser from C
+function ConvertDEV485ToJSON_C(out outputStr: WideString): byte; stdcall; external RELAY_PATH;
 //converting dev485 to XML-format - XML-serializing
 function ConvertDEV485ToXML(var outPath:WideString): byte; stdcall; external RELAY_PATH;
 //sends an array of statements to ALL devices, this is going to be 1 turn (the passive device during the turn gets 'empty' signal)

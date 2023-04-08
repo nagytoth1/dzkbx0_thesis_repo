@@ -59,7 +59,7 @@ namespace SLFormHelper
         /// <exception cref="DllNotFoundException">Nem találja a DLL-fájlt, az SLDLL_relay mappába helyezett relay.dll állományt.</exception>
         /// <exception cref="Dev485Exception">Nem került beállításra a dev485-tömb (Delphi-oldalon felbukkanó probléma).</exception>
         /// <exception cref="SLDLLException">Az SLDLL_Open nem került még meghívásra.</exception>
-        public static void CallListelem(ref byte drb485, bool useJSON = true)
+        public static void CallListelem(ref byte drb485, ToDeviceList_UsedMethod method = ToDeviceList_UsedMethod.JSON)
         {
             ushort result = Listelem(ref drb485);
             if (result == 254)
@@ -70,12 +70,37 @@ namespace SLFormHelper
             {
                 devices.Clear();
                 turnDurations.Clear();
-                if (useJSON)
-                    JSONToDeviceList(); //ez fogja feltölteni a C#-os Devices-listát
-                else
-                    XMLToDeviceList();
+                switch (method)
+                {
+                    case ToDeviceList_UsedMethod.JSON:
+                        JSONToDeviceList();
+                        break;
+                    case ToDeviceList_UsedMethod.JSON_C:
+                        JSONToDeviceList_C();
+                        break;
+                    case ToDeviceList_UsedMethod.XML:
+                        XMLToDeviceList();
+                        break;
+                    default:
+                        break;
+                }
                 turnDurations.Add(2000); //alapból beállítjuk egy ütem hosszát - 2 másodpercre
             }
+        }
+        /// <summary>
+        /// Milyen módon akarjuk a Delphiben dev485-tömbként létező eszközök listáját áthozni C# részére?
+        /// <br></br>
+        /// 1. JSON: ConvertDev485ToJSON-függvényt hívja, ez a klasszikus Delphi-implementáció, ami az elejétől fogva benne volt.
+        /// <br></br>
+        /// 2. JSON_C: A legújabb ConvertDev485ToJSON_C-függvényt hívja, amely függvény egy C nyelven készített DLL-t hív segíségül a relayDLL-ben
+        /// <br></br>
+        /// 3. XML: ConvertDev485ToXML-függvényt hívja, amely során egy devices.xml fájl kerül kiírásra, majd ezt olvassa be a C#.
+        /// </summary>
+        public enum ToDeviceList_UsedMethod
+        {
+            JSON,
+            JSON_C,
+            XML
         }
         /// <summary>
         /// A relayDLL egy metódusát hívja (fill_device_list_with_devices), amely a dev485-öt 3 eszközzel tölti fel attól függetlenül, hogy milyen eszközök vannak ténylegesen csatlakoztatva.
@@ -86,35 +111,50 @@ namespace SLFormHelper
         /// <br></br>It is used only for testing purposes.
         /// <para/>1 piece LEDLight, 1 piece Speaker, and 1 piece LEDArrow gets added to device list.
         /// </summary>
-        public static void CallFillDev485Static(bool useJSON = true)
+        public static void CallFillDev485Static(ToDeviceList_UsedMethod method = ToDeviceList_UsedMethod.JSON)
         {
             byte result = FillDev485WithStaticData(); //Delphiben feltölti a dev485-tömböt, drb485-öt beállítja 3-ra
             if (result == 253)
                 throw new Dev485Exception("Az eszközök tömbje már fel lett töltve!");
             turnDurations.Add(2000);
-            if (useJSON)
-                JSONToDeviceList();
-            else
-                XMLToDeviceList();
+             switch (method)
+             {
+                 case ToDeviceList_UsedMethod.JSON:
+                     JSONToDeviceList();
+                     break;
+                 case ToDeviceList_UsedMethod.JSON_C:
+                     JSONToDeviceList_C();
+                     break;
+                 case ToDeviceList_UsedMethod.XML:
+                     XMLToDeviceList();
+                     break;
+                 default:
+                     break;
+             }
+
             //hangszóró
             Speaker speaker = (Speaker)devices[0];
             speaker.AddSound(Pitch.C_OKTAV4, 63, 500);
-            
+
             //nyíl
             LEDArrow arrow = (LEDArrow)devices[1];
             arrow.Color = Color.Red;
             arrow.Direction = Direction.LEFT;
-            
+
             //lámpa
             LEDLight light = (LEDLight)devices[2];
             light.Color = Color.Green;
+
         }
         /// <summary>
-        /// Delphi-függvényt hív, amelyben minden egyes csatlakoztatott (tehát felmért) eszköznek kiküld egy ütemnyi jelet az adott ütemre vonatkozó beállításainak megfelelően. 
-        /// A LED-lámpa és LED-nyíl típusú eszközökre az SLDLL_SetLista-függvény, addig Hangszóró típusú eszközök esetében az SLDLL_Hangkuldes-függvény kerül meghívásra.
+        /// Delphi-függvényt hív, amelyben minden egyes csatlakoztatott (tehát felmért) eszköznek kiküld egy ütemnyi jelet 
+        /// az adott ütemre vonatkozó beállításainak megfelelően. 
+        /// A LED-lámpa és LED-nyíl típusú eszközökre az SLDLL_SetLista-függvény, 
+        /// addig Hangszóró típusú eszközök esetében az SLDLL_Hangkuldes-függvény kerül meghívásra.
         /// <br></br>---------------------------------------<br></br>
         /// </summary>
-        /// <param name="json_source">DEV485 eszközbeállításainak JSON-formátumú reprezentációja. <br></br> Ezt a Helperosztály "DevicesToJSON"-függvénye el is készíti számunkra a devices-lista elemei alapján.</param>
+        /// <param name="json_source">DEV485 eszközbeállításainak JSON-formátumú reprezentációja. 
+        /// <br></br> Ezt a Helperosztály "DevicesToJSON"-függvénye el is készíti számunkra a devices-lista elemei alapján.</param>
         public static void CallSetTurnForEachDevice(ref string json_source)
         {
             ushort result = SetTurnForEachDevice(ref json_source);
@@ -150,7 +190,7 @@ namespace SLFormHelper
                         DRB485 = (byte)msg.LParam;
                     }
                     catch (ArgumentException) { throw; }
-                    CallListelem(ref drb485, true);
+                    CallListelem(ref drb485, ToDeviceList_UsedMethod.JSON);
                     break;
                 case ErrorCodes.AZOOKE: break;
                 //megváltoztattam az eszköz számát, akkor jön ez a válasz  
@@ -267,6 +307,8 @@ namespace SLFormHelper
 
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "ConvertDEV485ToJSON")]
         extern private static byte ConvertDeviceListToJSON([MarshalAs(UnmanagedType.BStr)][Out] out string outputStr);
+        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "ConvertDEV485ToJSON_C")]
+        extern private static byte ConvertDeviceListToJSON_C([MarshalAs(UnmanagedType.BStr)][Out] out string outputStr);
 
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "SetTurnForEachDeviceJSON")]
         extern private static ushort SetTurnForEachDevice([MarshalAs(UnmanagedType.BStr)][In] ref string json_source);

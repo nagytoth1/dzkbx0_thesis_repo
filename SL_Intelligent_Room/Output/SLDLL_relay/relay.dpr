@@ -8,7 +8,8 @@ uses
   Sysutils,
   Types,
   Messages,
-  Dialogs;
+  Dialogs,
+  Windows;
 
 //dpr implements the methods defined in pas + creates its own methods + propagates methods with exportlist
 //signatures of private, not exported, implemented methods
@@ -33,6 +34,7 @@ procedure setLEDDevice(i, red, green, blue, direction: byte); Forward;
 procedure setSpeaker(i: byte; elements:TStringList); overload; Forward;
 procedure setSpeaker(i, hangso, hanger:byte; hangho: word); overload; Forward;
 procedure printErrors(result: word); Forward;
+function create_json(device_ids:pinteger;length:integer):pchar; stdcall; external 'converter32.dll'
 
 function fill_devices_list_with_devices(): byte; stdcall;
 begin
@@ -144,6 +146,25 @@ begin
 	xmlDocument.SaveToFile(outPath);
 	showmessage('saved XML to location: ' + outPath);
 	result := EXIT_SUCCESS;
+end;
+
+function ConvertDEV485ToJSON_C(out outputStr: WideString): byte; stdcall;
+var
+    i: integer;
+    device_ids: array of integer;
+    output: pchar;
+    azonos: pinteger;
+begin
+	SetLength(device_ids, drb485);
+	for i := 0 to drb485 - 1 do
+	begin
+		device_ids[i] := dev485[i].azonos;
+	end;
+	azonos := @device_ids[0];
+	output := create_json(azonos, drb485);
+	showmessage(format('JSON-buffer = %s', [output]));
+	outputStr := output;
+	result := 0;
 end;
 
 function ConvertDEV485ToJSON(out outputStr: WideString): byte; stdcall;
@@ -375,6 +396,7 @@ exports Open,
         Listelem,
         Felmeres,
         ConvertDEV485ToJSON,
+		ConvertDEV485ToJSON_C,
         ConvertDEV485ToXML,
         SetTurnForEachDeviceJSON,
 		fill_devices_list_with_devices; //testing purposes!
