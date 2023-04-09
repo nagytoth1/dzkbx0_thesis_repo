@@ -8,6 +8,7 @@ namespace SLFormHelper
     {
         private const byte SOUNDLIST_MAX = 30; //hanglista hossza maximum
         private readonly List<Sound> soundList; //readonly = nem engedi átírni a memóriacímet
+        public List<Sound> Sounds { get { return soundList; } }
         public Speaker(uint azonos) : base(azonos) {
             this.soundList = new List<Sound>();
         }
@@ -45,7 +46,7 @@ namespace SLFormHelper
         {
             if (splitSettings.Length % 3 != 0)
                 throw new ArgumentException("A hangszóróhoz nem megfelelő a beállítási lista.");
-            for (int i = 0; i < soundList.Count - 2; i += 3)
+            for (int i = 0; i < splitSettings.Length - 2; i += 3)
             {
                 if (!Enum.TryParse(splitSettings[i], out Pitch parsedPitch))
                     throw new Exception("A megadott hangmagasság nem létezik.");

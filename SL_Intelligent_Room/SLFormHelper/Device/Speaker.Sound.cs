@@ -4,7 +4,7 @@ namespace SLFormHelper
 {
     public partial class Speaker
     {
-        private class Sound
+        public class Sound
         {
             //KONSTANSOK
             private const byte MAX_VOLUME = 63; //63 a legnagyobb hangerő, amit az eszköznek átadhatunk

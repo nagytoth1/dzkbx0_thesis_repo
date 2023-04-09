@@ -96,11 +96,11 @@ namespace SLFormHelper
         /// <br></br>
         /// 3. XML: ConvertDev485ToXML-függvényt hívja, amely során egy devices.xml fájl kerül kiírásra, majd ezt olvassa be a C#.
         /// </summary>
-        public enum ToDeviceList_UsedMethod
+        public enum ToDeviceList_UsedMethod:byte
         {
-            JSON,
-            JSON_C,
-            XML
+            JSON=0,
+            JSON_C=1,
+            XML=2
         }
         /// <summary>
         /// A relayDLL egy metódusát hívja (fill_device_list_with_devices), amely a dev485-öt 3 eszközzel tölti fel attól függetlenül, hogy milyen eszközök vannak ténylegesen csatlakoztatva.
@@ -324,7 +324,7 @@ namespace SLFormHelper
         /// The path of relayDLL.
         /// </summary>
         private const string DLLPATH = "..\\SLDLL_relay\\relay.dll";
-        private static readonly List<Device> devices = new List<Device>();
+        private static readonly List<Device> devices = new List<Device>(); //DLL-en belül lista típusú, mivel nem tudjuk, pontosan milyen hosszú lesz
         private static List<ushort> turnDurations = new List<ushort>();
         /// <summary>
         /// Eszközbeállítások ütemezésére használt lista. Egy programban tetszőleges számú ütemet küldhetünk ki az eszközök részére, ezért lista adatszerkezetet választottam.
@@ -337,7 +337,18 @@ namespace SLFormHelper
         /// <br></br>---------------------------------------<br></br>
         /// List of SLDLL-devices (LED lights, LED arrows and speakers), this is basically the C# equivalent of the dev485 block of relayDLL. It is passed and populated when the CallListelem function is called.
         /// </summary>
-        public static List<Device> Devices { get { return devices; } }
+
+        //public static List<Device> Devices { get { return devices; } }
+        //Ha tömböt csinálunk a Devices listából, akkor abból gyorsabb lesz a kiolvasás, mivel folytonos memóriaterületen tárolódik, közvetlen elérésű
+        public static Device[] Devices 
+        { 
+            get 
+            { 
+                if (devices == null) 
+                    return null; 
+                return devices.ToArray(); 
+            } 
+        } 
         #endregion
     }
 }

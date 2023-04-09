@@ -14,7 +14,7 @@ namespace SLFormHelper
         /// A lista elérhető FormHelper.Devices property-n keresztül.
         /// </summary>
         /// <exception cref="XmlException"></exception>
-        public static void XMLToDeviceList()
+        private static void XMLToDeviceList()
         {
             XmlNodeList nodeList;
             string path = "devices.xml";

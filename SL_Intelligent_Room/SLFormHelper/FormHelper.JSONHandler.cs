@@ -21,7 +21,7 @@ namespace SLFormHelper
         /// </summary>
         /// <param name="jsonFile">Beolvasni kívánt JSON-fájl elérési útvonala.</param>
         /// <exception cref="JsonException"></exception>
-        public static void LoadDeviceSettings(string jsonFile)
+        public static SerializedTurnSettings[] LoadDeviceSettings(string jsonFile, out ushort time)
         {
             string fileContent;
             try
@@ -34,7 +34,8 @@ namespace SLFormHelper
             catch (IOException e)
             {
                 Logger.WriteLog($"Hiba történt fájlbeolvasás közben...{e.Message}", SeverityLevel.WARNING);
-                return;
+                time = 0;
+                return null;
             }
             SerializedTurnSettings[] turnSettings = JsonConvert.DeserializeObject<SerializedTurnSettings[]>(fileContent);
             try
@@ -42,17 +43,8 @@ namespace SLFormHelper
                 ValidateSettings(turnSettings);
             }
             catch (JsonException) { throw; }
-            for (int j = 0; j < turnSettings.Length; j++)
-            {
-                for (int i = 0; i < devices.Count; i++)
-                {
-                    devices[i].LoadDeviceSettings(
-                        turnSettings[j].Devices[i]
-                            .Settings
-                            .Split('|'));
-                }
-                Durations[j] = turnSettings[j].Time;
-            }
+            time = turnSettings[0].Time;
+            return turnSettings;
         }
 
         /// <summary>
@@ -80,7 +72,7 @@ namespace SLFormHelper
             char readDeviceType; //json-ből érkezik
             foreach (SerializedTurnSettings turn in turnSettings) //Az ütemeket végig kell nézni
             {
-                for (int i = 0; i < Devices.Count; i++) //az adott ütemen belül végigmegyek az eszközök listáján, hogy azok típusra megegyeznek-e
+                for (int i = 0; i < devices.Count; i++) //az adott ütemen belül végigmegyek az eszközök listáján, hogy azok típusra megegyeznek-e
                 {
                     readDeviceType = turn.Devices[i].Type; //adott ütemhez tartozó eszköz típusa megegyezik-e a tárolt (jelenleg csatlakoztatott) eszközzel
                     if (readDeviceType != devices[i].GetJSONType())
@@ -88,34 +80,6 @@ namespace SLFormHelper
                             string.Format($"A beolvasott JSON-forrás helytelen {i + 1}. eszköznél, mert {Devices[i].GetJSONType()} típusú eszköz következne, de {readDeviceType}-típusút olvastam."));
                 }
             }
-        }
-        /// <summary>
-        /// Létrehoz egy JSON-fájlt, amelyben az eszközlista aktuális beállításainak állapotát elkészíti (snapshot).
-        /// Az elkészült fájl a LoadDeviceSettings-metódussal betölthető.
-        /// <br></br>---------------------------------------<br></br>
-        /// Creates a JSON file with the current state of the device list settings (snapshot).
-        /// The created file can be loaded using the LoadDeviceSettings method.
-        /// </summary>
-        /// <param name="jsonPathToFile">A menteni kívánt fájl elérési útja.</param>
-    public static void UnloadDeviceSettings(string jsonPathToFile)
-        {
-            SerializedTurnSettings[] turnSettings = new SerializedTurnSettings[turnDurations.Count];
-            for (int j = 0; j < turnDurations.Count; j++)
-            {
-                turnSettings[j] = 
-                    new SerializedTurnSettings(
-                        devices: new SerializedDeviceSettings[devices.Count],
-                        time: turnDurations[j]);
-                for (int i = 0; i < devices.Count; i++)
-                {
-                    turnSettings[j].Devices[i] = new SerializedDeviceSettings(
-                        type: devices[i].GetJSONType(),
-                        settings: devices[i].GetJSONSettings());
-                }
-            }
-            File.WriteAllText(
-                path: jsonPathToFile,
-                contents: JsonConvert.SerializeObject(turnSettings, Formatting.Indented));
         }
 
         /// <summary>
@@ -126,7 +90,7 @@ namespace SLFormHelper
         /// <returns>Az eszközlista JSON-reprezentációja.</returns>
         public static string DevicesToJSON()
         {
-            if (devices.Count == 0) 
+            if (devices.Count == 0)
                 return "[]";
             StringBuilder sBuilder = new StringBuilder("[");
             foreach (Device device in devices)
@@ -159,12 +123,12 @@ namespace SLFormHelper
             //[{"azonos":16388}, {"azonos": 36543}, ...] JSON-formátumú dev485 betöltése a C# környezete számára
             if (!jsonFormat.IsValidJSON())
                 throw new JsonException($"Az eszközök leírása helytelen JSON-formátumban történt: {jsonFormat}");
-           List<SerializedDevice> deserializedDeviceList = JsonConvert.DeserializeObject<List<SerializedDevice>>(jsonFormat);
-            
-            
+            List<SerializedDevice> deserializedDeviceList = JsonConvert.DeserializeObject<List<SerializedDevice>>(jsonFormat);
+
+
             if (deserializedDeviceList == null)
                 throw new JsonException($"Eszközlista létrehozása sikertelen: {jsonFormat}");
-            
+
             for (int i = 0; i < deserializedDeviceList.Count; i++)
                 devices.Add(deserializedDeviceList[i].CreateDevice());
         }
@@ -180,7 +144,7 @@ namespace SLFormHelper
             for (int i = 0; i < deserializedDeviceList.Count; i++)
                 devices.Add(deserializedDeviceList[i].CreateDevice());
         }
-        
+
         /// <summary>
         /// Szöveg-típusú változóra meghívható kiegészítő (extension) függvény. <br></br>
         /// Eldönti a bemenő JSON-forrásszövegről, hogy az helyes JSON-formátumban van-e.
@@ -203,6 +167,37 @@ namespace SLFormHelper
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Létrehoz egy JSON-fájlt, amelyben az eszközlista aktuális beállításainak állapotát elkészíti (snapshot) egy adott ütemben.
+        /// Az elkészült fájl a LoadDeviceSettings-metódussal betölthető.
+        /// <br></br>
+        /// UPDATE: priváttá tettem, mivel a kimentés implementációja Levente formjában került megírásra. Ezt a metódust nem használjuk.<br></br>
+        /// Ez a metódus akkor működne, ha:<br></br>
+        ///     1. a turnDurations-listát aktívan használnánk, tehát minden egyes ütemhez külön ütemidők lennének rendelve, jelenleg egyetlen konstans értékkel dolgozunk (pl. ütemenként 2 másodperc)
+        ///     2. a DataGrid sorain végighaladva egy Devices-listának állítgatnánk be az elemeit, és ezekről készülhetne pillanatkép/snapshot ütemenként, előtte természetesen az eredeti Devices-listából kellene egy másolatot képezni, ezt tömbbé alakítani
+        /// <br></br>---------------------------------------<br></br>
+        /// Creates a JSON file with the current state of the device list settings (snapshot).
+        /// The created file can be loaded using the LoadDeviceSettings method.
+        /// </summary>
+        /// <param name="jsonPathToFile">A menteni kívánt fájl elérési útja.</param>
+        /// <param name="devArray">A menteni kívánt eszközlista, ami a beállításokat tartalmazza.</param>
+        /// <param name="turnTime">A menteni kívánt ütem hossza.</param>
+        private static void UnloadDeviceSettings(Device[] devArray, ushort turnTime, string jsonPathToFile)
+        {
+            SerializedTurnSettings turnSettings = new SerializedTurnSettings(
+                        devices: new SerializedDeviceSettings[devArray.Length],
+                        time: turnTime);
+            
+            for (int i = 0; i < devices.Count; i++)
+                turnSettings.Devices[i] = new SerializedDeviceSettings(
+                    type: devArray[i].GetJSONType(),
+                    settings: devArray[i].GetJSONSettings());
+
+            File.AppendAllText(
+                path: jsonPathToFile, 
+                contents: JsonConvert.SerializeObject(turnSettings, Formatting.Indented));
         }
     }
 }

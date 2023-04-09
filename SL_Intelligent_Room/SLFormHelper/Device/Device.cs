@@ -8,7 +8,7 @@
         //ezek a mezők nem a JSON-ből jönnek, ezek állandóak, minden eszközbe bekerülnek
         public const string PRODUC = "Somodi László"; //mivel const, ezért static is lesz, egy memóriaterületen fognak tárolódni, mert minden eszköz ugyanazt kapja értékül
         public const string MANUFA = "Pluszs Kft.";
-        public Device(uint azonos)
+        protected Device(uint azonos)
         {
             this.azonos = azonos;
         }

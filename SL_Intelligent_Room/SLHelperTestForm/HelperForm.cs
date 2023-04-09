@@ -140,7 +140,7 @@ namespace SLHelperTestForm
             {
                 try
                 {
-                    LoadDeviceSettings(ofd.FileName);
+                    LoadDeviceSettings(ofd.FileName, out ushort time);
                 }
                 catch (Exception exc)
                 {
@@ -169,7 +169,6 @@ namespace SLHelperTestForm
             sfd.Filter = "JSON-file (*.json)|*.json";
             if (sfd.ShowDialog() == DialogResult.OK)
             {
-                UnloadDeviceSettings(sfd.FileName);
             }
         }
         private bool ledUP = true;
@@ -244,7 +243,7 @@ namespace SLHelperTestForm
             turnTimerKeteszkoz.Interval = 1; //a kattintáskor állítsa be a legelső intervallumot 1-re (tehát szinte a kattintás pillanta azonnal aktiválja a Tick-et)
             turnTimerKeteszkoz.Enabled = true; //indul a stopwatch, ha letelik x idő (timer.Interval), akkor a Tick
             button2Utem.Enabled = false;
-            if (Devices.Count < 2)
+            if (Devices.Length < 2)
             {
                 MessageBox.Show("Devices tömb nem 2 eszközt tartalmaz!"); return;
             }
@@ -261,7 +260,7 @@ namespace SLHelperTestForm
 
         private void turnTimerKeteszkoz_Tick(object sender, EventArgs e)
         {
-            if (Devices.Count != 2)
+            if (Devices.Length != 2)
             {
                 MessageBox.Show("Két eszköznek kell lennie!");
                 return;
