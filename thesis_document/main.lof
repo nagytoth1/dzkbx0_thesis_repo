@@ -1,22 +1,17 @@
-\select@language {magyar} \contentsline {figure}{\numberline {1.}{\ignorespaces Valamely demenciafajtával diagnosztizáltak számának emelkedése\relax }}{1}{figure.caption.3}%
-\select@language {magyar} \contentsline {figure}{\numberline {2.}{\ignorespaces Példa két metódusra, amelyben stringeket használunk.\relax }}{5}{figure.caption.4}%
-\select@language {magyar} \contentsline {figure}{\numberline {3.}{\ignorespaces Példa egy rekord definíciójára\relax }}{6}{figure.caption.5}%
-\select@language {magyar} \contentsline {figure}{\numberline {4.}{\ignorespaces Példa egy union típus definíciójára. Forrás: SLDLL\relax }}{6}{figure.caption.6}%
-\select@language {magyar} \contentsline {figure}{\numberline {5.}{\ignorespaces Példa egy külsős, azaz PInvoke-eljárás definíciójára és használatára\relax }}{9}{figure.caption.7}%
-\select@language {magyar} \addvspace {10\p@ }
-\select@language {magyar} \contentsline {figure}{\numberline {1.1.}{\ignorespaces Beadandó projektben készített .proto állomány (részlet)\relax }}{14}{figure.caption.8}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.2.}{\ignorespaces gRPC metódushívásainak típusai\relax }}{16}{figure.caption.9}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.3.}{\ignorespaces Szerializáció teljesítményének összehasonlítása JSON és Proto esetében\relax }}{16}{figure.caption.10}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.4.}{\ignorespaces Lámpa eszköz\relax }}{17}{figure.caption.11}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.5.}{\ignorespaces Nyíl eszköz\relax }}{17}{figure.caption.12}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.6.}{\ignorespaces RJ9-es csatlakozó vezetékes telefonkábel végén. Csak a középső 2 ér van csatlakoztatva.\relax }}{18}{figure.caption.13}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.7.}{\ignorespaces nyomatókábel USB-A és USB-B végekkel, előbbi a számítógéphez, míg utóbbi az elsőnek szánt eszközhöz csatlakoztatandó.\relax }}{18}{figure.caption.14}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.8.}{\ignorespaces Tápkábelt használunk a további, számítógéphez közvetlenül nem csatlakozó eszközök feszültségre kapcsolásához.\relax }}{19}{figure.caption.15}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.9.}{\ignorespaces Hibakódok és magyarázataik}}{27}{figure.caption.16}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.10.}{\ignorespaces Eszközök azonosítóinak átadása JSON-formátumon keresztül\relax }}{35}{figure.caption.20}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.11.}{\ignorespaces A függvény helyes Delphi-deklarációja\relax }}{36}{figure.caption.27}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.12.}{\ignorespaces A függvény helyes szignatúrája C\#-ban\relax }}{36}{figure.caption.28}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.13.}{\ignorespaces Megoldás a problémára - RelayDLL\relax }}{39}{figure.caption.37}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.14.}{\ignorespaces Hangszóróval lejátszható hangok listája frekvenciákra bontva\relax }}{40}{figure.caption.38}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.15.}{\ignorespaces A hangszóró hanglistát kezel - megoldás C\# nyelven\relax }}{40}{figure.caption.40}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.16.}{\ignorespaces Két eszköz csatlakoztatásának módja.\relax }}{41}{figure.caption.42}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.1.}{\ignorespaces Valamely demenciafajtával diagnosztizáltak számának emelkedése\relax }}{1}{figure.caption.2}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.2.}{\ignorespaces Példa két metódusra, amelyben stringeket használunk.\relax }}{5}{figure.caption.3}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.3.}{\ignorespaces Példa egy rekord definíciójára\relax }}{6}{figure.caption.4}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.4.}{\ignorespaces Példa egy union típus definíciójára. Forrás: SLDLL\relax }}{6}{figure.caption.5}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.5.}{\ignorespaces Beadandó projektben készített .proto állomány (részlet)\relax }}{11}{figure.caption.6}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.6.}{\ignorespaces gRPC metódushívásainak típusai\relax }}{13}{figure.caption.7}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.7.}{\ignorespaces Szerializáció teljesítményének összehasonlítása JSON és Proto esetében\relax }}{13}{figure.caption.8}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.8.}{\ignorespaces Hibakódok és magyarázataik}}{23}{figure.caption.9}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.9.}{\ignorespaces Az elkészült állományok metódusai\relax }}{29}{figure.caption.10}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.10.}{\ignorespaces Az elkészült állományok metódusai\relax }}{29}{figure.caption.11}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.11.}{\ignorespaces Eszközök azonosítóinak átadása JSON-formátumon keresztül\relax }}{31}{figure.caption.12}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.12.}{\ignorespaces A függvény helyes Delphi-deklarációja\relax }}{32}{figure.caption.13}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.13.}{\ignorespaces A függvény helyes szignatúrája C\#-ban\relax }}{32}{figure.caption.14}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.14.}{\ignorespaces Megoldás a problémára - RelayDLL\relax }}{35}{figure.caption.15}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.15.}{\ignorespaces Hangszóróval lejátszható hangok listája frekvenciákra bontva\relax }}{36}{figure.caption.16}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.16.}{\ignorespaces A hangszóró hanglistát kezel - megoldás C\# nyelven\relax }}{36}{figure.caption.17}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.17.}{\ignorespaces Két eszköz csatlakoztatásának módja.\relax }}{36}{figure.caption.18}%
