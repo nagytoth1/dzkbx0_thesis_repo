@@ -1,17 +1,18 @@
 \select@language {magyar} \contentsline {figure}{\numberline {1.1.}{\ignorespaces Valamely demenciafajtával diagnosztizáltak számának emelkedése\relax }}{1}{figure.caption.2}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.2.}{\ignorespaces Példa két metódusra, amelyben stringeket használunk.\relax }}{5}{figure.caption.3}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.3.}{\ignorespaces Példa egy rekord definíciójára\relax }}{6}{figure.caption.4}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.4.}{\ignorespaces Példa egy union típus definíciójára. Forrás: SLDLL\relax }}{6}{figure.caption.5}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.5.}{\ignorespaces Beadandó projektben készített .proto állomány (részlet)\relax }}{11}{figure.caption.6}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.6.}{\ignorespaces gRPC metódushívásainak típusai\relax }}{13}{figure.caption.7}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.7.}{\ignorespaces Szerializáció teljesítményének összehasonlítása JSON és Proto esetében\relax }}{13}{figure.caption.8}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.8.}{\ignorespaces Hibakódok és magyarázataik}}{23}{figure.caption.9}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.9.}{\ignorespaces Az elkészült állományok metódusai\relax }}{29}{figure.caption.10}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.10.}{\ignorespaces Az elkészült állományok metódusai\relax }}{29}{figure.caption.11}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.11.}{\ignorespaces Eszközök azonosítóinak átadása JSON-formátumon keresztül\relax }}{31}{figure.caption.12}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.12.}{\ignorespaces A függvény helyes Delphi-deklarációja\relax }}{32}{figure.caption.13}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.13.}{\ignorespaces A függvény helyes szignatúrája C\#-ban\relax }}{32}{figure.caption.14}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.14.}{\ignorespaces Megoldás a problémára - RelayDLL\relax }}{35}{figure.caption.15}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.15.}{\ignorespaces Hangszóróval lejátszható hangok listája frekvenciákra bontva\relax }}{36}{figure.caption.16}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.16.}{\ignorespaces A hangszóró hanglistát kezel - megoldás C\# nyelven\relax }}{36}{figure.caption.17}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.17.}{\ignorespaces Két eszköz csatlakoztatásának módja.\relax }}{36}{figure.caption.18}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.2.}{\ignorespaces Példa egy rekord definíciójára\relax }}{5}{figure.caption.3}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.3.}{\ignorespaces Példa egy union típus definíciójára. Forrás: SLDLL\relax }}{6}{figure.caption.4}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.4.}{\ignorespaces Beadandó projektben készített .proto állomány (részlet)\relax }}{11}{figure.caption.5}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.5.}{\ignorespaces gRPC metódushívásainak típusai\relax }}{12}{figure.caption.6}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.6.}{\ignorespaces Szerializáció teljesítményének összehasonlítása JSON és Proto esetében\relax }}{13}{figure.caption.7}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.7.}{\ignorespaces Hibakódok és magyarázataik}}{23}{figure.caption.8}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.8.}{\ignorespaces Az elkészült állományok metódusai\relax }}{23}{figure.caption.9}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.9.}{\ignorespaces A FormHelperDLL felépítése\relax }}{30}{figure.caption.11}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.10.}{\ignorespaces Hangszóróval lejátszható hangok listája frekvenciákra bontva\relax }}{31}{figure.caption.12}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.11.}{\ignorespaces A különböző szerializálási módok meghívása az SLFormHelperben\relax }}{32}{figure.caption.13}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.12.}{\ignorespaces Egy lámpa és egy hangszóró 1 ütemre vonatkozó beállításai JSON-formátumban\relax }}{33}{figure.caption.14}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.13.}{\ignorespaces Eszközök azonosítóinak átadása JSON-formátumon keresztül\relax }}{33}{figure.caption.17}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.14.}{\ignorespaces A függvény helyes Delphi-deklarációja\relax }}{35}{figure.caption.24}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.15.}{\ignorespaces A függvény helyes szignatúrája C\#-ban\relax }}{36}{figure.caption.25}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.16.}{\ignorespaces Megoldás a problémára - RelayDLL\relax }}{38}{figure.caption.34}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.17.}{\ignorespaces A hangszóró hanglistát kezel - megoldás C\# nyelven\relax }}{39}{figure.caption.36}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.18.}{\ignorespaces Két eszköz csatlakoztatásának módja.\relax }}{40}{figure.caption.39}%

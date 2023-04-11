@@ -22,8 +22,6 @@ function extractValueFromJSONField(const json_element, key: string):string; Forw
 procedure split(const Delimiter: Char; Input: string; const Strings: TStrings); Forward;
 //removes unnecessary characters from JSON-input string, prepares it
 procedure removeSpecialChars(var str : WideString); Forward;
-//creates dev485 from JSON-format
-function convertJSONToDEV485(var json_source: WideString):DEVLIS; Forward;
 //checks whether the settings of the devices are correct
 function validateExtractedDeviceValues(const actDeviceType:string; const elements: TStringList):byte; Forward;
 //decides which type the given device belongs to (LED-arrow, LED-light or Speaker) and calls the corresponding set-method
@@ -33,7 +31,8 @@ procedure setLEDDevice(i, red, green, blue, direction: byte); Forward;
 //sets a device of a Speaker type
 procedure setSpeaker(i: byte; elements:TStringList); overload; Forward;
 procedure setSpeaker(i, hangso, hanger:byte; hangho: word); overload; Forward;
-procedure printErrors(result: word); Forward;
+//creates a valid JSON-list from deviceIDs of the scanned device 
+//implementation comes from 'converter32.dll' written in C
 function create_json(device_ids:pinteger;length:integer):pchar; stdcall; external 'converter32.dll'
 
 function fill_devices_list_with_devices(): byte; stdcall;
@@ -82,45 +81,47 @@ var
 	actDeviceSettings: string;
 begin
 	//decode the JSON of the current turn (type + settings fields)
-	jsonArrayElements := reduceJSONSourceToElements(json_source);
+	jsonArrayElements := TStringList.Create();
+	removeSpecialChars(json_source); //prepare JSON by removing unnecessary characters
+  	split(',', json_source, jsonArrayElements); //'azonos:16388, tipus:"L" ...'
 	i := 0; j := 0;
-	
 	//when devList is connected with dev485 then this must be called
-	
-	while(j < drb485) do
+	while( < drb485) do
 	begin
 		json_element1 := jsonArrayElements[i]; //loads the actual device
 		json_element2 := jsonArrayElements[i+1]; //loads the actual device
     	//I want the first char of string 
 		actDeviceType := extractValueFromJSONField(json_element1, 'type'); //gets the type of the device
     	actDeviceSettings := extractValueFromJSONField(json_element2, 'settings'); //for example: 255|0|0|1
-		if devListSet = false then //devList should be linked only once with dev485 elements
-		begin
+		if devListSet = false then begin
 			devList[j].azonos := dev485[j].azonos; //link dev485 to devList using identifiers
+			devListSet := true; //it becomes true after the first iteration (first turn)
 		end;
-		result := setDeviceByType(j, actDeviceType, actDeviceSettings); //SEHException
-		//TODO: is there no such result that leads to end the loop?
-		printErrors(result);
-		inc(j);
+		result := setDeviceByType(j, actDeviceType, actDeviceSettings);
 		inc(i, 2);
-  end; //case
-  devListSet := true; //it becomes true after the first iteration (first turn)
-  result := SLDLL_SetLista(drb485, devList);
-end;
-
-procedure printErrors(result: word);
-begin
-	if result = 0 then exit;
-	if result = DEVTYPE_UNDEFINED then
-		showmessage('Eszkoz tipusa nem meghatarozhato.')
-	else if result = DEVSETTINGS_INVALID_FORMAT then 
-		showmessage('Eszkoz beallitasai nem megfeleloek.')
-	else if result = DEVSETTING_ARROW_FAILED then
-		showmessage('Nyil beallitasi hiba.')
-	else if result = DEVSETTING_SPEAKER_FAILED then
-		showmessage('Hangszoro beallitasi hiba.')
-	else
-		showmessage('Egyeb hiba.');
+		j := i div 2;
+		if result = DEVTYPE_UNDEFINED then begin
+			showmessage('Eszkoz tipusa nem meghatarozhato.');
+			continue;
+		end;
+		else if result = DEVSETTINGS_INVALID_FORMAT then begin
+			showmessage('Eszkoz beallitasai nem megfeleloek.');
+			continue;
+		end;
+		else if result = DEVSETTING_ARROW_FAILED then begin
+			showmessage('Nyil beallitasi hiba.');
+			continue;
+		end;
+		else if result = DEVSETTING_SPEAKER_FAILED then begin
+			showmessage('Hangszoro beallitasi hiba.');
+			continue;
+		end;
+		else begin
+			showmessage('Egyeb hiba.');
+			exit;
+		end;
+  	end; //case
+	result := SLDLL_SetLista(drb485, devList);
 end;
 
 function ConvertDEV485ToXML(var outPath:WideString): byte; stdcall;
@@ -209,39 +210,6 @@ procedure removeSpecialChars(var str : WideString); //string is given by as refe
     end;
 end;
 
-//question: should dev485 be rather given in as parameter?
-//in C# we don't need this, we will implement it for C#-environment
-function convertJSONToDEV485(var json_source: WideString):DEVLIS; //returns array dev485
-var
-  //input looks like this: [{"azonos" : 16388, "tipus" : "L"},{"azonos": 120, "tipus" : "0"}, ... ]
-  jsonArrayElements: TStringList;
-  json_element, json_value: string;
-  i, k, dev_azonos: word;
-begin
-  SetLength(dev485, MAX_DEVICECOUNT);
-  jsonArrayElements := reduceJSONSourceToElements(json_source);
-  k := 0; //the index of dev485 gets incremented only if field 'azonos' is found with its value
-  for i := 0 to jsonArrayElements.Count - 1 do
-  begin
-    json_element := jsonArrayElements[i];
-    json_value := extractValueFromJSONField(json_element, 'azonos');
-    if json_value = '' then
-		continue;
-	
-	// if the given string does not represent a valid int (invalid), result is -1
-    dev_azonos := strToIntDef(json_value, high(word));
-    if dev_azonos = high(word) then
-        writeln(Format('Invalid deviceID %s at device %d', [json_value, i])); //if there is a wrong deviceID in JSON, the loop still continues
-        continue;
-    dev485[k].azonos := dev_azonos; //dev485[k].azonos gets the value '16388' as an int
-    //these 2 fields are constants
-    dev485[k].produc := PRODUCER; 
-    dev485[k].manufa := MANUFACTURER;
-	inc(k);
-  end;
-  writeln('Array dev485 has been created from JSON-string successfully!');
-  result := dev485;
-end;
 function extractValueFromJSONField(const json_element, key:string):string;
 var 
 	value:string;
@@ -255,17 +223,6 @@ begin
 	if (jsonField.Count <> 0) and (jsonField[0] = key) then
 	 	value := jsonField[1]; //'16388'
 	result := value;
-end;
-
-function reduceJSONSourceToElements(var json_source: WideString):TStringList;
-var 
-	jsonArrayElements: TStringList;
-begin
-	jsonArrayElements := TStringList.Create();
-	
-	removeSpecialChars(json_source);
-  	split(',', json_source, jsonArrayElements);
-	result := jsonArrayElements; //'azonos:16388, tipus:"L" ...'
 end;
 
 procedure split(const Delimiter: Char; Input: string; const Strings: TStrings);
@@ -362,6 +319,8 @@ begin
 end;
 procedure setSpeaker(i, hangso, hanger:byte; hangho: word); overload;
 begin
+	devList[i].handrb := 1;
+	devList[i].hantbp := @H;
 	H[0].hangso := hangso;
 	H[0].hanger := hanger;
 	H[0].hangho := hangho;
