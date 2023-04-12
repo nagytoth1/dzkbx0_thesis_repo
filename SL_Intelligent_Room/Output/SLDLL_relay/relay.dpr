@@ -13,8 +13,7 @@ uses
 
 //dpr implements the methods defined in pas + creates its own methods + propagates methods with exportlist
 //signatures of private, not exported, implemented methods
-//creates Delphi stringlist from given JSON-array
-function reduceJSONSourceToElements(var json_source: WideString):TStringList; Forward;
+
 //searches for the key in a JSON-element, returns with a value paired to it
 //for example: from input "azonos":10 method is going to return 10
 function extractValueFromJSONField(const json_element, key: string):string; Forward;
@@ -83,10 +82,10 @@ begin
 	//decode the JSON of the current turn (type + settings fields)
 	jsonArrayElements := TStringList.Create();
 	removeSpecialChars(json_source); //prepare JSON by removing unnecessary characters
-  	split(',', json_source, jsonArrayElements); //'azonos:16388, tipus:"L" ...'
+  	split(',', json_source, jsonArrayElements); //add JSON-entries to a string list 'azonos:16388', ... 
 	i := 0; j := 0;
 	//when devList is connected with dev485 then this must be called
-	while( < drb485) do
+	while(j < drb485) do
 	begin
 		json_element1 := jsonArrayElements[i]; //loads the actual device
 		json_element2 := jsonArrayElements[i+1]; //loads the actual device
@@ -103,19 +102,19 @@ begin
 		if result = DEVTYPE_UNDEFINED then begin
 			showmessage('Eszkoz tipusa nem meghatarozhato.');
 			continue;
-		end;
+		end
 		else if result = DEVSETTINGS_INVALID_FORMAT then begin
 			showmessage('Eszkoz beallitasai nem megfeleloek.');
 			continue;
-		end;
+		end
 		else if result = DEVSETTING_ARROW_FAILED then begin
 			showmessage('Nyil beallitasi hiba.');
 			continue;
-		end;
+		end
 		else if result = DEVSETTING_SPEAKER_FAILED then begin
 			showmessage('Hangszoro beallitasi hiba.');
 			continue;
-		end;
+		end
 		else begin
 			showmessage('Egyeb hiba.');
 			exit;
