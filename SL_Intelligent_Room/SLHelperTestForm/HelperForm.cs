@@ -1,7 +1,7 @@
 ﻿using SLFormHelper;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
-using System.Threading;
 using System.Windows.Forms;
 using static SLFormHelper.FormHelper;
 
@@ -12,14 +12,27 @@ namespace SLHelperTestForm
         public HelperForm()
         {
             InitializeComponent();
+            rnd = new Random();
         }
 
+        private static Random rnd;
         private void HelperForm_Load(object sender, EventArgs e)
         {
             try
             {
+                utemek = new List<Device>[]
+                {
+                    DevicesDeepCopy(),
+                    DevicesDeepCopy(),
+                    DevicesDeepCopy(),
+                    DevicesDeepCopy()
+                }; // 4 különböző devices lista 
                 //CallOpen(this.Handle);
-                CallFillDev485Static(ToDeviceList_UsedMethod.JSON_C);
+                //CallFillDev485Static();
+                CallFillDev485Static(CJSONDeviceListConverter.GetInstance());
+                //CallFillDev485Static(XMLDeviceListConverter.GetInstance());
+                listBox1.DataSource = Devices;
+                
             }
             catch (DllNotFoundException ex)
             {
@@ -53,22 +66,6 @@ namespace SLHelperTestForm
                 drb485 = value;
             }
         }
-        private enum ErrorCodes : sbyte
-        {
-            FELMOK = 1,                       // A felmérés rendben lezajlott
-            AZOOKE = 2,                       // Az azonosító váltás rendben lezajlott
-            LEDRGB = 5,                       // A LED lámpa RGB értéke
-            NYIRGB = 6,                       // A nyíl RGB és irány értéke
-            HANGEL = 7,                       // A hangstring állapota
-            STATKV = 8,                       // A státusz értéke
-            LISVAL = 9,                       // A táblázat végének a válasza 
-            USBREM = -1,                      // Az USB vezérlő eltávolításra került
-            VALTIO = -2,                      // Felmérés közben válaszvárás time-out következett be
-            FELMHK = -3,                      // Felmérés vége hibával
-            FELMHD = -4,                      // Nincs egy darab sem hibakód (elvben sem lehet ilyen)
-            FELMDE = -5                       // A 16 és 64 bites darabszám nem egyforma (elvben sem lehet ilyen)
-        }
-
         private void btnOpen_Click(object sender, EventArgs e)
         {
             CallOpen(this.Handle);
@@ -106,8 +103,6 @@ namespace SLHelperTestForm
 
         private void btnUres_Click(object sender, EventArgs e)
         {
-            //amikor ki van küldve neki a jel, akkor nem lehet meghívni a felmérést újra, mert mert másik állapotban van az eszköz
-            //TODO: ezt még lekezelni
             foreach (Device d in Devices)
             {
                 if (d is LEDArrow arrow)
@@ -130,17 +125,29 @@ namespace SLHelperTestForm
             Console.WriteLine(json_source);
             CallSetTurnForEachDevice(ref json_source);
         }
-
+        private static List<Device>[] utemek;
         private void betoltBtn_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString();
-            ofd.Filter = "JSON-file (*.json)|*.json";
+            OpenFileDialog ofd = new OpenFileDialog
+            {
+                InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
+                Filter = "JSON-file (*.json)|*.json"
+            };
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
-                    LoadDeviceSettings(ofd.FileName, out ushort time);
+                    string jsonfile = ofd.FileName;
+                    LoadJSON(ref jsonfile);
+                    for (int i = 0; i < utemek.Length; i++) //4 ütem betöltése
+                    {
+                        LoadTurn(ref i, utemek[i], out ushort turnTime);
+                    }
+
+                    for (int i = 0; i < utemek.Length; i++)
+                    {
+                        Console.WriteLine($"{i}. ütem lámpája: {utemek[i][2].GetJSONSettings()}");
+                    }
                 }
                 catch (Exception exc)
                 {
@@ -148,27 +155,24 @@ namespace SLHelperTestForm
                     Logger.WriteLog(exc.Message, SeverityLevel.WARNING);
                     return;
                 }
-                string json_source = DevicesToJSON();
-                Console.WriteLine(json_source);
-                try
-                {
-                    CallSetTurnForEachDevice(ref json_source);
-                    Console.WriteLine("Ütemek kiküldve!");
-                }
-                catch(Exception exc)
-                {
-                    MessageBox.Show(exc.Message);
-                }
             }
         }
-
         private void kimentBtn_Click(object sender, EventArgs e)
         {
-            SaveFileDialog sfd = new SaveFileDialog();
-            sfd.InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString();
-            sfd.Filter = "JSON-file (*.json)|*.json";
+            SaveFileDialog sfd = new SaveFileDialog
+            {
+                InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
+                Filter = "JSON-file (*.json)|*.json"
+            };
+            string jsonfile;
             if (sfd.ShowDialog() == DialogResult.OK)
             {
+                jsonfile = sfd.FileName;
+                for (int i = 0; i < utemek.Length; i++)
+                {
+                    SaveTurn(utemek[i], ref ticks[i]);
+                }
+                SaveJSON(ref jsonfile); //kimenti a 4 ütemet
             }
         }
         private bool ledUP = true;
@@ -214,12 +218,10 @@ namespace SLHelperTestForm
             if (ledUP) //ha ledUP értéke igaz, akkor villanjon fel a nyíl balra kék színnel
             {
                 light.Color = Color.Blue;
-                Console.WriteLine("tik");
             }
             else //ha ledUP értéke hamis, akkor "kapcsolja ki" a nyilat (küldjön fekete színt mindkét irányba)
             {
                 light.Color = Color.Black;
-                Console.WriteLine("tok");
             }
             string json_source = DevicesToJSON();
             try
@@ -243,7 +245,7 @@ namespace SLHelperTestForm
             turnTimerKeteszkoz.Interval = 1; //a kattintáskor állítsa be a legelső intervallumot 1-re (tehát szinte a kattintás pillanta azonnal aktiválja a Tick-et)
             turnTimerKeteszkoz.Enabled = true; //indul a stopwatch, ha letelik x idő (timer.Interval), akkor a Tick
             button2Utem.Enabled = false;
-            if (Devices.Length < 2)
+            if (Devices.Count < 2)
             {
                 MessageBox.Show("Devices tömb nem 2 eszközt tartalmaz!"); return;
             }
@@ -260,7 +262,7 @@ namespace SLHelperTestForm
 
         private void turnTimerKeteszkoz_Tick(object sender, EventArgs e)
         {
-            if (Devices.Length != 2)
+            if (Devices.Count != 2)
             {
                 MessageBox.Show("Két eszköznek kell lennie!");
                 return;

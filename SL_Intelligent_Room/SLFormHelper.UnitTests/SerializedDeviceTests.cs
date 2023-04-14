@@ -4,12 +4,11 @@ namespace SLFormHelper.UnitTests
     [TestFixture]
     public class SerializedDeviceTests
     {
-        SerializedDevice target;
+        SerializedDevice target = new SerializedDevice();
         [Test]
         public void CreateDevice_Scenario_Speaker()
         {
-            target = new SerializedDevice();
-            target.Azonos = 49156; //speaker típusú azonosítót adok neki
+            target.Azonos = 0xc004; //speaker típusú azonosítót adok neki
 
             Device d = target.CreateDevice();
 
@@ -19,8 +18,7 @@ namespace SLFormHelper.UnitTests
         [Test]
         public void CreateDevice_Scenario_LEDArrow()
         {
-            target = new SerializedDevice();
-            target.Azonos = 32772;
+            target.Azonos = 0x8004; 
 
             Device d = target.CreateDevice();
 
@@ -29,8 +27,7 @@ namespace SLFormHelper.UnitTests
         [Test]
         public void CreateDevice_Scenario_LEDLight()
         {
-            target = new SerializedDevice();
-            target.Azonos = 16388;
+            target.Azonos = 0x4004;
 
             Device d = target.CreateDevice();
 
@@ -40,12 +37,45 @@ namespace SLFormHelper.UnitTests
         [Test]
         public void CreateDevice_Scenario_None()
         {
-            target = new SerializedDevice();
             target.Azonos = 0;
 
             Device d = target.CreateDevice();
 
             Assert.That(d == null);
+        }
+        [Test]
+        public void CreateDevice_Scenario_Speaker_max()
+        {
+            target.Azonos = 0xcfff;
+
+            Device d = target.CreateDevice();
+
+            Assert.IsInstanceOf<Speaker>(d);
+        }
+        public void CreateDevice_Scenario_LEDArrow_max()
+        {
+            target.Azonos = 0x8fff;
+
+            Device d = target.CreateDevice();
+
+            Assert.IsInstanceOf<LEDArrow>(d);
+        }
+        public void CreateDevice_Scenario_LEDLight_max()
+        {
+            target.Azonos = 0x4fff;
+
+            Device d = target.CreateDevice();
+
+            Assert.IsInstanceOf<LEDLight>(d);
+        }
+        
+        public void CreateDevice_Scenario_None_max()
+        {
+            target.Azonos = 0xd000;
+
+            Device d = target.CreateDevice();
+
+            Assert.IsNull(d);
         }
     }
 }

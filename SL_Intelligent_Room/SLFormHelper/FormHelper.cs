@@ -59,7 +59,7 @@ namespace SLFormHelper
         /// <exception cref="DllNotFoundException">Nem találja a DLL-fájlt, az SLDLL_relay mappába helyezett relay.dll állományt.</exception>
         /// <exception cref="Dev485Exception">Nem került beállításra a dev485-tömb (Delphi-oldalon felbukkanó probléma).</exception>
         /// <exception cref="SLDLLException">Az SLDLL_Open nem került még meghívásra.</exception>
-        public static void CallListelem(ref byte drb485, ToDeviceList_UsedMethod method = ToDeviceList_UsedMethod.JSON)
+        public static void CallListelem(ref byte drb485, DeviceListConverter converter)
         {
             ushort result = Listelem(ref drb485);
             if (result == 254)
@@ -70,39 +70,15 @@ namespace SLFormHelper
             {
                 devices.Clear();
                 turnDurations.Clear();
-                switch (method)
-                {
-                    case ToDeviceList_UsedMethod.JSON:
-                        JSONToDeviceList();
-                        break;
-                    case ToDeviceList_UsedMethod.JSON_C:
-                        JSONToDeviceList_C();
-                        break;
-                    case ToDeviceList_UsedMethod.XML:
-                        XMLToDeviceList();
-                        break;
-                    default:
-                        break;
-                }
+                //megoldás switch-case kiváltására
+                converter.ToDeviceList();
                 turnDurations.Add(2000); //alapból beállítjuk egy ütem hosszát - 2 másodpercre
             }
         }
-        /// <summary>
-        /// Milyen módon akarjuk a Delphiben dev485-tömbként létező eszközök listáját áthozni C# részére?
-        /// <br></br>
-        /// 1. JSON: ConvertDev485ToJSON-függvényt hívja, ez a klasszikus Delphi-implementáció, ami az elejétől fogva benne volt.
-        /// <br></br>
-        /// 2. JSON_C: A legújabb ConvertDev485ToJSON_C-függvényt hívja, amely függvény egy C nyelven készített DLL-t hív segíségül a relayDLL-ben
-        /// <br></br>
-        /// 3. XML: ConvertDev485ToXML-függvényt hívja, amely során egy devices.xml fájl kerül kiírásra, majd ezt olvassa be a C#.
-        /// </summary>
-        public enum ToDeviceList_UsedMethod:byte
+        public static void CallListelem(ref byte drb485)
         {
-            JSON=0,
-            JSON_C=1,
-            XML=2
+            CallListelem(ref drb485, JSONDeviceListConverter.GetInstance());
         }
-        /// <summary>
         /// A relayDLL egy metódusát hívja (fill_device_list_with_devices), amely a dev485-öt 3 eszközzel tölti fel attól függetlenül, hogy milyen eszközök vannak ténylegesen csatlakoztatva.
         /// <br></br>Csak és kizárólag tesztelésre használjuk.
         /// <para/>1 db LED-lámpa, 1 db Hangszóró és 1 db LED-nyíl eszköz kerül hozzáadásra a devices-listához
@@ -111,26 +87,28 @@ namespace SLFormHelper
         /// <br></br>It is used only for testing purposes.
         /// <para/>1 piece LEDLight, 1 piece Speaker, and 1 piece LEDArrow gets added to device list.
         /// </summary>
-        public static void CallFillDev485Static(ToDeviceList_UsedMethod method = ToDeviceList_UsedMethod.JSON)
+        public static void CallFillDev485Static(DeviceListConverter converter)
         {
             byte result = FillDev485WithStaticData(); //Delphiben feltölti a dev485-tömböt, drb485-öt beállítja 3-ra
             if (result == 253)
                 throw new Dev485Exception("Az eszközök tömbje már fel lett töltve!");
             turnDurations.Add(2000);
-             switch (method)
-             {
-                 case ToDeviceList_UsedMethod.JSON:
-                     JSONToDeviceList();
-                     break;
-                 case ToDeviceList_UsedMethod.JSON_C:
-                     JSONToDeviceList_C();
-                     break;
-                 case ToDeviceList_UsedMethod.XML:
-                     XMLToDeviceList();
-                     break;
-                 default:
-                     break;
-             }
+            /*switch (method)
+            {
+                case ToDeviceList_UsedMethod.JSON:
+                    JSONToDeviceList();
+                    break;
+                case ToDeviceList_UsedMethod.JSON_C:
+                    JSONToDeviceList_C();
+                    break;
+                case ToDeviceList_UsedMethod.XML:
+                    XMLToDeviceList();
+                    break;
+                default:
+                    break;
+            }*/
+            //megoldás switch-case helyett
+            converter.ToDeviceList();
 
             //hangszóró
             Speaker speaker = (Speaker)devices[0];
@@ -145,6 +123,13 @@ namespace SLFormHelper
             LEDLight light = (LEDLight)devices[2];
             light.Color = Color.Green;
 
+        }
+        /// <summary>
+        /// paraméter nélküli változat, alapból JSONDeviceListConverter osztállyal hívja meg
+        /// </summary>
+        public static void CallFillDev485Static()
+        {
+            CallFillDev485Static(JSONDeviceListConverter.GetInstance());
         }
         /// <summary>
         /// Delphi-függvényt hív, amelyben minden egyes csatlakoztatott (tehát felmért) eszköznek kiküld egy ütemnyi jelet 
@@ -190,21 +175,21 @@ namespace SLFormHelper
                         DRB485 = (byte)msg.LParam;
                     }
                     catch (ArgumentException) { throw; }
-                    CallListelem(ref drb485, ToDeviceList_UsedMethod.JSON);
+                    //CallListelem(ref drb485, JSONDeviceListConverter.GetInstance()); //ez az alapértelmezett
+                    CallListelem(ref drb485, CJSONDeviceListConverter.GetInstance());
+                    //CallListelem(ref drb485, XMLDeviceListConverter.GetInstance());
                     break;
                 case ErrorCodes.AZOOKE: break;
                 //megváltoztattam az eszköz számát, akkor jön ez a válasz  
                 case ErrorCodes.LEDRGB: break;
-                //ledbea(PELVSTA(Msg.LParam) ^); - relayelni
                 case ErrorCodes.NYIRGB: break;
-                //nyilbe(PELVSTA(Msg.LParam)^); - relayelni
                 case ErrorCodes.HANGEL: break;
-                //hanbea(PELVSTA(Msg.LParam)^); - relayelni - elég a Msg.LPARAM-ot átadni mindhárom esetben - egész szám értékként kell átadni
                 case ErrorCodes.STATKV: break;
-                //itt kapom vissza az értéket
                 case ErrorCodes.LISVAL: break; //A lista_hívás adja vissza message-ben
-                                    //-------Negatív válaszkódok (hibakódok) esetei--------
-                case ErrorCodes.USBREM: break;
+                //-------Negatív válaszkódok (hibakódok) esetei--------
+                case ErrorCodes.USBREM:
+                    MessageBox.Show("Az USB el lett távolítva!");
+                    throw new USBDisconnectedException("Az USB el lett távolítva!");
                 // Az USB vezérlő eltávolításra került
                 case ErrorCodes.VALTIO: break;
                 // Válaszvárás time-out következett be
@@ -300,15 +285,7 @@ namespace SLFormHelper
         extern private static ushort Felmeres();
 
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "Listelem")]
-        extern private static ushort Listelem([In] ref byte drb485);
-
-        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "ConvertDEV485ToXML")]
-        extern private static byte ConvertDeviceListToXML([MarshalAs(UnmanagedType.BStr)][In] ref string outputStr);
-
-        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "ConvertDEV485ToJSON")]
-        extern private static byte ConvertDeviceListToJSON([MarshalAs(UnmanagedType.BStr)][Out] out string outputStr);
-        [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "ConvertDEV485ToJSON_C")]
-        extern private static byte ConvertDeviceListToJSON_C([MarshalAs(UnmanagedType.BStr)][Out] out string outputStr);
+        extern private static ushort Listelem([In] ref byte drb485);      
 
         [DllImport(DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "SetTurnForEachDeviceJSON")]
         extern private static ushort SetTurnForEachDevice([MarshalAs(UnmanagedType.BStr)][In] ref string json_source);
@@ -323,7 +300,7 @@ namespace SLFormHelper
         /// <summary>
         /// The path of relayDLL.
         /// </summary>
-        private const string DLLPATH = "..\\SLDLL_relay\\relay.dll";
+        public const string DLLPATH = "..\\SLDLL_relay\\relay.dll";
         private static readonly List<Device> devices = new List<Device>(); //DLL-en belül lista típusú, mivel nem tudjuk, pontosan milyen hosszú lesz
         private static List<ushort> turnDurations = new List<ushort>();
         /// <summary>
@@ -337,18 +314,19 @@ namespace SLFormHelper
         /// <br></br>---------------------------------------<br></br>
         /// List of SLDLL-devices (LED lights, LED arrows and speakers), this is basically the C# equivalent of the dev485 block of relayDLL. It is passed and populated when the CallListelem function is called.
         /// </summary>
-
-        //public static List<Device> Devices { get { return devices; } }
-        //Ha tömböt csinálunk a Devices listából, akkor abból gyorsabb lesz a kiolvasás, mivel folytonos memóriaterületen tárolódik, közvetlen elérésű
-        public static Device[] Devices 
+        public static List<Device> Devices { get { return devices; } }
+        //public static List<Device> DevicesCopy(){ return new List<Device>(devices); } //shallow copy lesz, az eszközök referenciái meg fognak egyezni
+        public static List<Device> DevicesDeepCopy() 
         { 
-            get 
-            { 
-                if (devices == null) 
-                    return null; 
-                return devices.ToArray(); 
-            } 
-        } 
+            List<Device> devicesCopy = new List<Device>();
+            
+            foreach (Device d in devices)
+            {
+                devicesCopy.Add(d.Clone());
+            }
+
+            return devicesCopy;
+        }
         #endregion
     }
 }

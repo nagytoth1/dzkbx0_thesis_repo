@@ -120,9 +120,9 @@
             this.kimentBtn.Font = new System.Drawing.Font("Consolas", 10F);
             this.kimentBtn.Location = new System.Drawing.Point(16, 331);
             this.kimentBtn.Name = "kimentBtn";
-            this.kimentBtn.Size = new System.Drawing.Size(84, 41);
+            this.kimentBtn.Size = new System.Drawing.Size(181, 85);
             this.kimentBtn.TabIndex = 6;
-            this.kimentBtn.Text = "Kiment";
+            this.kimentBtn.Text = "Kiment 4 ütemet";
             this.kimentBtn.UseVisualStyleBackColor = true;
             this.kimentBtn.Click += new System.EventHandler(this.kimentBtn_Click);
             // 
@@ -131,9 +131,9 @@
             this.betoltBtn.Font = new System.Drawing.Font("Consolas", 10F);
             this.betoltBtn.Location = new System.Drawing.Point(220, 331);
             this.betoltBtn.Name = "betoltBtn";
-            this.betoltBtn.Size = new System.Drawing.Size(84, 41);
+            this.betoltBtn.Size = new System.Drawing.Size(181, 85);
             this.betoltBtn.TabIndex = 6;
-            this.betoltBtn.Text = "Betölt";
+            this.betoltBtn.Text = "Betölt 4 ütemet";
             this.betoltBtn.UseVisualStyleBackColor = true;
             this.betoltBtn.Click += new System.EventHandler(this.betoltBtn_Click);
             // 

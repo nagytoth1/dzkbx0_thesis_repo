@@ -58,7 +58,6 @@ end;
 function Felmeres(): word; stdcall;
 begin
   result := SLDLL_Felmeres();
-  devListSet := false;
   writeln(Format('Felmeres eredmenye %d &dev485 = %p &dev485[0] = %p', [result, @dev485, @dev485[0]]));
 end;
 
@@ -87,9 +86,9 @@ begin
 	//when devList is connected with dev485 then this must be called
 	while(j < drb485) do
 	begin
-		json_element1 := jsonArrayElements[i]; //loads the actual device
-		json_element2 := jsonArrayElements[i+1]; //loads the actual device
-    	//I want the first char of string 
+		json_element1 := jsonArrayElements[i]; //loads the actual device type: "type":"L"
+		json_element2 := jsonArrayElements[i+1]; //loads the actual setting "settings":"0|255|0"
+
 		actDeviceType := extractValueFromJSONField(json_element1, 'type'); //gets the type of the device
     	actDeviceSettings := extractValueFromJSONField(json_element2, 'settings'); //for example: 255|0|0|1
 		if devListSet = false then begin
@@ -115,11 +114,13 @@ begin
 			showmessage('Hangszoro beallitasi hiba.');
 			continue;
 		end
-		else begin
+		else if result = 0 then
+			continue
+		else begin 
 			showmessage('Egyeb hiba.');
 			exit;
 		end;
-  	end; //case
+  	end;
 	result := SLDLL_SetLista(drb485, devList);
 end;
 
@@ -144,7 +145,6 @@ begin
 		node.Attributes['azonos'] := dev485[i].azonos; //we don't need the type of the device
 	end;
 	xmlDocument.SaveToFile(outPath);
-	showmessage('saved XML to location: ' + outPath);
 	result := EXIT_SUCCESS;
 end;
 

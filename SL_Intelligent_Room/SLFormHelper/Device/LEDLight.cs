@@ -59,5 +59,10 @@ namespace SLFormHelper
         {
             return string.Format($"{color.R}|{color.G}|{color.B}"); //255|0|0
         }
+
+        public override Device Clone()
+        {
+            return new LEDLight(this.azonos, this.color);
+        }
     }
 }

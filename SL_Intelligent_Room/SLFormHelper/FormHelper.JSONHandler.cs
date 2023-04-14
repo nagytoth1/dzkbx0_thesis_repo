@@ -1,6 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -10,43 +8,6 @@ namespace SLFormHelper
 {
     public static partial class FormHelper
     {
-        /// <summary>
-        /// Beolvassa a megadott elérési úton szereplő JSON-fájlt, amely az eszközbeállításokat tartalmaz.<br></br>
-        /// Ezt a metódust használva betölthetünk előre beállított eszközlistákat a programunkba futásidőben.<br></br>
-        /// Az eszközbeállítások mentéséről és tárolásáról az UnloadDeviceSettings-metódus gondoskodik.
-        /// <br></br>---------------------------------------<br></br>
-        /// Reads the JSON file containing the device settings from the specified path.
-        ///Using this method, you can load preconfigured device lists into your program at runtime.
-        ///The UnloadDeviceSettings method is used to save and store the device settings.
-        /// </summary>
-        /// <param name="jsonFile">Beolvasni kívánt JSON-fájl elérési útvonala.</param>
-        /// <exception cref="JsonException"></exception>
-        public static SerializedTurnSettings[] LoadDeviceSettings(string jsonFile, out ushort time)
-        {
-            string fileContent;
-            try
-            {
-                using (StreamReader reader = new StreamReader(jsonFile))
-                {
-                    fileContent = reader.ReadToEnd();
-                }
-            }
-            catch (IOException e)
-            {
-                Logger.WriteLog($"Hiba történt fájlbeolvasás közben...{e.Message}", SeverityLevel.WARNING);
-                time = 0;
-                return null;
-            }
-            SerializedTurnSettings[] turnSettings = JsonConvert.DeserializeObject<SerializedTurnSettings[]>(fileContent);
-            try
-            {
-                ValidateSettings(turnSettings);
-            }
-            catch (JsonException) { throw; }
-            time = turnSettings[0].Time;
-            return turnSettings;
-        }
-
         /// <summary>
         /// Megvizsgálja a bemeneti JSON-fájlról, hogy valós adatokat tartalmaz-e. Ez a következőket jelenti:
         /// <br></br>
@@ -67,19 +28,29 @@ namespace SLFormHelper
         private static void ValidateSettings(SerializedTurnSettings[] turnSettings)
         {
             if (turnSettings == null || turnSettings.Length == 0)
-                throw new JsonException("Hibás forrásfájl, az eszközbeállítások helytelen JSON-formátumban vannak tárolva.");
-
-            char readDeviceType; //json-ből érkezik
-            foreach (SerializedTurnSettings turn in turnSettings) //Az ütemeket végig kell nézni
+                throw new JsonException("Hibás forrásfájl: Az ütemek listája üres. Jó a JSON-formátum?");
+            int turnNumber = turnSettings.Length; //ennyi ütem van a fájlban (legalább 1)
+            int devicesPerTurn; //aktuális ütemben ennyi eszköz beállítását olvasta ki a fájlból
+            char deviceType; //JSON-ből kiolvasott típus
+            int i, j;
+            for(j = 0; j < turnNumber; j++) //ütemeken végigmegyünk
             {
-                for (int i = 0; i < devices.Count; i++) //az adott ütemen belül végigmegyek az eszközök listáján, hogy azok típusra megegyeznek-e
+                devicesPerTurn = turnSettings[j].Devices.Length; 
+                if (devicesPerTurn != devices.Count) //ha valamelyik ütemnél is eltérne az eszközök száma, utasítsuk el a fájlt
                 {
-                    readDeviceType = turn.Devices[i].Type; //adott ütemhez tartozó eszköz típusa megegyezik-e a tárolt (jelenleg csatlakoztatott) eszközzel
-                    if (readDeviceType != devices[i].GetJSONType())
+                    throw new JsonException($"Hibás forrásfájl: A beolvasott fájlban {j}. ütemnél az eszközök darabszáma ({devicesPerTurn} db) eltér a korábban észlelt eszközök számától {devices.Count}");
+                }
+                
+                for (i = 0; i < devices.Count; i++) //az adott ütemen belül végigmegyek az eszközök listáján, hogy azok típusra megegyeznek-e
+                {
+                    deviceType = turnSettings[j].Devices[i].Type; //adott ütemhez tartozó eszköz típusa megegyezik-e a tárolt (jelenleg csatlakoztatott) eszközzel
+                    if (deviceType != devices[i].GetJSONType())
                         throw new JsonException(
-                            string.Format($"A beolvasott JSON-forrás helytelen {i + 1}. eszköznél, mert {Devices[i].GetJSONType()} típusú eszköz következne, de {readDeviceType}-típusút olvastam."));
+                            string.Format($"Hibás a forrásfájl {j}. ütem {i + 1}. eszközénél: A beolvasott fájlban az eszköz típusa ({deviceType}) eltér a korábban észlelt eszköz  típusától ({devices[i].GetJSONType()})"));
                 }
             }
+            //ha minden jó, akkor nem dob Exception-t
+            MessageBox.Show("A forrásfájlt rendben találtam.");
         }
 
         /// <summary>
@@ -90,10 +61,10 @@ namespace SLFormHelper
         /// <returns>Az eszközlista JSON-reprezentációja.</returns>
         public static string DevicesToJSON()
         {
-            if (devices.Count == 0)
+            if (Devices.Count == 0)
                 return "[]";
             StringBuilder sBuilder = new StringBuilder("[");
-            foreach (Device device in devices)
+            foreach (Device device in Devices)
             {
                 //{"type":"L",\"settings\":\"255|0|0\"}
                 sBuilder.Append("{\"type\":\"").Append(device.GetJSONType()).Append("\","). //{"type":"L"
@@ -103,74 +74,36 @@ namespace SLFormHelper
             sBuilder.Append(']');
             return sBuilder.ToString();
         }
-
+        //ütemenként ebbe mentegeti a szerializált dolgokat
+        private static List<SerializedTurnSettings> turnsSettings = new List<SerializedTurnSettings>(); 
         /// <summary>
-        /// Delphi-függvényt hív, amely a felmért eszközök tömbjét, a `dev485`-öt JSON-formátumra alakítja (szerializálja), majd ezt a standard formátumot (lényegében csak az eszközök azonosítóját) a C# számára közli.
-        /// Ebből a C# legyártja a saját eszközlistáját (`devices`-lista) a megfelelő típusú eszközök példányaival (LED-lámpa, LED-nyíl, Hangszóró).
-        /// Ezen az eszközlistán beállításokat tudunk végezni, amelyet ki tudunk küldeni végül a megfelelő eszközök részére.
-        /// A lista elérhető FormHelper.Devices property-n keresztül.
-        /// <br></br>---------------------------------------<br></br>
-        /// A Delphi-function is called that converts (serializes) the array of devices being surveyed, `dev485`, into JSON format, and then communicates this standard format (essentially just the device identifier) to C#.
-        /// From this, C# derives its own list of devices (`devices`-list) with instances of the appropriate type of devices (LED lamp, LED arrow, Speaker).
-        /// On this device list you can make settings, which you can eventually send out to the appropriate devices.
-        /// The list is accessible via the FormHelper.Devices property.
+        /// Egyetlen ütemet ment ki JSON-ba. Az eszközök beállítása után kell meghívni, ekkor snapshotot készít a paraméterben kapott devices-lista beállításairól.
         /// </summary>
-        /// <param name="use_c">Használjuk-e a converter32.dll-jében található C-függvényt</param>
-        /// <exception cref="JsonException"></exception>
-        private static void JSONToDeviceList()
+        /// <param name="turnDevices">A menteni kívánt eszközlista, ami a beállításokat tartalmazza.</param>
+        /// <param name="turnTime">A menteni kívánt ütem hossza.</param>
+        public static void SaveTurn(List<Device> turnDevices, ref ushort turnTime)
         {
-            ConvertDeviceListToJSON(out string jsonFormat);
-            //[{"azonos":16388}, {"azonos": 36543}, ...] JSON-formátumú dev485 betöltése a C# környezete számára
-            if (!jsonFormat.IsValidJSON())
-                throw new JsonException($"Az eszközök leírása helytelen JSON-formátumban történt: {jsonFormat}");
-            List<SerializedDevice> deserializedDeviceList = JsonConvert.DeserializeObject<List<SerializedDevice>>(jsonFormat);
+            if (turnDevices == null || turnDevices.Count == 0)
+            {
+                MessageBox.Show("Az ütembeállítások elmentése meghiúsult: Nincs eszköz feltöltve az ütemben.");
+                return;
+            }
 
-
-            if (deserializedDeviceList == null)
-                throw new JsonException($"Eszközlista létrehozása sikertelen: {jsonFormat}");
-
-            for (int i = 0; i < deserializedDeviceList.Count; i++)
-                devices.Add(deserializedDeviceList[i].CreateDevice());
-        }
-
-        private static void JSONToDeviceList_C()
-        {
-            ConvertDeviceListToJSON_C(out string jsonFormat);
-            List<SerializedDevice> deserializedDeviceList = JsonConvert.DeserializeObject<List<SerializedDevice>>(jsonFormat);
-
-            if (deserializedDeviceList == null)
-                throw new JsonException($"Eszközlista létrehozása sikertelen: {jsonFormat}");
-
-            for (int i = 0; i < deserializedDeviceList.Count; i++)
-                devices.Add(deserializedDeviceList[i].CreateDevice());
+            SerializedTurnSettings serializedTurn = new SerializedTurnSettings(
+                            devices: new SerializedDeviceSettings[turnDevices.Count],
+                            time: turnTime);
+            
+            for(int i = 0; i < turnDevices.Count; i++) //ütemben lévő eszközöket beletesszük
+            {
+                serializedTurn.Devices[i] = new SerializedDeviceSettings(
+                        type: turnDevices[i].GetJSONType(), //aktuális ütem i. eszközének típusa
+                        settings: turnDevices[i].GetJSONSettings()); //aktuális ütem i. eszközének beállításai
+            }
+            turnsSettings.Add(serializedTurn);
         }
 
         /// <summary>
-        /// Szöveg-típusú változóra meghívható kiegészítő (extension) függvény. <br></br>
-        /// Eldönti a bemenő JSON-forrásszövegről, hogy az helyes JSON-formátumban van-e.
-        /// <br></br>---------------------------------------<br></br>
-        /// Extension method for strings.
-        /// This function makes a decision whether the given string is in valid JSON-format or not.
-        /// </summary>
-        /// <param name="source">Forrásszöveg, amit meg akarunk vizsgálni.</param>
-        /// <returns>true, ha JSON-formátumban van, különben false.</returns>
-        private static bool IsValidJSON(this string source) //extension method for string
-        {
-            if (source == null || source == "")
-                return false;
-            try
-            {
-                JToken.Parse(source);
-                return true;
-            }
-            catch (JsonException) //ha bármi hiba van a JSON-parse közben, akkor nem lehet valid a JSON-formátum
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Létrehoz egy JSON-fájlt, amelyben az eszközlista aktuális beállításainak állapotát elkészíti (snapshot) egy adott ütemben.
+        /// Létrehoz egy JSON-fájlt, amelyben az eszközlista aktuális beállításainak állapotát elkészíti (snapshot) minden az elmentett ütemekre.
         /// Az elkészült fájl a LoadDeviceSettings-metódussal betölthető.
         /// <br></br>
         /// UPDATE: priváttá tettem, mivel a kimentés implementációja Levente formjában került megírásra. Ezt a metódust nem használjuk.<br></br>
@@ -182,22 +115,84 @@ namespace SLFormHelper
         /// The created file can be loaded using the LoadDeviceSettings method.
         /// </summary>
         /// <param name="jsonPathToFile">A menteni kívánt fájl elérési útja.</param>
-        /// <param name="devArray">A menteni kívánt eszközlista, ami a beállításokat tartalmazza.</param>
-        /// <param name="turnTime">A menteni kívánt ütem hossza.</param>
-        private static void UnloadDeviceSettings(Device[] devArray, ushort turnTime, string jsonPathToFile)
+        public static void SaveJSON(ref string jsonPathToFile)
         {
-            SerializedTurnSettings turnSettings = new SerializedTurnSettings(
-                        devices: new SerializedDeviceSettings[devArray.Length],
-                        time: turnTime);
-            
-            for (int i = 0; i < devices.Count; i++)
-                turnSettings.Devices[i] = new SerializedDeviceSettings(
-                    type: devArray[i].GetJSONType(),
-                    settings: devArray[i].GetJSONSettings());
+            if (turnsSettings.Count == 0)
+            {
+                MessageBox.Show("A fájl mentése meghiúsult: Nincs eszköz feltöltve ütemenként.");
+                return;
+            }
 
-            File.AppendAllText(
-                path: jsonPathToFile, 
-                contents: JsonConvert.SerializeObject(turnSettings, Formatting.Indented));
+            File.WriteAllText(path: jsonPathToFile,
+                contents: JsonConvert.SerializeObject(turnsSettings, Formatting.Indented));
+        }
+
+        /// <summary>
+        /// Beolvassa a megadott elérési úton szereplő JSON-fájlt, amely az eszközbeállításokat tartalmaz.<br></br>
+        /// Ezt a metódust használva betölthetünk előre beállított eszközlistákat a programunkba futásidőben.<br></br>
+        /// Az eszközbeállítások mentéséről és tárolásáról az UnloadDeviceSettings-metódus gondoskodik.
+        /// <br></br>---------------------------------------<br></br>
+        /// Reads the JSON file containing the device settings from the specified path.
+        ///Using this method, you can load preconfigured device lists into your program at runtime.
+        ///The UnloadDeviceSettings method is used to save and store the device settings.
+        /// </summary>
+        /// <param name="turn">Hanyadik ütemet szeretnénk betölteni.</param>
+        /// <param name="turnDevices">Eszközök listája, amit ki szeretnénk küldeni majd</param>
+        /// <param name="turnTime">Ütemek egységes időtartama</param>
+        /// <exception cref="JsonException"></exception>
+        public static void LoadTurn(ref int turn, List<Device> turnDevices, out ushort turnTime)
+        {
+            turnTime = 0;
+            if (turnsSettings == null || turnsSettings.Count == 0)
+            {
+                MessageBox.Show("Betöltés meghiúsult: Üres az ütemek listája.");
+                return;
+            }
+            if(turn >= turnsSettings.Count)
+            {
+                MessageBox.Show($"Betöltés meghiúsult: A betölteni kívánt ütem száma ({turn}) nem haladhatja meg a tárolt ütemek számát ({turnsSettings.Count}).");
+                return;
+            }
+            turnTime = turnsSettings[turn].Time;
+            for (int i = 0; i < turnsSettings[turn].Devices.Length; i++)
+            {
+                turnDevices[i].LoadDeviceSettings(turnsSettings[turn].Devices[i].Settings.Split('|'));
+            }
+        }
+
+        /// <summary>
+        /// Betölti a JSON-fájlból az eszközbeállításokat.
+        /// </summary>
+        /// <param name="jsonFile">Beolvasni kívánt JSON-fájl elérési útvonala.</param>        
+        public static void LoadJSON(ref string jsonFile)
+        {
+            string fileContent;
+            try
+            {
+                using (StreamReader reader = new StreamReader(jsonFile))
+                {
+                    fileContent = reader.ReadToEnd();
+                }
+            }
+            catch (IOException e)
+            {
+                Logger.WriteLog($"Hiba történt fájlbeolvasás közben...{e.Message}", SeverityLevel.ERROR);
+                return;
+            }
+            SerializedTurnSettings[] turnSettings;
+            try
+            {
+                turnSettings = JsonConvert.DeserializeObject<SerializedTurnSettings[]>(fileContent);
+                ValidateSettings(turnSettings);
+                //innentől valid JSON van, legalább 1 ütem, minden ütemnél stimmel az eszközök típusa
+            }
+            catch (JsonException e)
+            {
+                Logger.WriteLog($"Hibás JSON-formátum...{e.Message}", SeverityLevel.WARNING);
+                MessageBox.Show(e.Message);
+                return;
+            }
+            turnsSettings = new List<SerializedTurnSettings>(turnSettings);
         }
     }
 }

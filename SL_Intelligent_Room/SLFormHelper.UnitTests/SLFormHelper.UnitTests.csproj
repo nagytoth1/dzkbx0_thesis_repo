@@ -54,7 +54,8 @@
   <ItemGroup>
     <Compile Include="SerializedDeviceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="FormHelperTests.cs" />
+    <Compile Include="FormHelperDisconnectedTests.cs" />
+    <Compile Include="FormHelperConnectedTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

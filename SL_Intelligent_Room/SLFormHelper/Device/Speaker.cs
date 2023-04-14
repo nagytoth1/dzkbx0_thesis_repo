@@ -46,6 +46,7 @@ namespace SLFormHelper
         {
             if (splitSettings.Length % 3 != 0)
                 throw new ArgumentException("A hangszóróhoz nem megfelelő a beállítási lista.");
+            ClearSounds();
             for (int i = 0; i < splitSettings.Length - 2; i += 3)
             {
                 if (!Enum.TryParse(splitSettings[i], out Pitch parsedPitch))
@@ -75,6 +76,11 @@ namespace SLFormHelper
             }
             sb.Append(soundList[i].ToString());
             return sb.ToString();
+        }
+
+        public override Device Clone()
+        {
+            return new Speaker(this.azonos);
         }
     }
 }

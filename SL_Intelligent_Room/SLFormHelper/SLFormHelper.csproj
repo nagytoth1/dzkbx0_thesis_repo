@@ -65,6 +65,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DeviceListConverters\XMLDeviceListConverter.cs" />
+    <Compile Include="DeviceListConverters\CJSONDeviceListConverter.cs" />
+    <Compile Include="DeviceListConverters\JSONDeviceListConverter.cs" />
+    <Compile Include="DeviceListConverters\DeviceListConverter.cs" />
     <Compile Include="Device\Pitch.cs" />
     <Compile Include="Device\SerializedTurnSettings.cs" />
     <Compile Include="Device\Speaker.Sound.cs" />
@@ -77,7 +81,6 @@
     <Compile Include="Exceptions\USBDisconnectedException.cs" />
     <Compile Include="FormHelper.cs" />
     <Compile Include="FormHelper.JSONHandler.cs" />
-    <Compile Include="FormHelper.XMLHandler.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Exceptions\SLDLLException.cs" />

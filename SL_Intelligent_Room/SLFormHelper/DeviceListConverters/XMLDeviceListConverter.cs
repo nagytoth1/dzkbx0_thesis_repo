@@ -1,11 +1,30 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using System.Xml;
 
 namespace SLFormHelper
 {
-    public static partial class FormHelper //konténerosztály
+    /// <summary>
+    /// Egy osztály, amely végrehajtja a dev485 tömb átalakítását a relayDLL-ből XML-formátumú állományba (devices.xml).
+    /// Ezt a Delphi-implementáció alapján végzi, a ConvertDEV485ToXML-függvényt meghívva.
+    /// GetInstance statikus függvénnyel lehet példányosítani.
+    /// <br></br>-----------------------------------------<br></br>
+    /// A class that executes converting dev485 array from relayDLL into JSON-formatted string.
+    /// Can only be instantiated using GetInstance static method.
+    /// </summary>
+    public class XMLDeviceListConverter : DeviceListConverter
     {
+        private static XMLDeviceListConverter instance;
+        private XMLDeviceListConverter() { }
+
+        public static XMLDeviceListConverter GetInstance()
+        {
+            if (instance == null)
+                instance = new XMLDeviceListConverter();
+            return instance;
+        }
         public const string XMLPATH = ".\\devices.xml";
         /// <summary>
         /// Delphi-függvényt hív, amely a felmért eszközök tömbjét, a `dev485`-öt XML-formátumra alakítja (szerializálja), majd ezt a standard formátumot (lényegében csak az eszközök azonosítóját) a C# számára közli.
@@ -14,14 +33,15 @@ namespace SLFormHelper
         /// A lista elérhető FormHelper.Devices property-n keresztül.
         /// </summary>
         /// <exception cref="XmlException"></exception>
-        private static void XMLToDeviceList()
+        public void ToDeviceList()
         {
             XmlNodeList nodeList;
-            string path = "devices.xml";
+            string path = XMLPATH;
             try
             {
                 //TODO: DelphiDLL-t hív, ennek milyen visszatérési értékei vannak? - ennek megfelelő Exception-öket dobni
                 ConvertDeviceListToXML(ref path);
+                MessageBox.Show($"XML kimentve a következő helyre: {Path.GetFullPath(XMLPATH)}");
                 nodeList = ReadXMLDocument();
             }
             catch (XmlException xmlEx)
@@ -39,16 +59,10 @@ namespace SLFormHelper
                 }
                 serialized = new SerializedDevice(azonos);
                 deviceToAdd = serialized.CreateDevice();
-                devices.Add(deviceToAdd);
+                FormHelper.Devices.Add(deviceToAdd);
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <exception cref="IOException"></exception>
-        /// <exception cref="Exception"></exception>
-        /// <returns></returns>
         private static XmlNodeList ReadXMLDocument()
         {
             XmlDocument xmlDocument = new XmlDocument();
@@ -73,5 +87,8 @@ namespace SLFormHelper
 
             return nodeList;
         }
+
+        [DllImport(FormHelper.DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "ConvertDEV485ToXML")]
+        extern private static byte ConvertDeviceListToXML([MarshalAs(UnmanagedType.BStr)][In] ref string outputStr);
     }
 }

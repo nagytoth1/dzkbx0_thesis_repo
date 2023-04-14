@@ -38,5 +38,10 @@ namespace SLFormHelper
         {
             return string.Format("{0}|{1}", base.GetJSONSettings(), (byte) direction); //255|0|0|1
         }
+
+        public override Device Clone()
+        {
+            return new LEDArrow(this.azonos, this.color, this.direction);
+        }
     }
 }
