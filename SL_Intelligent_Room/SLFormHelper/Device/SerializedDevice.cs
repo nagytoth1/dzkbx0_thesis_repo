@@ -11,15 +11,13 @@ namespace SLFormHelper
     [Serializable]
     public class SerializedDevice
     {
-        private const int SLLELO = 0x4000;
-        private const int SLNELO = 0x8000;
-        private const int SLHELO = 0xc000;
+        private const ushort SLLELO = 0x_4000;
+        private const ushort SLNELO = 0x_8000;
+        private const ushort SLHELO = 0x_c000;
 
-        private uint azonos;
-
-        public SerializedDevice(uint devID) { this.azonos = devID; }
-        public SerializedDevice() { }
-        public uint Azonos { get => azonos; set => azonos = value; }
+        private ushort azonos;
+        public SerializedDevice(ushort azonos) { this.azonos = azonos; }
+        public ushort Azonos { get => azonos; set => azonos = value; }
 
         public Device CreateDevice() //refactoring: should be an abstract factory
         {

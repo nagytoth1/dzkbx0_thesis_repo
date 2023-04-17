@@ -4,7 +4,7 @@ namespace SLFormHelper.UnitTests
     [TestFixture]
     public class SerializedDeviceTests
     {
-        SerializedDevice target = new SerializedDevice();
+        SerializedDevice target = new SerializedDevice(0);
         [Test]
         public void CreateDevice_Scenario_Speaker()
         {

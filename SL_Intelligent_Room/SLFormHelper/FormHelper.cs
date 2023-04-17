@@ -110,6 +110,7 @@ namespace SLFormHelper
             //megoldás switch-case helyett
             converter.ToDeviceList();
 
+            /*
             //hangszóró
             Speaker speaker = (Speaker)devices[0];
             speaker.AddSound(Pitch.C_OKTAV4, 63, 500);
@@ -122,7 +123,7 @@ namespace SLFormHelper
             //lámpa
             LEDLight light = (LEDLight)devices[2];
             light.Color = Color.Green;
-
+            */
         }
         /// <summary>
         /// paraméter nélküli változat, alapból JSONDeviceListConverter osztállyal hívja meg

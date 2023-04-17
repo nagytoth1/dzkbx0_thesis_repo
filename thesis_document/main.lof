@@ -18,6 +18,7 @@
 \select@language {magyar} \contentsline {figure}{\numberline {1.18.}{\ignorespaces Eszközök azonosítóinak átadása JSON-formátumon keresztül\relax }}{37}{figure.caption.24}%
 \select@language {magyar} \contentsline {figure}{\numberline {1.19.}{\ignorespaces A függvény helyes Delphi-deklarációja\relax }}{38}{figure.caption.31}%
 \select@language {magyar} \contentsline {figure}{\numberline {1.20.}{\ignorespaces A függvény helyes szignatúrája C\#-ban\relax }}{39}{figure.caption.32}%
-\select@language {magyar} \contentsline {figure}{\numberline {1.21.}{\ignorespaces Megoldás a hangszóró hanglistájának kezelésére - RelayDLL\relax }}{41}{figure.caption.41}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.21.}{\ignorespaces Megoldás a hangszóró hanglistájának kezelésére - relayDLL\relax }}{41}{figure.caption.41}%
 \select@language {magyar} \contentsline {figure}{\numberline {1.22.}{\ignorespaces A hangszóró hanglistát kezel - megoldás C\# nyelven\relax }}{42}{figure.caption.43}%
 \select@language {magyar} \contentsline {figure}{\numberline {1.23.}{\ignorespaces Két eszköz csatlakoztatásának módja.\relax }}{43}{figure.caption.46}%
+\select@language {magyar} \contentsline {figure}{\numberline {1.24.}{\ignorespaces Egy eszköz hátulján lévő foglalatok.\relax }}{43}{figure.caption.47}%

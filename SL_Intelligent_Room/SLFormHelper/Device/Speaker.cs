@@ -9,7 +9,7 @@ namespace SLFormHelper
         private const byte SOUNDLIST_MAX = 30; //hanglista hossza maximum
         private readonly List<Sound> soundList; //readonly = nem engedi átírni a memóriacímet
         public List<Sound> Sounds { get { return soundList; } }
-        public Speaker(uint azonos) : base(azonos) {
+        public Speaker(ushort azonos) : base(azonos) {
             this.soundList = new List<Sound>();
         }
         /// <summary>

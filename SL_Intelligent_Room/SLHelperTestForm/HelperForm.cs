@@ -9,29 +9,42 @@ namespace SLHelperTestForm
 {
     public partial class HelperForm : Form
     {
+        private static readonly List<Device> devices = Devices;
+        private static List<Device>[] utemek;
+
+        private ushort i = 0;
+        private ushort[] ticks = { 2000, 1000, 2000, 1000, 2000, 1000 };
+        private Color[] arrowColors = { Color.Green, Color.Red, Color.Blue, Color.Green, Color.Black };
+        private Direction[] arrowDirections = { Direction.LEFT, Direction.RIGHT, Direction.LEFT, Direction.RIGHT, Direction.BOTH };
+        private Color[] lightColors = { Color.Green, Color.Blue, Color.Black, Color.Blue, Color.Black };
         public HelperForm()
         {
             InitializeComponent();
-            rnd = new Random();
         }
-
-        private static Random rnd;
         private void HelperForm_Load(object sender, EventArgs e)
         {
             try
             {
-                utemek = new List<Device>[]
+                //CallOpen(this.Handle);
+                //CallFillDev485Static();
+                CallFillDev485Static(CJSONDeviceListConverter.GetInstance()); //feltöltöm a tömböt statikus elemekkel
+                //CallFillDev485Static(XMLDeviceListConverter.GetInstance());
+                utemek = new List<Device>[] //ütemeket veszek fel (ezek a datagrid sorai)
                 {
                     DevicesDeepCopy(),
                     DevicesDeepCopy(),
                     DevicesDeepCopy(),
                     DevicesDeepCopy()
-                }; // 4 különböző devices lista 
-                //CallOpen(this.Handle);
-                //CallFillDev485Static();
-                CallFillDev485Static(CJSONDeviceListConverter.GetInstance());
-                //CallFillDev485Static(XMLDeviceListConverter.GetInstance());
-                listBox1.DataSource = Devices;
+                }; // 4 különböző devices lista
+                listBox1.DataSource = devices;
+                Console.WriteLine("ütemek beállítgatása...");
+                for (int i = 0; i < utemek.Length; i++)
+                {
+                    if(utemek[i][2] is LEDLight light) //minden ütemben a 2. elem lámpa lesz (statikus feltöltés miatt)
+                    {
+                        light.Color = lightColors[i]; //beállítok színeket ütemenként a lámpának
+                    }
+                }
                 
             }
             catch (DllNotFoundException ex)
@@ -44,7 +57,6 @@ namespace SLHelperTestForm
                 Logger.WriteLog(ex.Message, SeverityLevel.ERROR);
             }
         }
-        //private int drb485;
         /// <summary>
         /// Ez lényegében a Delphi-ből érkező uzfeld-metódus C#-os változata
         /// Feldolgozza a Win32-es üzeneteket a Form és a rendszer/DLL között.
@@ -55,17 +67,6 @@ namespace SLHelperTestForm
             CallWndProc(ref msg);
             base.WndProc(ref msg);
         }
-        private static byte drb485;
-        public static byte DRB485
-        {
-            get { return drb485; }
-            set
-            {
-                if (value < 0)
-                    throw new ArgumentException("Eszközök darabszáma nem lehet negatív!");
-                drb485 = value;
-            }
-        }
         private void btnOpen_Click(object sender, EventArgs e)
         {
             CallOpen(this.Handle);
@@ -74,36 +75,53 @@ namespace SLHelperTestForm
         {
             btnFelmeres.Enabled = false;
             CallFelmeres();
-            listBox1.DataSource = Devices;
+            listBox1.DataSource = devices;
+        }
+        private void btnLampaPiros_Click(object sender, EventArgs e)
+        {
+            Device light = devices.Find(x => x is LEDLight);
+            if (light == null)
+            {
+                MessageBox.Show("Nincs lámpa csatlakoztatva!");
+                return;
+            }
+            ((LEDLight)light).Color = Color.FromArgb(255, 0, 0);
+
+            string json_source = JSONDeviceListConverter.DevicesToJSON();
+            Console.WriteLine(json_source);
+            CallSetTurnForEachDevice(ref json_source);
+        }
+
+        private void btnLampaZold_Click(object sender, EventArgs e)
+        {
+            Device light = devices.Find(x => x is LEDLight);
+            if (light == null)
+            {
+                MessageBox.Show("Nincs lámpa csatlakoztatva!");
+                return;
+            }
+            ((LEDLight)light).Color = Color.FromArgb(0, 255, 0);
+
+            string json_source = JSONDeviceListConverter.DevicesToJSON();
+            CallSetTurnForEachDevice(ref json_source);
         }
         private void btnKek_Click(object sender, EventArgs e)
         {
-            foreach (Device d in Devices)
+            Device light = devices.Find(x => x is LEDLight);
+            if (light == null)
             {
-                if (d is LEDArrow arrow)
-                {
-                    arrow.Color = Color.Red;
-                    arrow.Direction = Direction.LEFT;
-                    continue;
-                }
-                if (d is LEDLight light)
-                {
-                    light.Color = Color.Blue;
-                    continue;
-                }
-                if (d is Speaker speaker)
-                {
-                    speaker.AddSound(Pitch.C_OKTAV4, 50, 300);
-                }
+                MessageBox.Show("Nincs lámpa csatlakoztatva!");
+                return;
             }
-            string json_source = DevicesToJSON();
-            Console.WriteLine(json_source);
+            ((LEDLight)light).Color = Color.FromArgb(0, 0, 255);
+
+            string json_source = JSONDeviceListConverter.DevicesToJSON();
             CallSetTurnForEachDevice(ref json_source);
         }
 
         private void btnUres_Click(object sender, EventArgs e)
         {
-            foreach (Device d in Devices)
+            foreach (Device d in devices)
             {
                 if (d is LEDArrow arrow)
                 {
@@ -121,11 +139,113 @@ namespace SLHelperTestForm
                     speaker.ClearSounds(); //""
                 }
             }
-            string json_source = DevicesToJSON();
+            string json_source = JSONDeviceListConverter.DevicesToJSON();
             Console.WriteLine(json_source);
             CallSetTurnForEachDevice(ref json_source);
         }
-        private static List<Device>[] utemek;
+        private void btnNyil3_Click(object sender, EventArgs e)
+        {
+            //a felhasználó azt tapasztalja, hogy a kattintásra kék 2 mp-ig, lekapcsol, újból kék 2 mp-ig, majd ismét lekapcsol
+            turnTimer.Interval = 1; //a kattintáskor állítsa be a legelső intervallumot 1-re (tehát szinte a kattintás pillanta azonnal aktiválja a Tick-et)
+            turnTimer.Enabled = true; //indul a stopwatch, ha letelik x idő (timer.Interval), akkor a Tick
+            if (Devices[0] == null)
+            {
+                MessageBox.Show("Devices tömb üres!"); return;
+            }
+
+            if (!(Devices[0] is LEDLight))
+            {
+                MessageBox.Show("Az eszköz nem lámpa!"); return;
+            }
+        }
+        private void button2Utem_Click(object sender, EventArgs e)
+        {
+            //a felhasználó azt tapasztalja, hogy a kattintásra kék 2 mp-ig, lekapcsol, újból kék 2 mp-ig, majd ismét lekapcsol
+            turnTimerKeteszkoz.Interval = 1; //a kattintáskor állítsa be a legelső intervallumot 1-re (tehát szinte a kattintás pillanta azonnal aktiválja a Tick-et)
+            turnTimerKeteszkoz.Enabled = true; //indul a stopwatch, ha letelik x idő (timer.Interval), akkor a Tick
+            button2Utem.Enabled = false;
+            if (devices.Count < 2)
+            {
+                MessageBox.Show("Devices tömb nem 2 eszközt tartalmaz!"); return;
+            }
+
+            if (!(devices[0] is LEDLight))
+            {
+                MessageBox.Show("Az első eszköz nem lámpa!"); return;
+            }
+            if (!(devices[1] is LEDArrow))
+            {
+                MessageBox.Show("A második eszköz nem nyíl!"); return;
+            }
+        }
+
+        private void turnTimerKeteszkoz_Tick(object sender, EventArgs e)
+        {
+            if (devices.Count != 2)
+            {
+                MessageBox.Show("Két eszköznek kell lennie!");
+                return;
+            }
+            if (!(devices[0] is LEDLight))
+            {
+                MessageBox.Show("Az első eszköz nem lámpa!\nA nyilat csatlakoztasd közvetlenül a számítógéphez az USB-porton keresztül, aztán a nyílhoz a lámpát. A lámpának adj tápfeszültséget is!");
+                return;
+            }
+            if (!(devices[1] is LEDArrow))
+            {
+                MessageBox.Show("A második eszköz nem nyíl!\nA nyilat csatlakoztasd közvetlenül a számítógéphez az USB-porton keresztül, aztán a nyílhoz a lámpát. A lámpának adj tápfeszültséget is!");
+                return;
+            }
+            LEDLight light = (LEDLight)devices[0];
+            LEDArrow arrow = (LEDArrow)devices[1];
+            if (i == 4) //vége a tickelésnek, 2 tick már lezajlott, negyedikre nincs szükségünk
+            {
+                //állítson vissza mindent eredeti, kezdeti állapotba
+                i = 0;
+                turnTimerKeteszkoz.Enabled = false;
+                button2Utem.Enabled = true;
+                //ha vége, akkor kikapcsolja őket
+                light.Color = Color.Black;
+                arrow.Color = Color.Black;
+                string json_s = JSONDeviceListConverter.DevicesToJSON();
+                CallSetTurnForEachDevice(ref json_s);
+                return;
+            }
+            turnTimerKeteszkoz.Interval = ticks[i]; //tickenként változzon az ütem hossza
+            light.Color = lightColors[i]; //felvillan kéken
+            arrow.Color = arrowColors[i];
+            arrow.Direction = arrowDirections[i]; //jobbra nyíl
+            string json_source = JSONDeviceListConverter.DevicesToJSON();
+            try
+            {
+                CallSetTurnForEachDevice(ref json_source);
+                i++; //növelje a "ciklusváltozót", amikor eléri a 4-et, akkor vége a ticknek
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(exc.Message);
+            }
+        }
+        //JSON-formátum kimentése
+        private void kimentBtn_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog
+            {
+                InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
+                Filter = "JSON-file (*.json)|*.json"
+            };
+            string jsonfile;
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                jsonfile = sfd.FileName;
+                for (int i = 0; i < utemek.Length; i++) //utemek.Length ugyanaz, mint a dataGrid.Rows.Count lenne
+                {
+                    JSONSourceHandler.SaveTurn(utemek[i], ref ticks[i]); //ütemenként feltöltjük a tömböt, amit ki akarunk menteni
+                }
+                JSONSourceHandler.SaveJSON(ref jsonfile); //kimenti egy fájlba a tömböt
+            }
+        }
+        //JSON-fájl betöltése
         private void betoltBtn_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog
@@ -138,16 +258,7 @@ namespace SLHelperTestForm
                 try
                 {
                     string jsonfile = ofd.FileName;
-                    LoadJSON(ref jsonfile);
-                    for (int i = 0; i < utemek.Length; i++) //4 ütem betöltése
-                    {
-                        LoadTurn(ref i, utemek[i], out ushort turnTime);
-                    }
-
-                    for (int i = 0; i < utemek.Length; i++)
-                    {
-                        Console.WriteLine($"{i}. ütem lámpája: {utemek[i][2].GetJSONSettings()}");
-                    }
+                    JSONSourceHandler.LoadJSON(ref jsonfile); //betölti a fájlt, feltölti a tömböt
                 }
                 catch (Exception exc)
                 {
@@ -157,154 +268,48 @@ namespace SLHelperTestForm
                 }
             }
         }
-        private void kimentBtn_Click(object sender, EventArgs e)
+        private void btnLejatszas_MouseClick(object sender, MouseEventArgs e)
         {
-            SaveFileDialog sfd = new SaveFileDialog
-            {
-                InitialDirectory = Environment.SpecialFolder.MyDocuments.ToString(),
-                Filter = "JSON-file (*.json)|*.json"
-            };
-            string jsonfile;
-            if (sfd.ShowDialog() == DialogResult.OK)
-            {
-                jsonfile = sfd.FileName;
-                for (int i = 0; i < utemek.Length; i++)
-                {
-                    SaveTurn(utemek[i], ref ticks[i]);
-                }
-                SaveJSON(ref jsonfile); //kimenti a 4 ütemet
-            }
-        }
-        private bool ledUP = true;
-        private ushort[] ticks = { 2000, 1000, 2000, 1000, 2000, 1000};
-        private byte i = 0;
-        private void btnNyil3_Click(object sender, EventArgs e)
-        {
-            //a felhasználó azt tapasztalja, hogy a kattintásra kék 2 mp-ig, lekapcsol, újból kék 2 mp-ig, majd ismét lekapcsol
-            turnTimer.Interval = 1; //a kattintáskor állítsa be a legelső intervallumot 1-re (tehát szinte a kattintás pillanta azonnal aktiválja a Tick-et)
-            turnTimer.Enabled = true; //indul a stopwatch, ha letelik x idő (timer.Interval), akkor a Tick
-            btnNyil3.Enabled = false;
-            if (Devices[0] == null)
-            {
-                MessageBox.Show("Devices tömb üres!"); return;
-            }
-
-            if (!(Devices[0] is LEDLight))
-            {
-                MessageBox.Show("Az eszköz nem lámpa!"); return;
-            }
+            turnTimer.Interval = 1;
+            ushort utemCounter = 0;
+            turnTimer.Tick += (senderObj, eventArgs) => timer_Tick(ref utemCounter, (ushort)utemek.Length);
+            turnTimer.Start();
+            btnLejatszas.Enabled = false; //érdemes letiltani a lejátszás idejére a gombot, ne tudja még egyszer megnyomni, amíg futnak az ütemek
+            Console.WriteLine("kiküldve!");
         }
 
         /// <summary>
-        /// timer.Enabled = true elindít egy Stopwatch-mérést, majd amikor a timer.Interval lejár, a Tick-event kódja lefut.<br></br>
+        /// timer.Enabled = true (vagy timer.Start()) elindít egy Stopwatch-mérést, majd amikor a timer.Interval lejár, a Tick-event kódja lefut.<br></br>
         /// Például ha a timer.Interval = 1000, akkor másodpercenként (1000 millisec időközönként) meghívódik a Tick-event kódja, tehát az alábbi függvény.<br></br>
-        /// timer.Enabled = false kikapcsolja a Tick-ek vizsgálatát
+        /// timer.Enabled = false (vagy timer.Stop()) kikapcsolja a Tick-ek vizsgálatát, az ütemezést
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void turnTimer_Tick(object sender, EventArgs e) 
+        private void timer_Tick(ref ushort act, ushort max)
         {
-            if (i == 4) //vége a tickelésnek, 3 tick már lezajlott, negyedikre nincs szükségünk
+            if (i == max) //vége a tickelésnek, ha n db tick már lezajlott
             {
+                Console.WriteLine("minden kiküldve!");
                 //állítson vissza mindent eredeti, kezdeti állapotba
                 i = 0;
-                ledUP = true;
-                turnTimer.Enabled = false;
-                btnNyil3.Enabled = true;
+                turnTimer.Stop();
+                btnLejatszas.Enabled = true; //amikor végzett az ütemek kiküldésével, vissza feloldjuk a gombot
                 return;
             }
-            turnTimer.Interval = ticks[i]; //tickenként változzon az ütem hossza
-            LEDLight light = (LEDLight)Devices[0];
-            if (ledUP) //ha ledUP értéke igaz, akkor villanjon fel a nyíl balra kék színnel
-            {
-                light.Color = Color.Blue;
-            }
-            else //ha ledUP értéke hamis, akkor "kapcsolja ki" a nyilat (küldjön fekete színt mindkét irányba)
-            {
-                light.Color = Color.Black;
-            }
-            string json_source = DevicesToJSON();
             try
             {
-                CallSetTurnForEachDevice(ref json_source);
+                JSONSourceHandler.LoadTurn(ref i, utemek[i], out ushort turnTime); //i. ütemet betölti
+                string json_source = JSONDeviceListConverter.DevicesToJSON(utemek[i].ToArray());
+                Console.WriteLine(json_source);
+                //turnTimer.Interval = ticks[i]; //1000, 2000, stb... legyen az intervallum
+                turnTimer.Interval = 2000;
+                //CallSetTurnForEachDevice(ref json_source);
             }
             catch (Exception exc)
             {
                 MessageBox.Show(exc.Message);
             }
-            ledUP = !ledUP; //negálja a változót, fordítsa ellentettjére, így váltakozva fog fel-le kapcsolni a nyíl
             i++; //növelje a "ciklusváltozót", amikor eléri a 4-et, akkor vége a tickelésnek
-        }
-
-        private Color[] arrowColors = { Color.Green, Color.Red, Color.Blue, Color.Green, Color.Black };
-        private Direction[] arrowDirections = { Direction.LEFT, Direction.RIGHT, Direction.LEFT, Direction.RIGHT, Direction.BOTH };
-        private Color[] lightColors = { Color.Green, Color.Blue, Color.Black, Color.Blue, Color.Black };
-        private void button2Utem_Click(object sender, EventArgs e)
-        {
-            //a felhasználó azt tapasztalja, hogy a kattintásra kék 2 mp-ig, lekapcsol, újból kék 2 mp-ig, majd ismét lekapcsol
-            turnTimerKeteszkoz.Interval = 1; //a kattintáskor állítsa be a legelső intervallumot 1-re (tehát szinte a kattintás pillanta azonnal aktiválja a Tick-et)
-            turnTimerKeteszkoz.Enabled = true; //indul a stopwatch, ha letelik x idő (timer.Interval), akkor a Tick
-            button2Utem.Enabled = false;
-            if (Devices.Count < 2)
-            {
-                MessageBox.Show("Devices tömb nem 2 eszközt tartalmaz!"); return;
-            }
-
-            if (!(Devices[0] is LEDLight))
-            {
-                MessageBox.Show("Az első eszköz nem lámpa!"); return;
-            }
-            if (!(Devices[1] is LEDArrow))
-            {
-                MessageBox.Show("A második eszköz nem nyíl!"); return;
-            }
-        }
-
-        private void turnTimerKeteszkoz_Tick(object sender, EventArgs e)
-        {
-            if (Devices.Count != 2)
-            {
-                MessageBox.Show("Két eszköznek kell lennie!");
-                return;
-            }if (!(Devices[0] is LEDLight))
-            {
-                MessageBox.Show("Első eszköz nem lámpa!");
-                return;
-            }
-            if (!(Devices[1] is LEDArrow))
-            {
-                MessageBox.Show("Második eszköz nem nyíl!");
-                return;
-            }
-            LEDLight light = (LEDLight)Devices[0];
-            LEDArrow arrow = (LEDArrow)Devices[1];
-            if (i == 4) //vége a tickelésnek, 2 tick már lezajlott, negyedikre nincs szükségünk
-            {
-                //állítson vissza mindent eredeti, kezdeti állapotba
-                i = 0;
-                turnTimerKeteszkoz.Enabled = false;
-                button2Utem.Enabled = true;
-                //ha vége, akkor kikapcsolhatná őket
-                light.Color = Color.Black;
-                arrow.Color = Color.Black;
-                string json_s = DevicesToJSON();
-                CallSetTurnForEachDevice(ref json_s);
-                return;
-            }
-            turnTimerKeteszkoz.Interval = ticks[i]; //tickenként változzon az ütem hossza
-            light.Color = lightColors[i]; //felvillan kéken
-            arrow.Color = arrowColors[i];
-            arrow.Direction = arrowDirections[i]; //jobbra nyíl
-            string json_source = DevicesToJSON();
-            try
-            {
-                CallSetTurnForEachDevice(ref json_source);
-                i++; //növelje a "ciklusváltozót", amikor eléri a 4-et, akkor vége a tickelésnek
-            }
-            catch (Exception exc)
-            {
-                MessageBox.Show(exc.Message);
-            }
+            act++;
+            Console.WriteLine($"\t i = {i} \t act = {act}");
         }
     }
 }

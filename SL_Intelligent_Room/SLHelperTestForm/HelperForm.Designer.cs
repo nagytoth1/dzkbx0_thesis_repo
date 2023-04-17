@@ -38,10 +38,12 @@
             this.btnUres = new System.Windows.Forms.Button();
             this.kimentBtn = new System.Windows.Forms.Button();
             this.betoltBtn = new System.Windows.Forms.Button();
-            this.btnNyil3 = new System.Windows.Forms.Button();
             this.turnTimer = new System.Windows.Forms.Timer(this.components);
             this.button2Utem = new System.Windows.Forms.Button();
             this.turnTimerKeteszkoz = new System.Windows.Forms.Timer(this.components);
+            this.btnLejatszas = new System.Windows.Forms.Button();
+            this.btnLampaPiros = new System.Windows.Forms.Button();
+            this.btnLampaZold = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -96,22 +98,22 @@
             // btnKek
             // 
             this.btnKek.Font = new System.Drawing.Font("Consolas", 10F);
-            this.btnKek.Location = new System.Drawing.Point(16, 244);
+            this.btnKek.Location = new System.Drawing.Point(407, 251);
             this.btnKek.Name = "btnKek";
             this.btnKek.Size = new System.Drawing.Size(181, 63);
             this.btnKek.TabIndex = 5;
-            this.btnKek.Text = "Legyen kék!";
+            this.btnKek.Text = "Lámpa kék";
             this.btnKek.UseVisualStyleBackColor = true;
             this.btnKek.Click += new System.EventHandler(this.btnKek_Click);
             // 
             // btnUres
             // 
             this.btnUres.Font = new System.Drawing.Font("Consolas", 10F);
-            this.btnUres.Location = new System.Drawing.Point(220, 244);
+            this.btnUres.Location = new System.Drawing.Point(594, 251);
             this.btnUres.Name = "btnUres";
             this.btnUres.Size = new System.Drawing.Size(181, 63);
             this.btnUres.TabIndex = 5;
-            this.btnUres.Text = "Legyen üres?!";
+            this.btnUres.Text = "Kikapcsol";
             this.btnUres.UseVisualStyleBackColor = true;
             this.btnUres.Click += new System.EventHandler(this.btnUres_Click);
             // 
@@ -137,29 +139,14 @@
             this.betoltBtn.UseVisualStyleBackColor = true;
             this.betoltBtn.Click += new System.EventHandler(this.betoltBtn_Click);
             // 
-            // btnNyil3
-            // 
-            this.btnNyil3.Font = new System.Drawing.Font("Consolas", 10F);
-            this.btnNyil3.Location = new System.Drawing.Point(416, 244);
-            this.btnNyil3.Name = "btnNyil3";
-            this.btnNyil3.Size = new System.Drawing.Size(181, 63);
-            this.btnNyil3.TabIndex = 5;
-            this.btnNyil3.Text = "Kék lámpa 3x";
-            this.btnNyil3.UseVisualStyleBackColor = true;
-            this.btnNyil3.Click += new System.EventHandler(this.btnNyil3_Click);
-            // 
-            // turnTimer
-            // 
-            this.turnTimer.Tick += new System.EventHandler(this.turnTimer_Tick);
-            // 
             // button2Utem
             // 
             this.button2Utem.Font = new System.Drawing.Font("Consolas", 10F);
-            this.button2Utem.Location = new System.Drawing.Point(416, 320);
+            this.button2Utem.Location = new System.Drawing.Point(416, 331);
             this.button2Utem.Name = "button2Utem";
-            this.button2Utem.Size = new System.Drawing.Size(227, 96);
+            this.button2Utem.Size = new System.Drawing.Size(172, 85);
             this.button2Utem.TabIndex = 5;
-            this.button2Utem.Text = "4 ütem kiküldése NL";
+            this.button2Utem.Text = "4 ütem kiküldése LN";
             this.button2Utem.UseVisualStyleBackColor = true;
             this.button2Utem.Click += new System.EventHandler(this.button2Utem_Click);
             // 
@@ -167,15 +154,50 @@
             // 
             this.turnTimerKeteszkoz.Tick += new System.EventHandler(this.turnTimerKeteszkoz_Tick);
             // 
+            // btnLejatszas
+            // 
+            this.btnLejatszas.Font = new System.Drawing.Font("Consolas", 10F);
+            this.btnLejatszas.Location = new System.Drawing.Point(113, 434);
+            this.btnLejatszas.Name = "btnLejatszas";
+            this.btnLejatszas.Size = new System.Drawing.Size(181, 85);
+            this.btnLejatszas.TabIndex = 6;
+            this.btnLejatszas.Text = "4 ütem lejátszása";
+            this.btnLejatszas.UseVisualStyleBackColor = true;
+            this.btnLejatszas.MouseClick += new System.Windows.Forms.MouseEventHandler(this.btnLejatszas_MouseClick);
+            // 
+            // btnLampaPiros
+            // 
+            this.btnLampaPiros.Font = new System.Drawing.Font("Consolas", 10F);
+            this.btnLampaPiros.Location = new System.Drawing.Point(16, 251);
+            this.btnLampaPiros.Name = "btnLampaPiros";
+            this.btnLampaPiros.Size = new System.Drawing.Size(181, 63);
+            this.btnLampaPiros.TabIndex = 7;
+            this.btnLampaPiros.Text = "Lámpa piros";
+            this.btnLampaPiros.UseVisualStyleBackColor = true;
+            this.btnLampaPiros.Click += new System.EventHandler(this.btnLampaPiros_Click);
+            // 
+            // btnLampaZold
+            // 
+            this.btnLampaZold.Font = new System.Drawing.Font("Consolas", 10F);
+            this.btnLampaZold.Location = new System.Drawing.Point(220, 251);
+            this.btnLampaZold.Name = "btnLampaZold";
+            this.btnLampaZold.Size = new System.Drawing.Size(181, 63);
+            this.btnLampaZold.TabIndex = 8;
+            this.btnLampaZold.Text = "Lámpa zöld";
+            this.btnLampaZold.UseVisualStyleBackColor = true;
+            this.btnLampaZold.Click += new System.EventHandler(this.btnLampaZold_Click);
+            // 
             // HelperForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 449);
+            this.ClientSize = new System.Drawing.Size(811, 546);
+            this.Controls.Add(this.btnLampaZold);
+            this.Controls.Add(this.btnLampaPiros);
+            this.Controls.Add(this.btnLejatszas);
             this.Controls.Add(this.betoltBtn);
             this.Controls.Add(this.kimentBtn);
             this.Controls.Add(this.btnUres);
-            this.Controls.Add(this.btnNyil3);
             this.Controls.Add(this.button2Utem);
             this.Controls.Add(this.btnKek);
             this.Controls.Add(this.btnFelmeres);
@@ -202,10 +224,12 @@
         private System.Windows.Forms.Button btnUres;
         private System.Windows.Forms.Button kimentBtn;
         private System.Windows.Forms.Button betoltBtn;
-        private System.Windows.Forms.Button btnNyil3;
         private System.Windows.Forms.Timer turnTimer;
         private System.Windows.Forms.Button button2Utem;
         private System.Windows.Forms.Timer turnTimerKeteszkoz;
+        private System.Windows.Forms.Button btnLejatszas;
+        private System.Windows.Forms.Button btnLampaPiros;
+        private System.Windows.Forms.Button btnLampaZold;
     }
 }
 

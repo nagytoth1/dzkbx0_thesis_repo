@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace SLFormHelper
 {
@@ -16,13 +17,14 @@ namespace SLFormHelper
     public class JSONDeviceListConverter : DeviceListConverter
     {
         private static JSONDeviceListConverter instance;
+        private static readonly List<Device> devices = FormHelper.Devices;
         private JSONDeviceListConverter() { }
-
         public static JSONDeviceListConverter GetInstance() {
             if (instance == null)
                 instance = new JSONDeviceListConverter();
             return instance;
         }
+
         /// <summary>
         /// Eldönti a bemenő JSON-forrásszövegről, hogy az helyes JSON-formátumban van-e.
         /// <br></br>---------------------------------------<br></br>
@@ -76,5 +78,31 @@ namespace SLFormHelper
 
         [DllImport(FormHelper.DLLPATH, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "ConvertDEV485ToJSON")]
         extern private static byte ConvertDeviceListToJSON([MarshalAs(UnmanagedType.BStr)][Out] out string outputStr);
+
+        /// <summary>
+        /// Az eszközlistát JSON-formátumú szöveggé alakítja (szerializálja).
+        /// <br></br>---------------------------------------<br></br>
+        /// Converts the device list to a JSON-formatted string. In other words, it does the serialization-process from this side.
+        /// </summary>
+        /// <returns>Az eszközlista JSON-reprezentációja.</returns>
+        public static string DevicesToJSON()
+        {
+            return DevicesToJSON(devices.ToArray());
+        }
+        public static string DevicesToJSON(Device[] devices)
+        {
+            if (devices.Length == 0)
+                return "[]";
+            StringBuilder sBuilder = new StringBuilder("[");
+            foreach (Device device in devices)
+            {
+                //{"type":"L",\"settings\":\"255|0|0\"}
+                sBuilder.Append("{\"type\":\"").Append(device.GetJSONType()).Append("\","). //{"type":"L"
+                        Append("\"settings\":\"").Append(device.GetJSONSettings()).Append("\"},"); //,"settings":"255|0|0"}
+            }
+            sBuilder.Remove(sBuilder.Length - 1, 1);
+            sBuilder.Append(']');
+            return sBuilder.ToString();
+        }
     }
 }

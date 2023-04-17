@@ -8,8 +8,8 @@ namespace SLFormHelper
     {
         private Direction direction;
 
-        public LEDArrow(uint azonos) : this(azonos, Color.Black, Direction.BOTH) { }
-        public LEDArrow(uint azonos, Color c, Direction direction) : base(azonos, c)
+        public LEDArrow(ushort azonos) : this(azonos, Color.Black, Direction.BOTH) { }
+        public LEDArrow(ushort azonos, Color c, Direction direction) : base(azonos, c)
         {
             this.direction = direction;
         }

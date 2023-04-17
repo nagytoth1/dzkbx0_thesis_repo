@@ -21,7 +21,7 @@ namespace SLFormHelper
         /// The one-parameter constructor of LEDLight, which only needs to be passed the identifier, defaults the device to black, indicating the off state.
         /// </summary>
         /// <param name="azonos">Az eszköz azonosítója (relayDLL-en keresztül kerül átadásra)</param>
-        public LEDLight(uint azonos)
+        public LEDLight(ushort azonos)
             : this(azonos, Color.Black) { } //legyen kikapcsolva alapjáraton - fekete színt küldünk ki a lámpának
         /// <summary>
         /// A lámpa eszköz konstruktora, az eszköz azonosítóját, és a beállítani kívánt színt kéri.
@@ -30,7 +30,7 @@ namespace SLFormHelper
         /// </summary>
         /// <param name="azonos">Eszköz azonosítója (relayDLL-en keresztül kerül átadásra)</param>
         /// <param name="c">A beállítani kívánt szín.</param>
-        public LEDLight(uint azonos, Color c) : base(azonos)
+        public LEDLight(ushort azonos, Color c) : base(azonos)
         {
             this.color = c;
         }

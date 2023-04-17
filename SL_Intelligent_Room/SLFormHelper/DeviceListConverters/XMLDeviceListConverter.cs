@@ -53,7 +53,7 @@ namespace SLFormHelper
             SerializedDevice serialized; Device deviceToAdd;
             for (int i = 0; i < nodeList.Count; i++)
             {
-                if (!uint.TryParse(nodeList[i].Attributes[0].Value, out uint azonos))
+                if (!ushort.TryParse(nodeList[i].Attributes[0].Value, out ushort azonos))
                 {
                     Logger.WriteLog("Az XML-ből olvasott azonosító nem szám!", SeverityLevel.WARNING);
                 }

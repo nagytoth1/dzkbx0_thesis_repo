@@ -1,15 +1,13 @@
-﻿using System;
-
-namespace SLFormHelper
+﻿namespace SLFormHelper
 {
     public abstract class Device
     {
-        protected uint azonos;
-        public uint Azonos { get => azonos; } //readonly!!! - comes from Delphi when Felmeres is called, so it should be forbidden to edit deviceID-s in C#
+        protected ushort azonos;
+        public ushort Azonos { get => azonos; } //readonly!!! - comes from Delphi when Felmeres is called, so it should be forbidden to edit deviceID-s in C#
         //ezek a mezők nem a JSON-ből jönnek, ezek állandóak, minden eszközbe bekerülnek
         public const string PRODUC = "Somodi László"; //mivel const, ezért static is lesz, egy memóriaterületen fognak tárolódni, mert minden eszköz ugyanazt kapja értékül
         public const string MANUFA = "Pluszs Kft.";
-        protected Device(uint azonos)
+        protected Device(ushort azonos)
         {
             this.azonos = azonos;
         }
@@ -26,15 +24,15 @@ namespace SLFormHelper
         //inner factory solution
         public static class Factory
         {
-            public static Device CreateArrow(uint azonos)
+            public static Device CreateArrow(ushort azonos)
             {
                 return new LEDArrow(azonos);
             }
-            public static Device CreateLight(uint azonos)
+            public static Device CreateLight(ushort azonos)
             {
                 return new LEDLight(azonos);
             }
-            public static Device CreateSpeaker(uint azonos)
+            public static Device CreateSpeaker(ushort azonos)
             {
                 return new Speaker(azonos);
             }
